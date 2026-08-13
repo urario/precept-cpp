@@ -23,3 +23,7 @@ okf_version: "0.2"
 * [ADR-0003: License Precept under Apache-2.0](decisions/adr-0003-apache-2-0.md) - Permissive license with an explicit patent grant.
 * [ADR-0004: Prefer a dedicated semantic vocabulary over a generic constrained framework](decisions/adr-0004-dedicated-semantic-vocabulary.md) - Named types instead of a predicate DSL.
 * [ADR-0005: Limit v0.1 to the span precondition family](decisions/adr-0005-v0-1-span-scope.md) - Validate one hypothesis before growing the vocabulary.
+
+# Testing
+
+* [Test Strategy](testing/test-strategy.md) - How runtime, compile-time, integration, and deferred tests are separated behind CTest.
