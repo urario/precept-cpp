@@ -5,7 +5,7 @@ description: The eight rules a proposed public Precept API must satisfy before i
 status: draft
 generated:
   by: claude-code/2.1.231
-  at: 2026-08-13T00:00:00+09:00
+  at: 2026-08-13T19:24:27Z
 sources:
   - id: issue-1
     resource: https://github.com/urario/precept-cpp/issues/1
@@ -48,8 +48,12 @@ machinery. Adoption cost stays close to including a header.
 
 # 6. Composable
 
-The API connects naturally to the standard library: it accepts standard containers and
-views as input, and returns to standard types when the fact is fully expressible there.
+The API integrates naturally with standard C++ types and operations. It builds on the standard
+library rather than displacing it, works with the operations users already reach for, and returns
+to a standard type whenever the verified fact is fully expressible there. What "natural" means
+differs per family — a view interoperates with ranges and algorithms, a value type with the
+arithmetic and comparisons of what it wraps — so this rule is judged against the family the API
+belongs to, not against a fixed list of accepted inputs.
 
 # 7. No magic
 

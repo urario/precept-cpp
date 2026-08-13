@@ -5,7 +5,7 @@ description: How AI agents participate in Precept development and how knowledge 
 status: draft
 generated:
   by: claude-code/2.1.231
-  at: 2026-08-13T00:00:00+09:00
+  at: 2026-08-13T19:24:27Z
 sources:
   - id: issue-3
     resource: https://github.com/urario/precept-cpp/issues/3
@@ -34,17 +34,20 @@ A contributor — human or agent — starting a task normally:
 2. Reads the Requirements, ADRs, Rules, and API Contracts relevant to the issue.
 3. Implements and tests the change.
 4. Updates the affected concepts **only if design knowledge changed**.
-5. States in the pull request whether a knowledge or ADR update was needed, and why.
-
-A knowledge check step will be added to this workflow once a checker exists; no checker is
-part of the repository yet.
+5. Runs the knowledge check together with the rest of the test suite.
+6. States in the pull request whether a knowledge or ADR update was needed, and why.
 
 # Agents do not invent design decisions
 
-An agent must not silently resolve an open design question. If a task requires a decision
-that is not already recorded in an issue or a concept, the agent either raises it in an
-issue or records it as a `status: draft` concept that states the open question — never as
-settled knowledge.
+An agent must not silently resolve an open design question. If a task requires a decision that is
+not already recorded in an issue or a concept, the agent raises it in an issue and leaves it open
+until it is settled.
+
+Open design questions live in issues and discussions; concepts hold knowledge that is settled. A
+concept is not created to store an undecided question, and `status: draft` does not make one
+acceptable — `draft` means knowledge that has not been reviewed yet, not a placeholder for a
+decision nobody has made. Linking from a concept to the open issue that owns a question is
+correct, and preferable to restating the question as knowledge.
 
 Knowledge concepts summarize decisions that were already made in issues, pull requests, or
 reviews. They are not a place to introduce new ones.
@@ -61,23 +64,44 @@ explicitly rather than filling it in.
 
 # Provenance and trust
 
-Trust signals follow OKF v0.2 and the actor convention `human:<id>`, `process:<id>`, and
-`<producer>/<version>` for agents.
+Trust signals follow OKF v0.2 and its actor convention:
 
-* `generated.by` identifies who or what produced the current content. Concepts drafted by
-  an agent record the agent in `<producer>/<version>` form, for example
-  `claude-code/2.1.231`. The version is the tool version actually used, reported by the
-  tool itself — it is never guessed, rounded, or left as a placeholder. An agent that
-  cannot determine its own version records `process:<id>` instead and says so in the pull
-  request, rather than inventing a version.
+| Actor | Form | Example |
+|-------|------|---------|
+| Agent or tool | `<producer>/<version>` | `claude-code/2.1.231` |
+| Person | `human:<id>` | `human:urario` |
+| Automated process | `process:<id>` | `process:nightly-link-check` |
+
+`process:` identifies an automated process such as a scheduled job or a pipeline step. It is not a
+fallback for an interactive coding agent: an agent that cannot determine its own version does not
+become a process by declaring itself one.
+
+* `generated.by` identifies who or what produced the current content. An agent records itself in
+  `<producer>/<version>` form, using the version the tool itself reports — never a guessed,
+  rounded, or placeholder version.
+* `generated.at` is the timestamp of the current content's last meaningful change. It is not the
+  pull request date, not a time rounded to `00:00:00`, not a time an agent recalls, and not a
+  timestamp left over from an earlier version whose body has since been rewritten.
+* The whole `generated` family is optional. When either the exact producer or the exact time of
+  the last meaningful change cannot be established, `generated` is omitted rather than
+  approximated. An omitted field is accurate; an invented one is a false record that a later
+  reader cannot tell apart from a true one. Git history remains the full account of who changed
+  what and when.
 * `verified` records confirmation, and a `human:` entry is added **only after a human has
   actually reviewed the content**. An agent never adds a `human:` verification on someone's
   behalf.
 * A concept with no `verified` entry is unverified. That is an accurate state, not a defect.
 * AI-drafted knowledge is not treated as `stable` or human-reviewed by default. It stays
   `status: draft` until a human reviews it.
+* A concept whose body is materially rewritten goes back to `status: draft` with no human
+  `verified` entry, even when the previous version had one. A review confirmed the text that was
+  reviewed, not the text that replaced it. Corrections that touch only metadata do not discard an
+  existing human verification.
 * `sources` points at the issues, pull requests, or external material the content came from,
   so a reviewer can check the summary against its origin.
+
+The rule behind all of this: **AI may summarize evidence; AI must not manufacture provenance.**
+Unknown is better than invented.
 
 # Reviewing agent-authored knowledge
 

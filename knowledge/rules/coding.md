@@ -3,9 +3,6 @@ type: Project Rule
 title: Coding Rules
 description: Source-level conventions that apply to code authored for Precept.
 status: draft
-generated:
-  by: process:codex
-  at: 2026-08-14T00:00:00+09:00
 sources:
   - id: adr-0003
     resource: ../decisions/adr-0003-apache-2-0.md

@@ -35,6 +35,22 @@ Runtime tests use GoogleTest, compile-time properties use `static_assert`, and C
 test execution entry point. Positive compile tests are normal CMake build targets. Negative compile
 tests will be added only when a public API has constraints that need them.
 
+## Knowledge base
+
+Design decisions, rules, and ADRs live in the [knowledge bundle](knowledge/index.md), which is the
+source of truth for them. `tools/check_knowledge.py` checks that bundle and runs under CTest with
+everything else, so `ctest` covers the knowledge base as well as the code. It needs a Python 3
+interpreter and PyYAML:
+
+```sh
+python -m pip install pyyaml
+python tools/check_knowledge.py knowledge
+```
+
+Both are development-only and are never requirements of the library. When either is missing, CMake
+says so at configure time and the knowledge tests are not registered; configuring with
+`-DPRECEPT_REQUIRE_KNOWLEDGE_CHECK=ON`, as CI does, turns that into a configuration error instead.
+
 ## Formatting and static analysis
 
 The repository `.clang-format` file defines the source formatting style. Check or update the

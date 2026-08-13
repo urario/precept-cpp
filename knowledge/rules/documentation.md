@@ -5,7 +5,7 @@ description: Language policy, the split between README and this knowledge bundle
 status: draft
 generated:
   by: claude-code/2.1.231
-  at: 2026-08-13T00:00:00+09:00
+  at: 2026-08-13T19:24:27Z
 sources:
   - id: issue-3
     resource: https://github.com/urario/precept-cpp/issues/3
@@ -60,45 +60,62 @@ length in the README — link to the relevant concept instead.
 This bundle targets **OKF v0.2**. `knowledge/index.md` is the bundle root and the only file
 that declares `okf_version`.
 
-Two separate layers of rules apply, and they are deliberately never merged: OKF v0.2
-conformance is defined by the specification, while everything else is Precept's own policy.
-Any future knowledge checker must report the first layer as errors and the second as
-warnings.
+## OKF conformance is not the same thing as Precept repository validity
 
-## Layer 1 — OKF v0.2 conformance
+A bundle can conform to OKF v0.2 and still be unacceptable in this repository, and a Precept rule
+can be broken without any part of the specification being violated. Findings are therefore
+reported at three severities that are never merged, and a Precept requirement is never described
+as an OKF specification violation.
 
-These requirements come from the
-[OKF v0.2 specification](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md).
-A bundle conforms when:
+### OKF conformance error
 
-* Every non-reserved `.md` file contains parseable YAML frontmatter.
+A violation of the
+[OKF v0.2 specification](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)
+itself. Its conformance section defines exactly three requirements, and nothing else belongs at
+this severity:
+
+* Every non-reserved `.md` file contains a parseable YAML frontmatter block.
 * Every frontmatter block contains a non-empty `type`.
-* Reserved files follow the structure the specification defines for them: `index.md` is
-  section headings plus link bullets, and `log.md` is date-grouped entries, newest first.
-* `okf_version` is declared only in the bundle-root `index.md`.
+* The reserved filenames follow their specified structure **when present**: `index.md` is section
+  headings with link bullets and carries no frontmatter, except that the bundle root may declare
+  `okf_version`; `log.md` groups entries under ISO `YYYY-MM-DD` date headings.
 
-The specification is permissive by design. It does **not** reject a bundle for unknown
-`type` values, unrecognized extra frontmatter keys, missing optional or recommended
-metadata, broken cross-links, or missing `index.md` files. Precept tooling must not reject
-a bundle for those reasons either.
+The specification is permissive by design, and Precept tooling is permissive in exactly the same
+places. A bundle is never rejected for an unknown `type`, unrecognized extra frontmatter keys,
+missing optional or recommended metadata, broken cross-links, or a missing `index.md`.
 
-Both reserved filenames are optional in OKF: `index.md` is a directory listing, `log.md` is
-an update history. Precept requires the bundle-root `index.md` as project policy — that
-requirement does not come from OKF.
+### Precept policy error
 
-This bundle has no `log.md`. A checker must not require one; it validates the structure only
-when the file is present. A `log.md` is introduced once the bundle needs a curated semantic
-history — important decisions, deprecations, releases, significant knowledge updates —
-rather than a second rendering of the git log.
+A requirement that OKF leaves optional or producer-defined and that this repository has decided
+to enforce. Breaking one fails the check — as a Precept failure, not as a conformance failure:
 
-## Layer 2 — Precept project policy
+* The bundle root `knowledge/index.md` exists. OKF makes every `index.md` optional; this project
+  does not, because it is the entry point humans and agents are told to start from.
+* The bundle root declares `okf_version`, as exactly the string `"0.2"`.
+* ADR files follow the file name convention below.
+* Every ADR body contains the mandatory sections below.
 
-These are this project's conventions. Breaking one is a warning to be discussed in review,
-not an OKF conformance failure:
+`log.md` is deliberately absent from that list. Both reserved filenames are optional in OKF, and
+this bundle has none; its structure is checked only when the file exists. One is introduced once
+the bundle needs a curated semantic history — important decisions, deprecations, releases,
+significant knowledge updates — rather than a second rendering of the git log.
+
+### Advisory warning
+
+A quality problem worth a reviewer's attention that must not fail a build: a broken
+repository-relative link, missing recommended metadata, an expired `stale_after`,
+machine-generated content presented as `stable` with nothing verifying it, an actor or lifecycle
+value outside the vocabularies below, or another policy deviation better discussed than enforced.
+
+Warnings stay few on purpose. A check that reports something on every run stops being read, and
+the errors mixed in with it are what get lost first.
+
+## Authoring conventions
 
 * `type` values are human-readable phrases — for example `Architecture Decision`,
   `Design Principle`, `Project Rule`, `Requirement`, `API Contract`, `Test Strategy` —
-  rather than machine-oriented abbreviations.
+  rather than machine-oriented abbreviations. OKF registers no types, so an unfamiliar one is
+  never an error; it is a naming question for review.
 * Recommended metadata on every concept: `title`, `description`, `tags`.
 * `status` is one of `draft`, `stable`, `deprecated`. An absent `status` means `stable`.
 * `generated` and `verified` record provenance; see
@@ -109,6 +126,21 @@ not an OKF conformance failure:
 * Cross-links follow the link style below.
 * ADR files follow the ADR conventions below.
 * Keep each concept small and focused on one main topic.
+
+## The knowledge checker
+
+`tools/check_knowledge.py` checks this bundle at the three severities above. It runs under CTest
+alongside the C++ tests, so a normal test run covers the knowledge bundle too, and it can be run
+on its own during editing.
+
+It is development-only tooling. The interpreter and YAML parser it needs are never requirements of
+the library, never propagate to consumers, and are absent from a library-only configuration.
+
+It is deliberately not a general OKF validator: it checks what this repository needs and tolerates
+everything the specification tolerates. The judgements that need a reader — whether a concept
+records a decision that was actually made, whether an ADR reconstructs reasoning it does not have,
+whether provenance is honest — belong to review and are not automated. A clean run means no rule
+was broken, not that the knowledge is correct.
 
 ## Cross-link style
 
@@ -124,7 +156,7 @@ in place:
 * from a concept in a subdirectory: `../decisions/adr-0001-cpp20.md`
 * within the same directory: `design-principles.md`
 
-External references use full URLs. A future checker resolves links by this same rule.
+External references use full URLs. The knowledge checker resolves links by this same rule.
 
 # Directories are created when they are needed
 

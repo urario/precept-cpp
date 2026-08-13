@@ -5,7 +5,7 @@ description: Distribute Precept as headers only, so adoption costs no build syst
 status: draft
 generated:
   by: claude-code/2.1.231
-  at: 2026-08-13T00:00:00+09:00
+  at: 2026-08-13T19:24:27Z
 sources:
   - id: issue-1
     resource: https://github.com/urario/precept-cpp/issues/1
@@ -48,24 +48,31 @@ No alternatives are reconstructed here.
 
 # Consequences
 
-* Everything in the public API lives in headers, so implementation changes are ABI-visible
-  and header hygiene matters: no macro pollution, no unnamed-namespace state in headers.
+* Everything in the public API lives in headers, so implementation changes are ABI-visible and
+  header hygiene is part of the public contract: no macro pollution, no mutable per-translation-unit
+  state, and nothing whose per-translation-unit identity or address can be observed through the
+  public API or violate the ODR when a header is included from several translation units. This
+  constrains state and identity that reach public semantics, not where implementation code is
+  written — a header is the only place Precept has to write it.
 * Compile-time cost is borne by consumers, which reinforces the "Tiny" admission rule in
   [API Admission Rules](../architecture/api-admission-rules.md).
 
-## Requirements this places on the build system
+## Constraints this places on the build and packaging work
 
-Nothing below exists in the repository yet. These are requirements the build and packaging
-work must satisfy when it is implemented in
+These are standing constraints on build, test, and packaging changes rather than a description of
+what the repository contains at any given moment. What is implemented, and where, is visible in
+the build files, the tests, and the issues that own them —
 [#2](https://github.com/urario/precept-cpp/issues/2) and
-[#9](https://github.com/urario/precept-cpp/issues/9) — they are not descriptions of the
-current repository state.
+[#9](https://github.com/urario/precept-cpp/issues/9).
 
-* The exported CMake target is an `INTERFACE` target carrying only include requirements and
-  `cxx_std_20`.
-* Development warnings, sanitizers, and test dependencies stay in the in-tree build and are
-  never exported to consumers.
-* A consumer smoke test confirms the zero-dependency claim instead of assuming it.
+* The consumer-facing target carries the minimum a consumer needs — include requirements and the
+  C++20 language requirement — and nothing that only the in-tree build cares about.
+* Development tools are not consumer dependencies. Test frameworks, warning and sanitizer
+  settings, formatters, analyzers, and knowledge tooling stay private to the development build and
+  are never usage requirements.
+* A configuration that only consumes the library neither requires nor fetches any of that tooling.
+* Consumer isolation is confirmed by a test rather than asserted. A zero-dependency claim decays
+  silently, so it is checked the same way behavior is.
 
 # Status
 

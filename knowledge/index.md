@@ -8,13 +8,13 @@ okf_version: "0.2"
 
 # Architecture
 
-* [Design Principles](architecture/design-principles.md) - The principles that shape every Precept API.
+* [Design Principles](architecture/design-principles.md) - The principles that shape how Precept types, factories, and conversions are designed.
 * [API Admission Rules](architecture/api-admission-rules.md) - The eight rules a public API must satisfy before it is accepted.
 
 # Rules
 
 * [Coding Rules](rules/coding.md) - Source-file licensing and code-level conventions.
-* [Documentation Rules](rules/documentation.md) - Language policy, README vs. knowledge split, and knowledge authoring conventions.
+* [Documentation Rules](rules/documentation.md) - Language policy, README vs. knowledge split, knowledge authoring conventions, and how knowledge findings are graded.
 * [AI-Assisted Development Rules](rules/ai-assisted-development.md) - How Codex and Claude Code participate, and how knowledge provenance is recorded.
 
 # Decisions

@@ -5,7 +5,7 @@ description: The principles that shape how Precept types, factories, and convers
 status: draft
 generated:
   by: claude-code/2.1.231
-  at: 2026-08-13T00:00:00+09:00
+  at: 2026-08-13T19:24:27Z
 sources:
   - id: issue-1
     resource: https://github.com/urario/precept-cpp/issues/1
@@ -20,9 +20,12 @@ tags: [architecture, design-principles]
 
 # Scope of this document
 
-These principles apply to every public Precept API. They describe *how* to design an API,
-while [API Admission Rules](api-admission-rules.md) describe *whether* an API
-is accepted at all.
+These principles describe *how* to design a public Precept API, while
+[API Admission Rules](api-admission-rules.md) describe *whether* an API is accepted at all.
+
+Most of them apply to every public API. Where a principle holds only for a subset of the
+vocabulary — the view types, for instance — it states that scope itself. A principle written for
+one family is not a constraint on families that do not exist yet.
 
 # Build thinly on the standard library
 
@@ -51,14 +54,15 @@ See [ADR-0004](../decisions/adr-0004-dedicated-semantic-vocabulary.md).
 # Factory to standard type
 
 When a verified fact is fully expressible by a standard type, do not introduce a new
-wrapper. Validate, then return the standard type.
-
-```cpp
-// A runtime-sized span checked to be exactly N elements is just a fixed-extent std::span.
-std::optional<std::span<T, N>> checked_span(std::span<T> input);
-```
+wrapper. Validate, then hand the standard type back: a runtime-sized span checked to hold exactly
+`N` elements is a fixed-extent `std::span<T, N>`, and no Precept type is needed to carry that
+fact any further.
 
 New types are justified only when the invariant must survive beyond the check.
+
+How a *failed* validation reaches the caller is a different question. This principle says only
+what a successful validation returns; the failure transport is undecided and is owned by issue
+[#4](https://github.com/urario/precept-cpp/issues/4).
 
 # Constraint to better API
 
@@ -72,11 +76,15 @@ If a type exists, its invariant holds. Every public construction path — constr
 factories, conversions, assignment — must preserve it. An invariant that can be sidestepped
 is worse than no invariant, because readers stop trusting the signature.
 
-# Views do not own storage
+# Precept view types do not own storage
 
-Precept types are borrowed views. They do not own, allocate, or extend the lifetime of the
-underlying storage, and must not appear to do so. Lifetime rules follow those of the
-standard view they wrap.
+Precept's view types — the span family, and any later type that borrows a range it did not
+allocate — are borrowed views. They do not own, allocate, or extend the lifetime of the underlying
+storage, and must not appear to do so. Lifetime rules follow those of the standard view they wrap.
+
+This is a principle about view types, not about Precept as a whole. Candidates that carry a value
+rather than borrow a range — numeric refinements, transition types, deferred-initialization
+types — are not views, and their ownership and lifetime semantics are not settled here.
 
 # No magic
 
@@ -92,8 +100,8 @@ verified fact must be visible in the signature and reusable downstream.
 
 The following are deliberately **not** decided here:
 
-* The validation failure model (for example whether factories return `std::optional`),
-  `constexpr`/`noexcept` policy, CTAD, implicit vs. explicit conversions, and the exact
-  contracts of the v0.1 span family — owned by issue #4 and to be recorded later as an
-  `API Contract` concept, plus an ADR if the decision is expensive to reverse.
+* The validation failure model, `constexpr`/`noexcept` policy, CTAD, implicit vs. explicit
+  conversions, and the exact contracts of the v0.1 span family — owned by issue #4 and to be
+  recorded later as an `API Contract` concept, plus an ADR if the decision is expensive to
+  reverse. No failure transport is favoured here by example or in passing.
 * Whether unchecked construction is exposed publicly at all — also part of issue #4.
