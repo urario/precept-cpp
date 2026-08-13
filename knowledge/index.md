@@ -13,6 +13,7 @@ okf_version: "0.2"
 
 # Rules
 
+* [Coding Rules](rules/coding.md) - Source-file licensing and code-level conventions.
 * [Documentation Rules](rules/documentation.md) - Language policy, README vs. knowledge split, knowledge authoring conventions, and how knowledge findings are graded.
 * [AI-Assisted Development Rules](rules/ai-assisted-development.md) - How Codex and Claude Code participate, and how knowledge provenance is recorded.
 
