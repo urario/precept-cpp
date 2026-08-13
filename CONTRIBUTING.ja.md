@@ -52,22 +52,33 @@ cmake --build build-no-tests
 
 ### knowledge check
 
-`tools/check_knowledge.py` は knowledge bundle を検査し、他のテストと同じく CTest 配下で走ります。
-つまり `ctest` を実行すれば knowledge も検査されます。knowledge を編集しながら単体で走らせるには:
+`tools/check_knowledge.py` は knowledge bundle を検査し、他のテストと同じく CTest 配下で走ります —
+ただし Python 3 と PyYAML が使える場合に限ります。どちらかが無いと、CMake は configure 時にその旨を
+伝え、knowledge のテストを登録しないだけなので、[まずここから](#まずここから) の素の `ctest` は
+bundle を一度も検査しないまま成功することがあります。knowledge を編集しながら単体で走らせるには:
 
 ```sh
 python -m pip install pyyaml==6.0.3
 python tools/check_knowledge.py knowledge
 ```
 
-Python と PyYAML は開発専用で、ライブラリの要件になることはありません。どちらかが無い場合、CMake は
-configure 時にその旨を伝え、knowledge のテストは登録されません。CI と同じく
-`-DPRECEPT_REQUIRE_KNOWLEDGE_CHECK=ON` を付けると、これは configure エラーになります。green な実行
-から検査が黙って消えることを防ぐためです。
+CI と同じ保証 — knowledge のテストが黙ってスキップされず実際に走ること — を得るには、PyYAML を
+インストールしたうえで configure します。
+
+```sh
+python -m pip install pyyaml==6.0.3
+cmake -S . -B build -DBUILD_TESTING=ON -DPRECEPT_REQUIRE_KNOWLEDGE_CHECK=ON
+cmake --build build
+ctest --test-dir build --output-on-failure
+```
+
+これにより、interpreter または PyYAML が無い状態は黙ったスキップではなく configure エラーになります。
+どちらも開発専用で、ライブラリの要件になることはありません。
 
 ### フォーマット
 
-`.clang-format` がソースのスタイルを定義します。追跡中の C++ ファイルに対して確認・適用します。
+`.clang-format` がソースのスタイルを定義します。今のところ対象は `tests/*.cpp` のみです — production
+header がまだ無いためです。確認・適用します。
 
 ```sh
 clang-format --dry-run --Werror tests/*.cpp
@@ -125,8 +136,8 @@ ADR は Issue / Pull Request / レビューで既に到達した決定を記録�
 ## 未決の問いは Issue へ
 
 変更にあたってどこにも記録されていない設計判断が必要になったら、Pull Request の中で決めずに Issue に
-出してください。問いを決めるのは Issue と Pull Request、既に決まったことを保持するのが knowledge
-bundle です。
+出してください。決まっていない設計判断は、決着するまで Issue と Pull Request 上の議論にあり、既に
+決まったことを保持するのが knowledge bundle です。
 
 ## AI 支援での貢献
 

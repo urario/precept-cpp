@@ -55,22 +55,34 @@ cmake --build build-no-tests
 
 ### Knowledge check
 
-`tools/check_knowledge.py` validates the knowledge bundle and runs under CTest with everything
-else, so `ctest` already covers it. To run it while editing knowledge:
+`tools/check_knowledge.py` validates the knowledge bundle and runs under CTest alongside
+everything else — but only when Python 3 and PyYAML are available. Without them, CMake reports
+that at configure time and simply does not register the knowledge tests, so a plain `ctest` run
+from [Start here](#start-here) can pass without ever checking the bundle. To run it standalone
+while editing knowledge:
 
 ```sh
 python -m pip install pyyaml==6.0.3
 python tools/check_knowledge.py knowledge
 ```
 
-Python and PyYAML are development-only and never requirements of the library. When either is
-missing, CMake says so at configure time and the knowledge tests are simply not registered.
-Configuring with `-DPRECEPT_REQUIRE_KNOWLEDGE_CHECK=ON`, as CI does, turns that into a
-configuration error instead, so the check cannot silently disappear from a green run.
+To get the same guarantee CI has — the knowledge tests actually running, not silently skipped —
+configure with `-DPRECEPT_REQUIRE_KNOWLEDGE_CHECK=ON` after installing PyYAML:
+
+```sh
+python -m pip install pyyaml==6.0.3
+cmake -S . -B build -DBUILD_TESTING=ON -DPRECEPT_REQUIRE_KNOWLEDGE_CHECK=ON
+cmake --build build
+ctest --test-dir build --output-on-failure
+```
+
+This turns a missing interpreter or missing PyYAML into a configuration error instead of a silent
+skip. Both remain development-only and never become requirements of the library.
 
 ### Formatting
 
-`.clang-format` defines the source style. Check or apply it on the tracked C++ files:
+`.clang-format` defines the source style. Today it covers only `tests/*.cpp` — there are no
+production headers yet. Check or apply it with:
 
 ```sh
 clang-format --dry-run --Werror tests/*.cpp
@@ -129,9 +141,9 @@ where the decision gets made. Conventions are in the
 
 ## Open questions go to issues
 
-If your change needs a design decision that is not recorded anywhere, raise it in an issue instead
-of settling it inside the pull request. Issues and pull requests are where questions are decided;
-the knowledge bundle holds what is already settled.
+If your change needs a design decision that is not recorded anywhere, raise it in an issue rather
+than settling it inside the pull request. Open design questions live in issues and pull request
+discussion until they are settled; the knowledge bundle holds what is already decided.
 
 ## AI-assisted contributions
 

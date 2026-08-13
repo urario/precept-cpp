@@ -22,8 +22,9 @@ the knowledge check, formatting, what a change is reviewed against, and how to o
 ## Knowledge base
 
 Design decisions, rules, and ADRs live in the [knowledge bundle](knowledge/index.md), which is the
-source of truth for them. `tools/check_knowledge.py` checks that bundle and runs under CTest with
-everything else, so `ctest` covers the knowledge base as well as the code.
+source of truth for them. `tools/check_knowledge.py` checks that bundle and runs under CTest
+alongside everything else, when Python and PyYAML are available; see
+[CONTRIBUTING.md](CONTRIBUTING.md#knowledge-check) for the setup that guarantees it runs.
 
 ## Contributing
 

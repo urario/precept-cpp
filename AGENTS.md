@@ -19,8 +19,15 @@ For a change to public API, the gate is
 
 ## 2. Build, test, and check with the standard commands
 
-`cmake` → `ctest`, exactly as in [CONTRIBUTING.md](CONTRIBUTING.md#start-here). The knowledge check
-runs under CTest with everything else. Do not add a parallel agent-only script.
+`cmake` → `ctest`, exactly as in [CONTRIBUTING.md](CONTRIBUTING.md#start-here). Do not add a
+parallel agent-only script.
+
+The plain quickstart does not guarantee the knowledge check ran: without Python and PyYAML, CMake
+silently skips registering it and `ctest` still passes. The
+[agent task workflow](knowledge/rules/ai-assisted-development.md) expects the knowledge check to
+run together with the rest of the test suite, so configure with
+`-DPRECEPT_REQUIRE_KNOWLEDGE_CHECK=ON` after installing PyYAML — see
+[Knowledge check](CONTRIBUTING.md#knowledge-check) — instead of relying on the plain quickstart.
 
 ## 3. Do not decide open design questions
 
