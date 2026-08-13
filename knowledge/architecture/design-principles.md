@@ -3,9 +3,6 @@ type: Design Principle
 title: Precept Design Principles
 description: The principles that shape how Precept types, factories, and conversions are designed.
 status: draft
-generated:
-  by: claude-code/2.1.231
-  at: 2026-08-13T19:24:27Z
 sources:
   - id: issue-1
     resource: https://github.com/urario/precept-cpp/issues/1
@@ -60,9 +57,9 @@ fact any further.
 
 New types are justified only when the invariant must survive beyond the check.
 
-How a *failed* validation reaches the caller is a different question. This principle says only
-what a successful validation returns; the failure transport is undecided and is owned by issue
-[#4](https://github.com/urario/precept-cpp/issues/4).
+How a *failed* validation reaches the caller is a different question. The v0.1 span family uses
+the boundary recorded in
+[ADR-0006](../decisions/adr-0006-validation-and-conversion-boundaries.md).
 
 # Constraint to better API
 
@@ -96,12 +93,10 @@ What the signature says is what happens.
 An API earns its place only if it does more than move an `assert` somewhere else: the
 verified fact must be visible in the signature and reusable downstream.
 
-# Open questions owned elsewhere
+# v0.1 span contract
 
-The following are deliberately **not** decided here:
-
-* The validation failure model, `constexpr`/`noexcept` policy, CTAD, implicit vs. explicit
-  conversions, and the exact contracts of the v0.1 span family — owned by issue #4 and to be
-  recorded later as an `API Contract` concept, plus an ADR if the decision is expensive to
-  reverse. No failure transport is favoured here by example or in passing.
-* Whether unchecked construction is exposed publicly at all — also part of issue #4.
+The validation failure model, unchecked-construction policy, `constexpr` and `noexcept` policy,
+CTAD, conversions, and exact API behavior are defined by the
+[v0.1 Span Family API Contract](../api/span-family.md). The expensive validation and conversion
+boundary decisions are recorded in
+[ADR-0006](../decisions/adr-0006-validation-and-conversion-boundaries.md).

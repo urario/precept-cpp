@@ -2,14 +2,15 @@
 type: Project Charter
 title: Precept Project Charter
 description: Precept makes semantic preconditions of C++ APIs explicit, reusable, and machine-enforced.
-status: stable
-verified:
-  - by: human:urario
-    at: 2026-08-14T04:04:00+09:00
+status: draft
 sources:
   - id: issue-1
     resource: https://github.com/urario/precept-cpp/issues/1
     title: Roadmap issue defining Precept's background, goals, principles, and roadmap
+    author: human:urario
+  - id: issue-4
+    resource: https://github.com/urario/precept-cpp/issues/4
+    title: Design issue defining the v0.1 span API contract
     author: human:urario
 tags: [vision, charter, scope]
 ---
@@ -93,8 +94,9 @@ The hypothesis being tested:
 > C++ developers want to state frequently recurring `std::span` size preconditions as
 > parameter types or validated factories, and reuse them.
 
-The exact contracts, conversions, and failure model of these four APIs are still being
-decided in issue #4 and are not part of this charter.
+Their exact contracts, conversions, and failure model are defined by the
+[v0.1 Span Family API Contract](../api/span-family.md). They remain outside this charter's
+responsibility.
 
 # Explored after v0.1
 
