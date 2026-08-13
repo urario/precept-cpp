@@ -83,8 +83,13 @@ metadata, broken cross-links, or missing `index.md` files. Precept tooling must 
 a bundle for those reasons either.
 
 Both reserved filenames are optional in OKF: `index.md` is a directory listing, `log.md` is
-an update history. Precept requires the bundle-root `index.md` as project policy, and issue
-#10 lists `log.md` as part of the intended structure — neither requirement comes from OKF.
+an update history. Precept requires the bundle-root `index.md` as project policy — that
+requirement does not come from OKF.
+
+This bundle has no `log.md`. A checker must not require one; it validates the structure only
+when the file is present. A `log.md` is introduced once the bundle needs a curated semantic
+history — important decisions, deprecations, releases, significant knowledge updates —
+rather than a second rendering of the git log.
 
 ## Layer 2 — Precept project policy
 
@@ -148,12 +153,25 @@ re-derive why an option was rejected.
 An ADR writes down a decision reached in an issue, pull request, or review. It is not the
 place to make one.
 
-* Rationale, alternatives, or consequences that are not in the ADR's `sources` are labeled
-  as reconstructed by the drafter and open to correction, so a reader can tell recorded
-  decisions from a drafter's reasoning.
+* Rationale, alternatives, and consequences that the ADR's `sources` do not record are
+  omitted. They are not reconstructed, and a label such as "reconstructed while drafting"
+  does not make reconstruction acceptable — knowledge is retrieved in fragments, and a
+  fragment separated from its label reads as a decision the project actually made.
+* Where the sources record that an option was rejected but not the comparison behind it,
+  state only what the sources support.
 * Reasoning that would settle a genuinely new question — release strategy, scope, product
   direction — is not added under a heading like "Alternatives considered". It goes to an
   issue and comes back once decided.
+
+`Alternatives considered` stays in the ADR even when there is nothing to put in it. Say so
+plainly instead of filling it in:
+
+```markdown
+# Alternatives considered
+
+The source material does not record alternatives considered for this decision.
+No alternatives are reconstructed here.
+```
 
 ## An ADR describes the decision, not a repository state it does not have
 

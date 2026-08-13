@@ -43,19 +43,8 @@ usage requirements on the exported target.
 
 # Alternatives considered
 
-Issue #1 records header-only and zero consumer dependencies as base policy, but not the
-options weighed against them. The alternatives below were reconstructed while drafting this
-ADR and are open to correction in review.
-
-* **Compiled static or shared library** — allows hiding implementation and reduces compile
-  time in large builds, but there is essentially no implementation to hide: the types are
-  thin views and constexpr-friendly factories. Rejected as pure overhead.
-* **Header-only, but depending on a third-party utility library** — would speed up early
-  development, but every consumer inherits that dependency's version constraints and
-  license. Rejected.
-* **Module-first distribution (C++20 modules)** — attractive long term, but toolchain
-  support across GCC, Clang, and MSVC is still uneven, and it would raise the adoption bar
-  Precept is trying to keep low. Not chosen now; may be revisited additively.
+The source material does not record alternatives considered for this decision.
+No alternatives are reconstructed here.
 
 # Consequences
 

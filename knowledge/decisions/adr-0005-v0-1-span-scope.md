@@ -45,18 +45,14 @@ family belongs in Precept at all is re-evaluated after v0.1.
 
 # Alternatives considered
 
-Issue #1 records the scope itself, and that the other families are exploration candidates
-after v0.1. It does not record a comparison of release strategies. The two alternatives
-below were reconstructed while drafting this ADR and are open to correction in review; no
-release or product strategy beyond the recorded scope is decided here.
+* **Include further precondition families in v0.1** — issue #1 records that `aligned_ptr`,
+  numeric refinements, transition types, semantic operations, and runtime protocol guards
+  are not implemented in v0.1, and that Precept is not to be a general store of convenience
+  APIs from the start.
 
-* **Ship several families in v0.1** — a more impressive first release, but it multiplies
-  unreviewed public API, dilutes the feedback signal, and locks in names before the core
-  idea is validated. Rejected, consistent with the scope recorded in issue #1.
-* **Ship only `at_least_span`** — the smallest possible test, but `checked_span()` and
-  `block_span` are what demonstrate the two principles that make Precept more than an
-  assertion helper: returning to standard types, and turning a constraint into a better
-  API. Rejected as too narrow to test the real hypothesis.
+The sources record that rejection, not a fuller comparison behind it. No other alternatives
+are recorded, and none are reconstructed here. No release strategy beyond the recorded scope
+is decided in this ADR.
 
 # Consequences
 

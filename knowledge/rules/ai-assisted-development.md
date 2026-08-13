@@ -49,6 +49,16 @@ settled knowledge.
 Knowledge concepts summarize decisions that were already made in issues, pull requests, or
 reviews. They are not a place to introduce new ones.
 
+# AI may summarize evidence; AI must not manufacture project history
+
+Rationale, alternatives, and consequences that the source material does not record are left
+out, not reconstructed. Labeling reconstructed reasoning is not sufficient: knowledge is
+retrieved in fragments, and a fragment separated from its label reads as history the project
+actually has — an option someone weighed and rejected, when nobody did.
+
+Where a section is required by convention and the sources record nothing behind it, say so
+explicitly rather than filling it in.
+
 # Provenance and trust
 
 Trust signals follow OKF v0.2 and the actor convention `human:<id>`, `process:<id>`, and

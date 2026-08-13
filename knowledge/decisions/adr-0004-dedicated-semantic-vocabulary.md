@@ -43,20 +43,13 @@ Generality is not a goal in itself. A new rule earns a new name only when it pas
 
 # Alternatives considered
 
-Issues #1 and #4 record the rejection of a generic predicate framework, including the
-`refined_span` example, so the first entry is sourced. The other two were reconstructed
-while drafting this ADR and are open to correction in review.
+* **A generic constraint or predicate framework** — issue #1 records that Precept is not to
+  become a generic `constrained` framework and that a small, self-explanatory vocabulary is
+  preferred; issue #4 records "do not become a predicate framework" together with the
+  `refined_span` shape shown above.
 
-* **Generic predicate framework** — maximum expressiveness and no per-rule code, but
-  signatures stop being self-documenting, error messages become template noise, and the
-  library turns into a DSL to learn rather than a vocabulary to read. Rejected.
-* **Dedicated types implemented privately on top of a generic core** — keeps the readable
-  public names while sharing implementation. Not adopted now: with the v0.1 surface this
-  small, the shared core would be speculative, and it risks leaking into public
-  signatures and diagnostics. It stays available as a purely internal refactoring later.
-* **Only free validation functions, no types at all** — simple, but the verified fact is
-  lost immediately after the call, which defeats the purpose of carrying it across API
-  boundaries. Rejected.
+The sources record that rejection, not a fuller comparison behind it. No other alternatives
+are recorded, and none are reconstructed here.
 
 # Consequences
 

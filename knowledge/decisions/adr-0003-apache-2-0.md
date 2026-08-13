@@ -30,20 +30,8 @@ Precept is licensed under Apache-2.0.
 
 # Alternatives considered
 
-The source issue records the choice of Apache-2.0 but not the comparison behind it. The
-alternatives below were reconstructed while drafting this ADR; they are the drafter's
-reasoning, not a decision already recorded elsewhere, and they are open to correction or
-removal in review.
-
-* **MIT** — shorter and very widely understood, but contains no express patent grant.
-  For a library about semantic API contracts that organizations embed directly, the
-  explicit grant and its termination clause are worth the extra length. Rejected.
-* **BSL-1.0** — common in the C++ ecosystem and does not require attribution in binaries,
-  which is convenient for header-only libraries. Still lacks an explicit patent grant.
-  Rejected for the same reason.
-* **LGPL or MPL** — file-level or library-level copyleft interacts poorly with header-only
-  distribution, where consumer binaries inevitably contain Precept's code. This would
-  discourage exactly the adoption Precept needs. Rejected.
+The source material does not record alternatives considered for this decision.
+No alternatives are reconstructed here.
 
 # Consequences
 
