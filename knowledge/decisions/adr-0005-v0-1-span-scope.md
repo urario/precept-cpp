@@ -2,10 +2,10 @@
 type: Architecture Decision
 title: Limit v0.1 to the span precondition family
 description: Release only span size preconditions in v0.1 so one hypothesis is tested before the vocabulary grows.
-status: draft
-generated:
-  by: claude-code/2.1.231
-  at: 2026-08-13T00:00:00+09:00
+status: stable
+verified:
+  - by: human:urario
+    at: 2026-08-14T04:04:00+09:00
 sources:
   - id: issue-1
     resource: https://github.com/urario/precept-cpp/issues/1
