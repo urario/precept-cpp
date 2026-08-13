@@ -4,7 +4,7 @@ title: AI-Assisted Development Rules
 description: How AI agents participate in Precept development and how knowledge provenance and trust are recorded.
 status: draft
 generated:
-  by: claude-code
+  by: claude-code/2.1.231
   at: 2026-08-13T00:00:00+09:00
 sources:
   - id: issue-3
@@ -30,7 +30,7 @@ check commands, and those commands remain the source of truth.
 
 A contributor — human or agent — starting a task normally:
 
-1. Reads [the knowledge index](/index.md).
+1. Reads [the knowledge index](../index.md).
 2. Reads the Requirements, ADRs, Rules, and API Contracts relevant to the issue.
 3. Implements and tests the change.
 4. Updates the affected concepts **only if design knowledge changed**.
@@ -55,7 +55,11 @@ Trust signals follow OKF v0.2 and the actor convention `human:<id>`, `process:<i
 `<producer>/<version>` for agents.
 
 * `generated.by` identifies who or what produced the current content. Concepts drafted by
-  an agent record the agent, for example `claude-code`.
+  an agent record the agent in `<producer>/<version>` form, for example
+  `claude-code/2.1.231`. The version is the tool version actually used, reported by the
+  tool itself — it is never guessed, rounded, or left as a placeholder. An agent that
+  cannot determine its own version records `process:<id>` instead and says so in the pull
+  request, rather than inventing a version.
 * `verified` records confirmation, and a `human:` entry is added **only after a human has
   actually reviewed the content**. An agent never adds a `human:` verification on someone's
   behalf.

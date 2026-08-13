@@ -4,7 +4,7 @@ title: Precept Project Charter
 description: Precept makes semantic preconditions of C++ APIs explicit, reusable, and machine-enforced.
 status: draft
 generated:
-  by: claude-code
+  by: claude-code/2.1.231
   at: 2026-08-13T00:00:00+09:00
 sources:
   - id: issue-1
@@ -63,23 +63,23 @@ implicit assumption
 
 # Base policy
 
-* Minimum language version: C++20 — see [ADR-0001](/decisions/adr-0001-cpp20.md).
-* Form: header-only, zero consumer dependencies — see [ADR-0002](/decisions/adr-0002-header-only.md).
+* Minimum language version: C++20 — see [ADR-0001](../decisions/adr-0001-cpp20.md).
+* Form: header-only, zero consumer dependencies — see [ADR-0002](../decisions/adr-0002-header-only.md).
 * Public namespace: `precept`.
-* License: Apache-2.0 — see [ADR-0003](/decisions/adr-0003-apache-2-0.md).
-* Knowledge format: Open Knowledge Format (OKF) v0.2, rooted at [this bundle](/index.md).
+* License: Apache-2.0 — see [ADR-0003](../decisions/adr-0003-apache-2-0.md).
+* Knowledge format: Open Knowledge Format (OKF) v0.2, rooted at [this bundle](../index.md).
 * Build thinly on top of the standard library; never replace it.
 * Prefer a small, self-explanatory vocabulary over a generic constraint framework — see
-  [ADR-0004](/decisions/adr-0004-dedicated-semantic-vocabulary.md).
+  [ADR-0004](../decisions/adr-0004-dedicated-semantic-vocabulary.md).
 
 The design principles behind these choices are recorded in
-[Design Principles](/architecture/design-principles.md), and the gate every public API
-must pass is [API Admission Rules](/architecture/api-admission-rules.md).
+[Design Principles](../architecture/design-principles.md), and the gate every public API
+must pass is [API Admission Rules](../architecture/api-admission-rules.md).
 
 # v0.1 scope
 
 v0.1 is limited to size preconditions on spans — see
-[ADR-0005](/decisions/adr-0005-v0-1-span-scope.md):
+[ADR-0005](../decisions/adr-0005-v0-1-span-scope.md):
 
 ```cpp
 precept::at_least_span

@@ -4,7 +4,7 @@ title: Limit v0.1 to the span precondition family
 description: Release only span size preconditions in v0.1 so one hypothesis is tested before the vocabulary grows.
 status: draft
 generated:
-  by: claude-code
+  by: claude-code/2.1.231
   at: 2026-08-13T00:00:00+09:00
 sources:
   - id: issue-1
@@ -45,20 +45,23 @@ family belongs in Precept at all is re-evaluated after v0.1.
 
 # Alternatives considered
 
+Issue #1 records the scope itself, and that the other families are exploration candidates
+after v0.1. It does not record a comparison of release strategies. The two alternatives
+below were reconstructed while drafting this ADR and are open to correction in review; no
+release or product strategy beyond the recorded scope is decided here.
+
 * **Ship several families in v0.1** — a more impressive first release, but it multiplies
   unreviewed public API, dilutes the feedback signal, and locks in names before the core
-  idea is validated. Rejected.
+  idea is validated. Rejected, consistent with the scope recorded in issue #1.
 * **Ship only `at_least_span`** — the smallest possible test, but `checked_span()` and
   `block_span` are what demonstrate the two principles that make Precept more than an
   assertion helper: returning to standard types, and turning a constraint into a better
   API. Rejected as too narrow to test the real hypothesis.
-* **Explore in a branch or an experimental namespace instead of releasing** — delays
-  real-world feedback, which is the only thing that answers the hypothesis. Rejected.
 
 # Consequences
 
 * Requests for other families are expected and welcome; they are recorded as issues and
-  evaluated against the [API Admission Rules](/architecture/api-admission-rules.md)
+  evaluated against the [API Admission Rules](../architecture/api-admission-rules.md)
   after v0.1.
 * Effort concentrates on the exact semantics of four APIs rather than the breadth of the
   surface, which matches the "few APIs, precise meaning" stance in issue #4.
@@ -78,4 +81,4 @@ Accepted.
 * Issues [#5](https://github.com/urario/precept-cpp/issues/5),
   [#6](https://github.com/urario/precept-cpp/issues/6),
   [#7](https://github.com/urario/precept-cpp/issues/7) — v0.1 implementations
-* [Project Charter](/vision/project-charter.md)
+* [Project Charter](../vision/project-charter.md)

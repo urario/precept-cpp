@@ -4,7 +4,7 @@ title: Precept Design Principles
 description: The principles that shape how Precept types, factories, and conversions are designed.
 status: draft
 generated:
-  by: claude-code
+  by: claude-code/2.1.231
   at: 2026-08-13T00:00:00+09:00
 sources:
   - id: issue-1
@@ -21,7 +21,7 @@ tags: [architecture, design-principles]
 # Scope of this document
 
 These principles apply to every public Precept API. They describe *how* to design an API,
-while [API Admission Rules](/architecture/api-admission-rules.md) describe *whether* an API
+while [API Admission Rules](api-admission-rules.md) describe *whether* an API
 is accepted at all.
 
 # Build thinly on the standard library
@@ -46,7 +46,7 @@ precept::at_least_span<const std::byte, 16>
 refined_span<const std::byte, size_at_least<16>, size_multiple_of<8>>
 ```
 
-See [ADR-0004](/decisions/adr-0004-dedicated-semantic-vocabulary.md).
+See [ADR-0004](../decisions/adr-0004-dedicated-semantic-vocabulary.md).
 
 # Factory to standard type
 

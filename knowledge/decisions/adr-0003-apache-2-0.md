@@ -4,7 +4,7 @@ title: License Precept under Apache-2.0
 description: Use Apache-2.0 so adoption is permissive and the patent grant is explicit.
 status: draft
 generated:
-  by: claude-code
+  by: claude-code/2.1.231
   at: 2026-08-13T00:00:00+09:00
 sources:
   - id: issue-1
@@ -30,6 +30,11 @@ Precept is licensed under Apache-2.0.
 
 # Alternatives considered
 
+The source issue records the choice of Apache-2.0 but not the comparison behind it. The
+alternatives below were reconstructed while drafting this ADR; they are the drafter's
+reasoning, not a decision already recorded elsewhere, and they are open to correction or
+removal in review.
+
 * **MIT** — shorter and very widely understood, but contains no express patent grant.
   For a library about semantic API contracts that organizations embed directly, the
   explicit grant and its termination clause are worth the extra length. Rejected.
@@ -47,9 +52,17 @@ Precept is licensed under Apache-2.0.
   for a party that initiates patent litigation over the work.
 * Consumers must preserve the license and notice files; this is a normal obligation but is
   worth stating in the README's license section.
-* The repository carries a `LICENSE` file, and source headers stay consistent with it.
 * Relicensing later would require agreement from all contributors, so this decision is
   treated as effectively permanent.
+
+## Required follow-up
+
+The repository does **not** yet contain a `LICENSE` file. Until it does, this ADR records an
+intent, not the repository's licensing state:
+
+* Add `LICENSE` containing the Apache-2.0 text.
+* State the license in the README.
+* Keep any license notices in source files consistent with that file.
 
 # Status
 
@@ -59,4 +72,4 @@ Accepted.
 
 * Issue [#1](https://github.com/urario/precept-cpp/issues/1) — roadmap and base policy
 * Issue [#8](https://github.com/urario/precept-cpp/issues/8) — README, examples, and docs
-* [Project Charter](/vision/project-charter.md)
+* [Project Charter](../vision/project-charter.md)

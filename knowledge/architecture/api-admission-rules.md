@@ -4,7 +4,7 @@ title: API Admission Rules
 description: The eight rules a proposed public Precept API must satisfy before it is accepted.
 status: draft
 generated:
-  by: claude-code
+  by: claude-code/2.1.231
   at: 2026-08-13T00:00:00+09:00
 sources:
   - id: issue-1
@@ -63,5 +63,5 @@ in the signature and reusable by downstream callers.
 
 # Relationship to design principles
 
-These rules are the admission gate. [Design Principles](/architecture/design-principles.md)
+These rules are the admission gate. [Design Principles](design-principles.md)
 describe how an admitted API is then shaped.

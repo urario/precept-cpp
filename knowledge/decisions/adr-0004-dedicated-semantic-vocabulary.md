@@ -4,7 +4,7 @@ title: Prefer a dedicated semantic vocabulary over a generic constrained framewo
 description: Provide named types such as at_least_span instead of a general predicate-parameterized refinement framework.
 status: draft
 generated:
-  by: claude-code
+  by: claude-code/2.1.231
   at: 2026-08-13T00:00:00+09:00
 sources:
   - id: issue-1
@@ -39,9 +39,13 @@ Precept provides dedicated, self-explanatory types and operations for each seman
 constraint or predicate framework. Each name states one rule.
 
 Generality is not a goal in itself. A new rule earns a new name only when it passes the
-[API Admission Rules](/architecture/api-admission-rules.md).
+[API Admission Rules](../architecture/api-admission-rules.md).
 
 # Alternatives considered
+
+Issues #1 and #4 record the rejection of a generic predicate framework, including the
+`refined_span` example, so the first entry is sourced. The other two were reconstructed
+while drafting this ADR and are open to correction in review.
 
 * **Generic predicate framework** — maximum expressiveness and no per-rule code, but
   signatures stop being self-documenting, error messages become template noise, and the
@@ -73,5 +77,5 @@ Accepted.
 
 * Issue [#1](https://github.com/urario/precept-cpp/issues/1) — roadmap and base policy
 * Issue [#4](https://github.com/urario/precept-cpp/issues/4) — v0.1 span API contract
-* [Design Principles](/architecture/design-principles.md)
-* [API Admission Rules](/architecture/api-admission-rules.md)
+* [Design Principles](../architecture/design-principles.md)
+* [API Admission Rules](../architecture/api-admission-rules.md)
