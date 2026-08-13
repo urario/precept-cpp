@@ -3,9 +3,6 @@ type: Test Strategy
 title: Precept Test Strategy
 description: Keep CTest as the common entry point while assigning each kind of property to the smallest suitable test mechanism.
 status: draft
-generated:
-  by: process:codex
-  at: 2026-08-14T00:00:00+09:00
 sources:
   - id: issue-2
     resource: https://github.com/urario/precept-cpp/issues/2
@@ -32,7 +29,8 @@ when Precept is the top-level project.
 * Positive compile tests are ordinary CMake build targets.
 * Negative compile tests do not run inside GoogleTest. Add a focused CMake compile check
   only when a public API has a constraint whose rejection behavior needs verification.
-* Knowledge validation joins CTest after the lightweight checker owned by issue #10 exists.
+* Knowledge bundle validation runs under CTest as a development-only check, so an ordinary test
+  run covers the knowledge bundle as well as the code.
 * Installed-package and consumer smoke tests are owned by issue #9.
 
 Configuring with `BUILD_TESTING=OFF` must not fetch or require GoogleTest. Development
