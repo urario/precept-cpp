@@ -30,3 +30,41 @@ target_compile_options(
 
 include(GoogleTest)
 gtest_discover_tests(precept_runtime_tests)
+
+# Knowledge bundle checks. These are development-only: the Python interpreter and its YAML
+# parser are never usage requirements of Precept::Precept, and a BUILD_TESTING=OFF
+# configuration never looks for them.
+option(PRECEPT_REQUIRE_KNOWLEDGE_CHECK
+       "Fail configuration when the knowledge checker cannot run" OFF)
+
+find_package(Python3 COMPONENTS Interpreter QUIET)
+
+set(precept_knowledge_check_blocker "")
+if(NOT Python3_FOUND)
+  set(precept_knowledge_check_blocker "no Python 3 interpreter was found")
+else()
+  execute_process(
+    COMMAND ${Python3_EXECUTABLE} -c "import yaml"
+    RESULT_VARIABLE precept_yaml_import
+    OUTPUT_QUIET ERROR_QUIET)
+  if(NOT precept_yaml_import EQUAL 0)
+    set(precept_knowledge_check_blocker
+        "${Python3_EXECUTABLE} cannot import yaml (python -m pip install pyyaml)")
+  endif()
+endif()
+
+if(precept_knowledge_check_blocker)
+  if(PRECEPT_REQUIRE_KNOWLEDGE_CHECK)
+    message(
+      FATAL_ERROR
+        "Knowledge checks are required but cannot run: ${precept_knowledge_check_blocker}")
+  endif()
+  message(STATUS "Precept: knowledge checks not registered - ${precept_knowledge_check_blocker}")
+else()
+  add_test(NAME knowledge_bundle
+           COMMAND ${Python3_EXECUTABLE} tools/check_knowledge.py knowledge)
+  add_test(NAME knowledge_checker
+           COMMAND ${Python3_EXECUTABLE} -m unittest --quiet tools.test_check_knowledge)
+  set_tests_properties(knowledge_bundle knowledge_checker
+                       PROPERTIES WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+endif()
