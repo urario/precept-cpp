@@ -28,5 +28,5 @@ everything else, so `ctest` covers the knowledge base as well as the code.
 ## Contributing
 
 Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md)
-（[日本語版](CONTRIBUTING.ja.md)）. Issues and pull requests are written primarily in Japanese;
-English is very welcome.
+([Japanese translation](CONTRIBUTING.ja.md)). Issues and pull requests are written primarily in
+Japanese; English is very welcome.

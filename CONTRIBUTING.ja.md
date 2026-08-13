@@ -56,7 +56,7 @@ cmake --build build-no-tests
 つまり `ctest` を実行すれば knowledge も検査されます。knowledge を編集しながら単体で走らせるには:
 
 ```sh
-python -m pip install pyyaml
+python -m pip install pyyaml==6.0.3
 python tools/check_knowledge.py knowledge
 ```
 

@@ -59,7 +59,7 @@ cmake --build build-no-tests
 else, so `ctest` already covers it. To run it while editing knowledge:
 
 ```sh
-python -m pip install pyyaml
+python -m pip install pyyaml==6.0.3
 python tools/check_knowledge.py knowledge
 ```
 
