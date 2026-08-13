@@ -2,10 +2,10 @@
 type: Architecture Decision
 title: Prefer a dedicated semantic vocabulary over a generic constrained framework
 description: Provide named types such as at_least_span instead of a general predicate-parameterized refinement framework.
-status: draft
-generated:
-  by: claude-code/2.1.231
-  at: 2026-08-13T00:00:00+09:00
+status: stable
+verified:
+  - by: human:urario
+    at: 2026-08-14T04:04:00+09:00
 sources:
   - id: issue-1
     resource: https://github.com/urario/precept-cpp/issues/1
