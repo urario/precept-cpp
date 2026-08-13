@@ -5,7 +5,7 @@ description: Language policy, the split between README and this knowledge bundle
 status: draft
 generated:
   by: claude-code/2.1.231
-  at: 2026-08-13T19:24:27Z
+  at: 2026-08-13T22:41:00Z
 sources:
   - id: issue-3
     resource: https://github.com/urario/precept-cpp/issues/3
@@ -32,6 +32,12 @@ Repository artifacts are written in **English**:
 * examples
 * user-facing text
 * every concept in this knowledge bundle, including ADRs
+
+A translation may sit beside an English artifact — `CONTRIBUTING.ja.md` next to
+`CONTRIBUTING.md` — so that a contributor reads the guide in the language they think in. The
+English version stays **normative**: where the two disagree, the English text governs, and a
+translation is updated in the same pull request that changes its original. A translation never
+carries a rule that its original does not.
 
 # Public API comments are written for users
 
