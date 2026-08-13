@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux GCC
+            os: ubuntu-latest
+            cmake_args: -DCMAKE_CXX_COMPILER=g++
+            check_no_tests: true
+          - name: Linux Clang
+            os: ubuntu-latest
+            cmake_args: -DCMAKE_CXX_COMPILER=clang++
+            check_no_tests: false
+          - name: Windows MSVC
+            os: windows-latest
+            cmake_args: ''
+            check_no_tests: false
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Configure
+        run: >-
+          cmake -S . -B build
+          -DBUILD_TESTING=ON
+          -DCMAKE_BUILD_TYPE=Debug
+          ${{ matrix.cmake_args }}
+
+      - name: Build
+        run: cmake --build build --config Debug --parallel
+
+      - name: Test
+        run: ctest --test-dir build -C Debug --output-on-failure
+
+      - name: Configure without tests
+        if: matrix.check_no_tests
+        run: cmake -S . -B build-no-tests -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build without tests
+        if: matrix.check_no_tests
+        run: cmake --build build-no-tests --config Debug --parallel
