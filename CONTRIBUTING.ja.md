@@ -88,7 +88,7 @@ clang-format -i include/precept/span/*.hpp tests/*.cpp tests/negative/*.cpp exam
 Markdown 内のコード例には `clang-format` が届かないので、編集するときは同じ brace / indent スタイルに
 手で合わせてください。
 
-clang-tidy はまだ必須のゲートではなく、public API の導入時に再検討します。
+clang-tidy は必須のゲートではありません。導入するには別途プロジェクトとしての決定が必要です。
 
 ## コードを書く前に
 

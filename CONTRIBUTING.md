@@ -92,7 +92,7 @@ clang-format -i include/precept/span/*.hpp tests/*.cpp tests/negative/*.cpp exam
 Code samples in Markdown are not reachable by `clang-format`, so match the same brace and indent
 style by hand when you edit one.
 
-clang-tidy is not a required gate yet; it is reconsidered when the public API is introduced.
+clang-tidy is not a required gate. Introducing one requires a separate project decision.
 
 ## Before you write code
 
