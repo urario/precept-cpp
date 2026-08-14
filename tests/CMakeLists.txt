@@ -36,6 +36,40 @@ target_compile_options(
 include(GoogleTest)
 gtest_discover_tests(precept_runtime_tests)
 
+if(CMAKE_CONFIGURATION_TYPES)
+  set(precept_multi_config TRUE)
+else()
+  set(precept_multi_config FALSE)
+endif()
+
+set(precept_consumer_test_args
+    -DPRECEPT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
+    -DPRECEPT_CONSUMER_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}/consumer
+    -DPRECEPT_TEST_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}/consumer-smoke
+    -DPRECEPT_GENERATOR=${CMAKE_GENERATOR}
+    -DPRECEPT_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+    -DPRECEPT_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+    -DPRECEPT_BUILD_CONFIG=$<CONFIG>
+    -DPRECEPT_MULTI_CONFIG=${precept_multi_config}
+    -DPRECEPT_INSTALL_INCLUDEDIR=${CMAKE_INSTALL_INCLUDEDIR}
+    -DPRECEPT_INSTALL_DATADIR=${CMAKE_INSTALL_DATADIR}
+    -DPRECEPT_INSTALL_CMAKE_DIR=${precept_cmake_install_dir})
+
+if(CMAKE_GENERATOR_PLATFORM)
+  list(APPEND precept_consumer_test_args
+       -DPRECEPT_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM})
+endif()
+
+if(CMAKE_GENERATOR_TOOLSET)
+  list(APPEND precept_consumer_test_args -DPRECEPT_GENERATOR_TOOLSET=${CMAKE_GENERATOR_TOOLSET})
+endif()
+
+add_test(
+  NAME precept_consumer_smoke
+  COMMAND ${CMAKE_COMMAND} ${precept_consumer_test_args} -P
+          ${CMAKE_CURRENT_SOURCE_DIR}/consumer/run_consumer_smoke.cmake)
+set_tests_properties(precept_consumer_smoke PROPERTIES TIMEOUT 180)
+
 function(precept_expect_compile_failure test_name source_file)
   try_compile(
     ${test_name}_compiled

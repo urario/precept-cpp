@@ -57,8 +57,23 @@ Either way, `Precept::Precept` is an interface target: it adds the include direc
 C++20, and it never pulls test dependencies or development tooling into your build. Because the
 library is header-only, copying `include/` into your own include path works too.
 
-There is no `install()` step and no `find_package(Precept)` yet — installed-package support is
-tracked by [issue #9](https://github.com/urario/precept-cpp/issues/9).
+To install the package from a source checkout:
+
+```sh
+cmake -S . -B build -DBUILD_TESTING=OFF
+cmake --build build
+cmake --install build --prefix <prefix>
+```
+
+An installed package can be consumed with the same target name:
+
+```cmake
+find_package(Precept 0.1 CONFIG REQUIRED)
+target_link_libraries(your_app PRIVATE Precept::Precept)
+```
+
+Configure the consumer with `-DCMAKE_PREFIX_PATH=<prefix>` when the install prefix is not already
+known to CMake.
 
 ## Minimum-size spans
 
