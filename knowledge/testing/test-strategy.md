@@ -12,6 +12,10 @@ sources:
     resource: https://github.com/urario/precept-cpp/pull/12#issuecomment-5282522532
     title: Review establishing the minimum test strategy knowledge for the build foundation
     author: human:urario
+  - id: issue-8
+    resource: https://github.com/urario/precept-cpp/issues/8
+    title: Documentation issue introducing the runnable examples under CTest
+    author: human:urario
 tags: [testing, ctest, googletest, build]
 ---
 
@@ -31,6 +35,11 @@ when Precept is the top-level project.
   only when a public API has a constraint whose rejection behavior needs verification.
 * Knowledge bundle validation runs under CTest as a development-only check, so an ordinary test
   run covers the knowledge bundle as well as the code.
+* Examples in `examples/` are built and run under CTest, because documentation that stops
+  compiling is worse than no documentation. They link `Precept::Precept` only: an example shows
+  what a consumer writes, so a test framework in it would misrepresent the library's cost. What
+  an example asserts about behavior belongs in a GoogleTest case as well, where a failure names
+  the property that broke.
 * Installed-package and consumer smoke tests are owned by issue #9.
 
 Configuring with `BUILD_TESTING=OFF` must not fetch or require GoogleTest. Development

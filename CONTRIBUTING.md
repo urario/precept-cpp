@@ -81,13 +81,16 @@ skip. Both remain development-only and never become requirements of the library.
 
 ### Formatting
 
-`.clang-format` defines the source style. Today it covers only `tests/*.cpp` — there are no
-production headers yet. Check or apply it with:
+`.clang-format` defines the source style, and it applies to every C++ file in the repository —
+the public headers, the tests, and the examples. Check or apply it with:
 
 ```sh
-clang-format --dry-run --Werror tests/*.cpp
-clang-format -i tests/*.cpp
+clang-format --dry-run --Werror include/precept/span/*.hpp tests/*.cpp tests/negative/*.cpp examples/*.cpp
+clang-format -i include/precept/span/*.hpp tests/*.cpp tests/negative/*.cpp examples/*.cpp
 ```
+
+Code samples in Markdown are not reachable by `clang-format`, so match the same brace and indent
+style by hand when you edit one.
 
 clang-tidy is not a required gate yet; it is reconsidered when the public API is introduced.
 
@@ -125,8 +128,13 @@ that can hold it:
 * compile-time properties → `static_assert`
 * positive compile tests → ordinary CMake build targets
 * negative compile tests → only when a public API constraint needs its rejection verified
+* examples staying correct → programs in `examples/`, built and run by the same `ctest` run
 
 The full split is in the [Test Strategy](knowledge/testing/test-strategy.md).
+
+A change to a public API keeps [`examples/`](examples/) compiling and honest. Examples are
+documentation, not a place to add coverage: a property worth asserting belongs in a GoogleTest
+case.
 
 ## Knowledge and ADRs
 

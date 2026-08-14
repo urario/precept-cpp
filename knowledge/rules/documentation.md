@@ -16,6 +16,10 @@ sources:
     resource: https://github.com/urario/precept-cpp/pull/21#issuecomment-5288811203
     title: Public API comment policy decision
     author: human:urario
+  - id: issue-8
+    resource: https://github.com/urario/precept-cpp/issues/8
+    title: Documentation issue covering the README, examples, and knowledge docs for v0.1
+    author: human:urario
 tags: [rules, documentation, okf]
 ---
 
@@ -103,6 +107,12 @@ tools are introduced only through a separate project decision if they become val
 
 The README is never hidden inside the bundle, and design rationale is not duplicated at
 length in the README — link to the relevant concept instead.
+
+Runnable examples are a third kind of artifact and live in `examples/`. Prose in either the README
+or this bundle shows the smallest fragment that makes its point and links to the example for the
+whole program, so that the working code has exactly one home. Examples are built and run as part
+of the test suite — see [Test Strategy](../testing/test-strategy.md) — because a code sample that
+no longer compiles teaches the wrong contract.
 
 # Knowledge bundle conventions
 
