@@ -5,7 +5,7 @@ description: How AI agents participate in Precept development and how knowledge 
 status: draft
 generated:
   by: claude-code/2.1.231
-  at: 2026-08-13T19:24:27Z
+  at: 2026-08-14T07:45:00Z
 sources:
   - id: issue-3
     resource: https://github.com/urario/precept-cpp/issues/3
@@ -15,6 +15,14 @@ sources:
     resource: https://github.com/urario/precept-cpp/issues/10
     title: Foundation issue for managing project knowledge, rules, and ADRs with OKF v0.2
     author: human:urario
+  - id: issue-31
+    resource: https://github.com/urario/precept-cpp/issues/31
+    title: Design issue for the agent's issue-update responsibilities in the task workflow
+    author: claude-code/2.1.231
+  - id: issue-31-decision-comment
+    resource: https://github.com/urario/precept-cpp/issues/31#issuecomment-5290847240
+    title: Owner decision on agent issue-update autonomy, body-edit scope, and update triggers, recorded from a chat conversation
+    author: claude-code/2.1.231
 tags: [rules, ai-assisted-development, provenance]
 ---
 
@@ -36,6 +44,39 @@ A contributor — human or agent — starting a task normally:
 4. Updates the affected concepts **only if design knowledge changed**.
 5. Runs the knowledge check together with the rest of the test suite.
 6. States in the pull request whether a knowledge or ADR update was needed, and why.
+7. Updates the issues the task touches, following the boundaries in
+   "Issue update responsibilities" below.
+
+# Issue update responsibilities
+
+An issue is the current-state record of a plan, not just a prompt for a pull request — a Done-when
+checklist that stops being updated once implementation starts stops being useful. Agents keep
+issues current within the same autonomy boundaries as any other action.
+
+Always, without asking first:
+
+* Add a fact-based status comment to any issue — progress, CI state, dependency state. This covers
+  a comment made when starting a task as much as one made along the way.
+* Update the body of an issue the agent itself authored — reflect a decision, check off a
+  completed task or Done-when item.
+* File a new issue for a follow-up or open question discovered mid-task.
+
+Confirm first — propose in a comment, apply only after the change is approved:
+
+* Changing the state (for example, closing) of an issue the agent did not author.
+* Changing dependencies or scope, such as splitting or merging issues.
+
+Never: recording an invented design decision as settled. See "Agents do not invent design
+decisions" below — that boundary applies to issue updates exactly as it applies to knowledge.
+
+Body edits are limited to issues the agent itself authored. An issue authored by someone else is
+updated through a comment, never a body rewrite: fetching a body through the GitHub API and
+writing it back can silently corrupt code blocks — angle brackets round-trip through HTML-entity
+escaping — and an agent holding the exact text it originally wrote is the one case where that risk
+does not apply.
+
+The roadmap issue ([#1](https://github.com/urario/precept-cpp/issues/1)) is updated at meaningful
+checkpoints — a Phase completing, a new epic being filed — not on every commit or every session.
 
 # Agents do not invent design decisions
 

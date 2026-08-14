@@ -88,7 +88,9 @@ clang-format -i include/precept/span/*.hpp tests/*.cpp tests/negative/*.cpp exam
 Markdown 内のコード例には `clang-format` が届かないので、編集するときは同じ brace / indent スタイルに
 手で合わせてください。
 
-clang-tidy は必須のゲートではありません。導入するには別途プロジェクトとしての決定が必要です。
+clang-tidy は必須のゲートです（[ADR-0007](knowledge/decisions/adr-0007-versioning-compatibility-and-support.md) 参照）。CI への組み込みと `.clang-tidy` 設定は
+[issue #27](https://github.com/urario/precept-cpp/issues/27) で追跡しており、それが入るまでは
+決まったローカル実行コマンドはありません。
 
 ## コードを書く前に
 
