@@ -161,13 +161,35 @@ if (auto blocks = precept::block_span<const std::byte, 16>::try_from(input)) {
 need the underlying element count. Empty input is valid, while a partial final block returns
 `std::nullopt`.
 
+## Aligned pointers
+
+`aligned_ptr<T, N>` carries a validated current-address alignment fact across API boundaries
+without owning the pointed-to object or becoming a range:
+
+```cpp
+#include <precept/aligned_ptr.hpp>
+
+void process(precept::aligned_ptr<const float, 32> input);
+
+if (auto input = precept::aligned_ptr<float, 64>::try_from(data)) {
+  process(*input); // safely weakens 64-byte mutable to 32-byte const
+}
+```
+
+A non-null misaligned pointer produces `std::nullopt`. Null is an ordinary valid pointer state, so
+it produces an engaged optional whose `get()` is null. `get()` is the explicit standard-pointer
+escape and does not hide `std::assume_aligned`; a downstream facility keeps its own preconditions.
+The exact boundary is defined by the
+[`aligned_ptr` API contract](knowledge/api/aligned-ptr.md).
+
 ## Examples
 
-[`examples/`](examples/) holds complete programs for the three usages the v0.1 vocabulary was
+[`examples/`](examples/) holds complete programs for the three span usages the v0.1 vocabulary was
 designed around: [packet and header parsing](examples/packet_parsing.cpp),
 [fixed-block processing](examples/fixed_block_processing.cpp), and
-[non-empty collection processing](examples/non_empty_processing.cpp). They are built and executed
-by an ordinary test run, so they always match the current API.
+[non-empty collection processing](examples/non_empty_processing.cpp). The
+[aligned buffer example](examples/aligned_buffer_processing.cpp) shows the first structural-property
+carrier. They are built and executed by an ordinary test run, so they always match the current API.
 
 ## Scope and non-goals
 

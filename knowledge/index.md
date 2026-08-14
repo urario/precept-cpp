@@ -18,6 +18,7 @@ okf_version: "0.2"
 # API
 
 * [v0.1 Span Family API Contract](api/span-family.md) - Guarantees, construction boundaries, conversions, lifetime rules, and operations for the four v0.1 span APIs.
+* [aligned_ptr API Contract](api/aligned-ptr.md) - Alignment guarantee, nullable validation result, safe weakening, ownership boundary, and standard-pointer escape.
 
 # Rules
 
