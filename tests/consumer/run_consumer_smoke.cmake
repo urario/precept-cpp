@@ -159,9 +159,12 @@ set(consumer_configure_args
     -B "${consumer_build_dir}"
     ${generator_args}
     -DCMAKE_PREFIX_PATH=${relocated_dir}
+    -DPrecept_DIR=${relocated_dir}/${PRECEPT_INSTALL_CMAKE_DIR}
     -DCMAKE_FIND_USE_PACKAGE_REGISTRY=OFF
     -DCMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY=OFF
-    -DCMAKE_FIND_USE_CMAKE_SYSTEM_PATH=OFF)
+    -DCMAKE_FIND_USE_CMAKE_SYSTEM_PATH=OFF
+    -DCMAKE_FIND_USE_PACKAGE_ROOT_PATH=OFF
+    -DCMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH=OFF)
 
 if(NOT "${PRECEPT_BUILD_TYPE}" STREQUAL "")
   list(APPEND consumer_configure_args -DCMAKE_BUILD_TYPE=${PRECEPT_BUILD_TYPE})
@@ -173,6 +176,28 @@ if(NOT "${PRECEPT_CXX_COMPILER}" STREQUAL ""
 endif()
 
 run_checked("${CMAKE_COMMAND}" ${consumer_configure_args})
+
+set(consumer_cache_file "${consumer_build_dir}/CMakeCache.txt")
+if(NOT EXISTS "${consumer_cache_file}")
+  message(FATAL_ERROR "Consumer CMake cache was not produced")
+endif()
+file(TO_CMAKE_PATH "${relocated_dir}/${PRECEPT_INSTALL_CMAKE_DIR}" expected_precept_dir)
+string(TOLOWER "${expected_precept_dir}" expected_precept_dir)
+file(READ "${consumer_cache_file}" consumer_cache_content)
+string(REPLACE "\n" ";" consumer_cache_lines "${consumer_cache_content}")
+set(found_relocated_precept_dir FALSE)
+foreach(consumer_cache_line IN LISTS consumer_cache_lines)
+  string(TOLOWER "${consumer_cache_line}" normalized_consumer_cache_line)
+  if(normalized_consumer_cache_line MATCHES "^precept_dir:[^=]*=")
+    string(REGEX REPLACE "^[^=]*=" "" actual_precept_dir "${normalized_consumer_cache_line}")
+    if("${actual_precept_dir}" STREQUAL "${expected_precept_dir}")
+      set(found_relocated_precept_dir TRUE)
+    endif()
+  endif()
+endforeach()
+if(NOT found_relocated_precept_dir)
+  message(FATAL_ERROR "Consumer did not configure against the relocated Precept_DIR")
+endif()
 
 set(consumer_build_args --build "${consumer_build_dir}")
 if(PRECEPT_MULTI_CONFIG)

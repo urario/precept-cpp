@@ -19,7 +19,6 @@ sources:
   - id: issue-9-package-consumer
     resource: https://github.com/urario/precept-cpp/issues/9
     title: CMake installed-package and standalone consumer smoke test contract
-    author: human:urario
 tags: [testing, ctest, googletest, build]
 ---
 
