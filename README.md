@@ -40,6 +40,11 @@ if (auto values = precept::non_empty_span<int>::try_from(input)) {
 }
 ```
 
+`at_least_span` truthfully models a contiguous, sized, borrowed range, so it can safely weaken to
+a compatible dynamic-extent `std::span` when an API does not require the minimum-size fact.
+`as_span()` remains the readable named form when you want that standard-span use to be explicit.
+Use `prefix()`—not the whole view—when you need the guaranteed `std::span<T, N>` prefix.
+
 ## Development
 
 The supported development entry point is CMake and CTest. Configuring tests for the first time

@@ -101,6 +101,16 @@ TEST(AtLeastSpanTest, IteratorDependsOnStorageRatherThanWrapperLifetime) {
   EXPECT_EQ(*(iterator + 2), 6);
 }
 
+TEST(AtLeastSpanTest, SupportsImplicitAndNamedWeakeningToDynamicSpan) {
+  std::array<int, 5> values = {1, 2, 3, 4, 5};
+  precept::at_least_span<const int, 4> verified = std::span<int, 5>{values};
+  const auto consume = [](std::span<const int> source) { return source.size(); };
+
+  EXPECT_EQ(consume(verified), 5U);
+  EXPECT_EQ(consume(verified.as_span()), 5U);
+  EXPECT_EQ(verified.prefix().size(), 4U);
+}
+
 TEST(NonEmptySpanTest, RejectsEmptyDynamicSpan) {
   std::span<int> empty;
   EXPECT_FALSE(precept::non_empty_span<int>::try_from(empty));

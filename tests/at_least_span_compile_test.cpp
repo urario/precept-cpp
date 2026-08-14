@@ -45,6 +45,9 @@ static_assert(std::convertible_to<mutable_eight, mutable_four>);
 static_assert(std::convertible_to<mutable_four, const_four>);
 static_assert(!std::convertible_to<mutable_four, mutable_eight>);
 static_assert(!std::convertible_to<const_four, mutable_four>);
+static_assert(std::convertible_to<mutable_four, std::span<int>>);
+static_assert(std::convertible_to<mutable_four, std::span<const int>>);
+static_assert(!std::convertible_to<mutable_four, std::span<int, 4>>);
 
 static_assert(std::same_as<mutable_four::element_type, int>);
 static_assert(std::same_as<mutable_four::value_type, int>);

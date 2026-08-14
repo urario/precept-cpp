@@ -66,7 +66,7 @@ public:
     return at_least_span(validated_t{}, std::span<T>{source});
   }
 
-  /// Explicitly returns the complete view without its minimum-size semantic guarantee.
+  /// Returns the complete dynamic-extent standard span through a readable named observer.
   [[nodiscard]] constexpr std::span<T> as_span() const noexcept { return view_; }
 
   /// Returns the first N elements as a fixed-extent standard span.
