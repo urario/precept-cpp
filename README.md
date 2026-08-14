@@ -11,7 +11,9 @@ void parse(precept::at_least_span<const std::byte, 16> packet);
 ```
 
 Precept is a C++20, header-only library with no consumer dependencies. The v0.1 span family is
-implemented; the public API is not frozen yet.
+implemented. Tagged releases follow [Semantic Versioning](knowledge/decisions/adr-0007-versioning-compatibility-and-support.md):
+within the 0.x series, PATCH releases preserve compatibility within a MINOR version, while a MINOR
+release may break it. A public name is deprecated for at least one MINOR release before removal.
 
 ## Why this matters after generative AI
 
@@ -39,7 +41,7 @@ include(FetchContent)
 FetchContent_Declare(
   precept
   GIT_REPOSITORY https://github.com/urario/precept-cpp.git
-  GIT_TAG main)
+  GIT_TAG v0.1.0)
 FetchContent_MakeAvailable(precept)
 
 target_link_libraries(your_app PRIVATE Precept::Precept)
@@ -222,6 +224,8 @@ the knowledge check, formatting, what a change is reviewed against, and how to o
 Design decisions, rules, and ADRs live in the [knowledge bundle](knowledge/index.md), which is the
 source of truth for them. Start from [`knowledge/index.md`](knowledge/index.md); the decisions that
 shape everything else are:
+
+Release notes are recorded in the [update log](knowledge/log.md).
 
 * [ADR-0001](knowledge/decisions/adr-0001-cpp20.md) — C++20 as the minimum language version.
 * [ADR-0002](knowledge/decisions/adr-0002-header-only.md) — header-only, zero consumer

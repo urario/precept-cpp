@@ -6,6 +6,10 @@ okf_version: "0.2"
 
 * [Project Charter](vision/project-charter.md) - Why Precept exists, what it optimizes for, and the scope of v0.1.
 
+# Updates
+
+* [Update Log](log.md) - Curated release and significant knowledge updates.
+
 # Architecture
 
 * [Design Principles](architecture/design-principles.md) - The principles that shape how Precept types, factories, and conversions are designed.
