@@ -28,6 +28,12 @@ jobs:
             os: windows-latest
             cmake_args: ''
             check_no_tests: false
+          # GCC ships its own libasan/libubsan, so it is the sanitizer build here rather than
+          # Clang, which needs a compiler-rt package this image does not guarantee.
+          - name: Linux GCC (Sanitizers)
+            os: ubuntu-latest
+            cmake_args: '-DCMAKE_CXX_COMPILER=g++ "-DCMAKE_CXX_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=all" "-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address,undefined"'
+            check_no_tests: false
 
     steps:
       - uses: actions/checkout@v7
@@ -63,3 +69,46 @@ jobs:
       - name: Build without tests
         if: matrix.check_no_tests
         run: cmake --build build-no-tests --config Debug --parallel
+
+  format:
+    name: clang-format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install clang-format
+        run: sudo apt-get update && sudo apt-get install -y clang-format
+
+      - name: Check formatting
+        run: >-
+          clang-format --dry-run --Werror
+          $(bash tools/list_public_headers.sh) tests/*.cpp tests/negative/*.cpp examples/*.cpp
+
+  clang-tidy:
+    name: clang-tidy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install clang-tidy
+        run: sudo apt-get update && sudo apt-get install -y clang-tidy
+
+      # BUILD_TESTING=ON so compile_commands.json carries real flags for the translation units
+      # that include the public headers (GoogleTest fetched by FetchContent must be on disk for
+      # clang-tidy to resolve those includes).
+      - name: Configure
+        run: >-
+          cmake -S . -B build
+          -DCMAKE_CXX_COMPILER=clang++
+          -DBUILD_TESTING=ON
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      # Scoped to the public headers, not tests/examples: bugprone-unchecked-optional-access
+      # cannot see through GoogleTest's ASSERT_TRUE/EXPECT_TRUE narrowing and flags every
+      # validated optional access in the test suite as a false positive.
+      - name: clang-tidy
+        run: clang-tidy -p build $(bash tools/list_public_headers.sh)

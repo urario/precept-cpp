@@ -19,7 +19,10 @@ sources:
   - id: issue-9-package-consumer
     resource: https://github.com/urario/precept-cpp/issues/9
     title: CMake installed-package and standalone consumer smoke test contract
-tags: [testing, ctest, googletest, build]
+  - id: issue-27
+    resource: https://github.com/urario/precept-cpp/issues/27
+    title: Foundation issue introducing CI quality gates now that production API code exists
+tags: [testing, ctest, googletest, build, sanitizers]
 ---
 
 # Common entry point
@@ -53,7 +56,18 @@ Configuring with `BUILD_TESTING=OFF` must not fetch or require GoogleTest. Devel
 warnings and test dependencies remain private to development targets and do not propagate
 to consumers.
 
-# Deferred quality gates
+# Sanitizers
 
-Sanitizers are reconsidered after production API code is introduced; the foundation does
-not add a sanitizer abstraction or CI matrix before there is production behavior to test.
+The condition this concept originally deferred on — production API code existing — was met once
+the v0.1 span family (`at_least_span`, `non_empty_span`, `block_span`, `checked_span`) landed.
+AddressSanitizer and UndefinedBehaviorSanitizer therefore run through the same CTest entry point,
+as a dedicated Linux GCC build in the CI matrix, rather than as a separate mechanism. This targets
+the family's own risk profile: it provides only borrowed views and owns no storage, so
+use-after-free and use-after-the-wrapper-is-destroyed are the defects most worth catching, and
+[the API contract](../api/span-family.md) already requires verifying iterator use after the
+originating wrapper is destroyed while storage remains valid.
+
+Static analysis (clang-tidy) is a separate, non-CTest CI job scoped to the public headers; its
+configuration and rationale live in [CONTRIBUTING.md](../../CONTRIBUTING.md#static-analysis) and
+[ADR-0007](../decisions/adr-0007-versioning-compatibility-and-support.md), not here, since it does
+not run through CTest.
