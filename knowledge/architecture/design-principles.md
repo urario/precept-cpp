@@ -1,8 +1,11 @@
 ---
 type: Design Principle
 title: Precept Design Principles
-description: The principles that shape how Precept types, factories, and conversions are designed.
-status: draft
+description: The principles that shape how Precept semantic types, factories, operations, and proof carriers are designed.
+status: stable
+verified:
+  - by: human:urario
+    at: 2026-08-14T21:47:00+09:00
 sources:
   - id: issue-1
     resource: https://github.com/urario/precept-cpp/issues/1
@@ -12,6 +15,10 @@ sources:
     resource: https://github.com/urario/precept-cpp/issues/4
     title: Design issue for the v0.1 span API contract, failure model, and conversions
     author: human:urario
+  - id: issue-49-owner-decision
+    resource: https://github.com/urario/precept-cpp/issues/49#issuecomment-5293470398
+    title: Owner approval of the v0.2 API admission and design-principle baseline
+    author: chatgpt/gpt-5.6-sol
 tags: [architecture, design-principles]
 ---
 
@@ -31,8 +38,12 @@ currency between libraries; Precept adds a thin semantic layer over them.
 
 # Carry the fact, not just the check
 
-The value of Precept is not a shorter guard clause. It is that a semantic fact, verified
-once, is preserved by the type and reusable across API boundaries.
+The value of Precept is not a shorter guard clause. It is that a semantic fact, verified once, is
+preserved by the chosen representation and remains useful across API boundaries.
+
+That representation may be a semantic type, a relational proof carrier, a transition-restricted
+API, or a standard type when the fact is fully expressible there. The representation should match
+the fact instead of forcing every fact into a wrapper type.
 
 # Prefer a dedicated vocabulary over a generic framework
 
@@ -55,7 +66,8 @@ wrapper. Validate, then hand the standard type back: a runtime-sized span checke
 `N` elements is a fixed-extent `std::span<T, N>`, and no Precept type is needed to carry that
 fact any further.
 
-New types are justified only when the invariant must survive beyond the check.
+New types are justified only when the invariant must survive beyond the check and no standard type
+already carries it completely.
 
 How a *failed* validation reaches the caller is a different question. The v0.1 span family uses
 the boundary recorded in
@@ -69,9 +81,32 @@ because `size() % N == 0` is worth recording on its own.
 
 # Invariants must not be bypassable
 
-If a type exists, its invariant holds. Every public construction path — constructors,
-factories, conversions, assignment — must preserve it. An invariant that can be sidestepped
-is worse than no invariant, because readers stop trusting the signature.
+Every public API path that claims a semantic fact must preserve that claim. Construction,
+validation, conversion, update, relation-producing operations, and observation must not create a
+state in which the API surface says a fact holds when it does not.
+
+A semantic representation that can be bypassed is worse than no representation, because readers
+stop trusting the signature and returned proof objects.
+
+# Proof freshness must be explicit
+
+A proof is useful only while the fact it represents remains trustworthy. Every persistent semantic
+representation must make clear what mutation, aliasing, lifetime change, external state, copy, or
+move can invalidate the fact.
+
+If the fact can become stale while the Precept representation still appears valid, and that
+freshness boundary cannot be stated as a small, readable contract, the fact should be reshaped or
+rejected as a persistent Precept proof.
+
+# Do not propagate guarantees across non-closed operations
+
+A semantic guarantee is propagated through an operation only when that operation is closed over
+the invariant. If the result does not necessarily satisfy the same guarantee, do not return the
+stronger semantic type or proof merely because the inputs had it.
+
+Prefer the appropriate standard result type, or require validation again when the fact must be
+re-established. This keeps semantic vocabulary from growing into a speculative operator or policy
+framework.
 
 # Precept view types do not own storage
 
@@ -90,8 +125,9 @@ What the signature says is what happens.
 
 # Better than an assert
 
-An API earns its place only if it does more than move an `assert` somewhere else: the
-verified fact must be visible in the signature and reusable downstream.
+An API earns its place only if it does more than move an `assert` or guard clause somewhere else.
+The verified fact must remain useful after validation through the chosen representation, including
+cases where a standard return type fully embodies that fact.
 
 # v0.1 span contract
 

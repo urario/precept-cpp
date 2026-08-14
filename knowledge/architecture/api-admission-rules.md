@@ -2,15 +2,19 @@
 type: Project Rule
 title: API Admission Rules
 description: The eight rules a proposed public Precept API must satisfy before it is accepted.
-status: draft
-generated:
-  by: claude-code/2.1.231
-  at: 2026-08-13T19:24:27Z
+status: stable
+verified:
+  - by: human:urario
+    at: 2026-08-14T21:47:00+09:00
 sources:
   - id: issue-1
     resource: https://github.com/urario/precept-cpp/issues/1
     title: Roadmap issue defining Precept's background, goals, principles, and roadmap
     author: human:urario
+  - id: issue-49-owner-decision
+    resource: https://github.com/urario/precept-cpp/issues/49#issuecomment-5293470398
+    title: Owner approval of the v0.2 API admission and design-principle baseline
+    author: chatgpt/gpt-5.6-sol
 tags: [architecture, api-design, rules]
 ---
 
@@ -33,8 +37,9 @@ guarantee correctly from the signature alone.
 
 # 3. Enforced
 
-The guarantee holds mechanically through the type system and validated construction, not
-through comments, naming conventions, or reviewer vigilance.
+The guarantee holds mechanically through the public representation and its validated boundaries —
+for example a semantic type, a transition API, a relational proof carrier, or a validating
+factory — not through comments, naming conventions, or reviewer vigilance.
 
 # 4. Reusable
 
@@ -49,11 +54,17 @@ machinery. Adoption cost stays close to including a header.
 # 6. Composable
 
 The API integrates naturally with standard C++ types and operations. It builds on the standard
-library rather than displacing it, works with the operations users already reach for, and returns
-to a standard type whenever the verified fact is fully expressible there. What "natural" means
-differs per family — a view interoperates with ranges and algorithms, a value type with the
-arithmetic and comparisons of what it wraps — so this rule is judged against the family the API
-belongs to, not against a fixed list of accepted inputs.
+library rather than displacing it, and returns to a standard type whenever the verified fact is
+fully expressible there.
+
+What "natural" means differs per family. A view should interoperate truthfully with the relevant
+range and algorithm facilities; a transition type should expose only the state changes its
+contract permits; a relational proof should compose with ordinary operations without requiring a
+relation framework; and a validating factory should return the standard type when that type fully
+carries the verified fact.
+
+Composable does **not** mean reproducing every operation of an underlying type. An operation that
+is not closed over the semantic guarantee need not preserve or re-create that guarantee.
 
 # 7. No magic
 
@@ -62,8 +73,10 @@ predictable from the signature.
 
 # 8. Better than an assert
 
-The API must deliver more than relocating an assertion: the verified fact becomes visible
-in the signature and reusable by downstream callers.
+The API must deliver more than relocating an assertion or shortening a guard clause. The verified
+fact must remain useful after validation — for example by being visible in a semantic type or
+proof carrier, by constraining allowed transitions, or by being fully embodied in a returned
+standard type that downstream code can use without repeating the original check.
 
 # Relationship to design principles
 
