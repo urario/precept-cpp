@@ -12,6 +12,10 @@ sources:
     resource: https://github.com/urario/precept-cpp/issues/4
     title: Design issue defining the v0.1 span API contract
     author: human:urario
+  - id: issue-26-decision-comment
+    resource: https://github.com/urario/precept-cpp/issues/26#issuecomment-5290846380
+    title: Owner decision on versioning, compatibility, deprecation, and support, recorded from a chat conversation
+    author: claude-code/2.1.231
 tags: [vision, charter, scope]
 ---
 
@@ -97,6 +101,14 @@ The hypothesis being tested:
 Their exact contracts, conversions, and failure model are defined by the
 [v0.1 Span Family API Contract](../api/span-family.md). They remain outside this charter's
 responsibility.
+
+# Versioning and support
+
+Tagged releases follow SemVer, with a MINOR version bump as the 0.x compatibility boundary and a
+one-MINOR deprecation notice before a public name is removed. A platform or compiler counts as
+supported when a required CI job verifies it, not when the maintainer owns the hardware. See
+[ADR-0007](../decisions/adr-0007-versioning-compatibility-and-support.md) for the full policy and
+the rationale behind it.
 
 # Explored after v0.1
 
