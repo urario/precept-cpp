@@ -4,8 +4,8 @@ title: License Precept under Apache-2.0
 description: Use Apache-2.0 so adoption is permissive and the patent grant is explicit.
 status: draft
 generated:
-  by: claude-code/2.1.231
-  at: 2026-08-13T19:24:27Z
+  by: claude-code/2.1.232
+  at: 2026-08-14T00:34:40Z
 sources:
   - id: issue-1
     resource: https://github.com/urario/precept-cpp/issues/1
@@ -55,13 +55,15 @@ No alternatives are reconstructed here.
 This summary is written for readers of this repository. The license text itself is what governs,
 and none of it is legal advice.
 
-## Follow-up
+## Adoption
 
-This ADR records a license choice; it does not by itself license the repository. Adoption is
-complete when the Apache-2.0 text is present as `LICENSE` at the repository root, the README
-states the license — owned by issue [#8](https://github.com/urario/precept-cpp/issues/8) — and any
-per-file notices are consistent with that file. The decision recorded here and the licensing state
-of the repository are separate things, and neither should be inferred from the other.
+This ADR records a license choice; it does not by itself license the repository. The decision
+recorded here and the licensing state of the repository are separate things, and neither should be
+inferred from the other.
+
+That state is now in place: the Apache-2.0 text is present as [`LICENSE`](../../LICENSE) at the
+repository root, the README states the license, and per-file notices are the SPDX header required
+by the [Coding Rules](../rules/coding.md), which points at that same file for the full text.
 
 # Status
 
@@ -71,4 +73,7 @@ Accepted.
 
 * Issue [#1](https://github.com/urario/precept-cpp/issues/1) — roadmap and base policy
 * Issue [#8](https://github.com/urario/precept-cpp/issues/8) — README, examples, and docs
+* Issue [#18](https://github.com/urario/precept-cpp/issues/18) — placing `LICENSE` and aligning the
+  license statements
+* [Coding Rules](../rules/coding.md) — the SPDX header carried by each source file
 * [Project Charter](../vision/project-charter.md)
