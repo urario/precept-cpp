@@ -20,23 +20,46 @@ jobs:
             os: ubuntu-latest
             cmake_args: -DCMAKE_CXX_COMPILER=g++
             check_no_tests: true
+            needs_libcxx: false
           - name: Linux Clang
             os: ubuntu-latest
             cmake_args: -DCMAKE_CXX_COMPILER=clang++
             check_no_tests: false
+            needs_libcxx: false
           - name: Windows MSVC
             os: windows-latest
             cmake_args: ''
             check_no_tests: false
+            needs_libcxx: false
           # GCC ships its own libasan/libubsan, so it is the sanitizer build here rather than
           # Clang, which needs a compiler-rt package this image does not guarantee.
           - name: Linux GCC (Sanitizers)
             os: ubuntu-latest
             cmake_args: '-DCMAKE_CXX_COMPILER=g++ "-DCMAKE_CXX_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=all" "-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address,undefined"'
             check_no_tests: false
+            needs_libcxx: false
+          # The only libc++ coverage in the matrix; verified locally to actually link libc++.so,
+          # not silently fall back to libstdc++.
+          - name: Linux Clang (libc++)
+            os: ubuntu-latest
+            cmake_args: '-DCMAKE_CXX_COMPILER=clang++ "-DCMAKE_CXX_FLAGS=-stdlib=libc++"'
+            check_no_tests: false
+            needs_libcxx: true
+          # No macOS hardware is available to the maintainer; this job is the only basis for
+          # calling macOS supported (ADR-0007's CI-verified definition), so it is required, not
+          # advisory.
+          - name: macOS AppleClang
+            os: macos-latest
+            cmake_args: ''
+            check_no_tests: false
+            needs_libcxx: false
 
     steps:
       - uses: actions/checkout@v7
+
+      - name: Install libc++
+        if: matrix.needs_libcxx
+        run: sudo apt-get update && sudo apt-get install -y libc++-dev libc++abi-dev
 
       - uses: actions/setup-python@v5
         with:
