@@ -16,6 +16,7 @@ FetchContent_MakeAvailable(googletest)
 
 add_library(
   precept_compile_requirements OBJECT compile_requirements.cpp
+                                      aligned_ptr_compile_test.cpp
                                       at_least_span_compile_test.cpp
                                       block_span_compile_test.cpp
                                       checked_span_compile_test.cpp)
@@ -25,8 +26,9 @@ target_compile_options(
   PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/W4;/permissive->
           $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall;-Wextra;-Wpedantic>)
 
-add_executable(precept_runtime_tests runtime_smoke_test.cpp at_least_span_test.cpp
-                                     block_span_test.cpp checked_span_test.cpp)
+add_executable(precept_runtime_tests runtime_smoke_test.cpp aligned_ptr_test.cpp
+                                     at_least_span_test.cpp block_span_test.cpp
+                                     checked_span_test.cpp)
 target_link_libraries(precept_runtime_tests PRIVATE Precept::Precept GTest::gtest_main)
 target_compile_options(
   precept_runtime_tests
@@ -97,6 +99,15 @@ precept_expect_compile_failure(block_span_zero block_span_zero.cpp)
 precept_expect_compile_failure(block_span_dynamic_extent block_span_dynamic_extent.cpp)
 precept_expect_compile_failure(block_span_fixed_non_divisible block_span_fixed_non_divisible.cpp)
 precept_expect_compile_failure(block_span_fixed_try_from block_span_fixed_try_from.cpp)
+precept_expect_compile_failure(aligned_ptr_strengthening aligned_ptr_strengthening.cpp)
+precept_expect_compile_failure(aligned_ptr_const_removal aligned_ptr_const_removal.cpp)
+precept_expect_compile_failure(aligned_ptr_array_covariance aligned_ptr_array_covariance.cpp)
+precept_expect_compile_failure(aligned_ptr_non_power_of_two aligned_ptr_non_power_of_two.cpp)
+precept_expect_compile_failure(aligned_ptr_below_natural_alignment
+                               aligned_ptr_below_natural_alignment.cpp)
+precept_expect_compile_failure(aligned_ptr_void aligned_ptr_void.cpp)
+precept_expect_compile_failure(aligned_ptr_incomplete aligned_ptr_incomplete.cpp)
+precept_expect_compile_failure(aligned_ptr_template_deduction aligned_ptr_template_deduction.cpp)
 
 # Knowledge bundle checks. These are development-only: the Python interpreter and its YAML
 # parser are never usage requirements of Precept::Precept, and a BUILD_TESTING=OFF
