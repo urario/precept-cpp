@@ -17,6 +17,7 @@ FetchContent_MakeAvailable(googletest)
 add_library(
   precept_compile_requirements OBJECT compile_requirements.cpp
                                       at_least_span_compile_test.cpp
+                                      block_span_compile_test.cpp
                                       checked_span_compile_test.cpp)
 target_link_libraries(precept_compile_requirements PRIVATE Precept::Precept)
 target_compile_options(
@@ -25,7 +26,7 @@ target_compile_options(
           $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall;-Wextra;-Wpedantic>)
 
 add_executable(precept_runtime_tests runtime_smoke_test.cpp at_least_span_test.cpp
-                                     checked_span_test.cpp)
+                                     block_span_test.cpp checked_span_test.cpp)
 target_link_libraries(precept_runtime_tests PRIVATE Precept::Precept GTest::gtest_main)
 target_compile_options(
   precept_runtime_tests
@@ -56,6 +57,10 @@ precept_expect_compile_failure(at_least_span_dynamic_direct at_least_span_dynami
 precept_expect_compile_failure(at_least_span_fixed_try_from at_least_span_fixed_try_from.cpp)
 precept_expect_compile_failure(checked_span_fixed_unequal checked_span_fixed_unequal.cpp)
 precept_expect_compile_failure(checked_span_dynamic_extent checked_span_dynamic_extent.cpp)
+precept_expect_compile_failure(block_span_zero block_span_zero.cpp)
+precept_expect_compile_failure(block_span_dynamic_extent block_span_dynamic_extent.cpp)
+precept_expect_compile_failure(block_span_fixed_non_divisible block_span_fixed_non_divisible.cpp)
+precept_expect_compile_failure(block_span_fixed_try_from block_span_fixed_try_from.cpp)
 
 # Knowledge bundle checks. These are development-only: the Python interpreter and its YAML
 # parser are never usage requirements of Precept::Precept, and a BUILD_TESTING=OFF
