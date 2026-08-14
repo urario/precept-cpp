@@ -86,6 +86,19 @@ jobs:
       - name: Test
         run: ctest --test-dir build -C Debug --output-on-failure
 
+      # Disposable compile spike for Issue #41. This branch is not a production implementation.
+      - name: Configure Issue 41 Gate C spike
+        run: >-
+          cmake -S spikes/issue-41 -B build-issue-41
+          -DCMAKE_BUILD_TYPE=Debug
+          ${{ matrix.cmake_args }}
+
+      - name: Build Issue 41 Gate C spike
+        run: cmake --build build-issue-41 --config Debug --parallel
+
+      - name: Test Issue 41 Gate C spike
+        run: ctest --test-dir build-issue-41 -C Debug --output-on-failure
+
       - name: Configure without tests
         if: matrix.check_no_tests
         run: cmake -S . -B build-no-tests -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Debug
