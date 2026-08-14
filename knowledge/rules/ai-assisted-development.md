@@ -3,9 +3,6 @@ type: Project Rule
 title: AI-Assisted Development Rules
 description: How AI agents participate in Precept development and how knowledge provenance and trust are recorded.
 status: draft
-generated:
-  by: claude-code/2.1.231
-  at: 2026-08-14T07:45:00Z
 sources:
   - id: issue-3
     resource: https://github.com/urario/precept-cpp/issues/3
@@ -23,6 +20,9 @@ sources:
     resource: https://github.com/urario/precept-cpp/issues/31#issuecomment-5290847240
     title: Owner decision on agent issue-update autonomy, body-edit scope, and update triggers, recorded from a chat conversation
     author: claude-code/2.1.231
+  - id: issue-36
+    resource: https://github.com/urario/precept-cpp/issues/36
+    title: Owner decision allowing agents to record human verification after explicit approval
 tags: [rules, ai-assisted-development, provenance]
 ---
 
@@ -128,9 +128,13 @@ become a process by declaring itself one.
   approximated. An omitted field is accurate; an invented one is a false record that a later
   reader cannot tell apart from a true one. Git history remains the full account of who changed
   what and when.
-* `verified` records confirmation, and a `human:` entry is added **only after a human has
-  actually reviewed the content**. An agent never adds a `human:` verification on someone's
-  behalf.
+* `verified` records who confirmed the content, not who typed the frontmatter. A `human:` entry is
+  added **only after that human has actually reviewed and explicitly accepted the content**. The
+  reviewer may update the frontmatter directly or explicitly ask an agent to record the approval.
+  An agent never infers approval or adds a `human:` verification without that instruction.
+* When an agent records an explicitly approved verification, `verified.by` still names the human
+  reviewer. Git history records the agent-authored file change; the verifier and the editor are
+  intentionally separate facts.
 * A concept with no `verified` entry is unverified. That is an accurate state, not a defect.
 * AI-drafted knowledge is not treated as `stable` or human-reviewed by default. It stays
   `status: draft` until a human reviews it.
@@ -146,6 +150,7 @@ Unknown is better than invented.
 
 # Reviewing agent-authored knowledge
 
-When a human reviews an AI-drafted concept and accepts it, the reviewer — not the agent —
-updates the frontmatter: `status` moves to `stable`, and a `verified` entry with a `human:`
-actor and timestamp is added.
+When a human reviews an AI-drafted concept and accepts it, the reviewer either updates the
+frontmatter or explicitly asks an agent to do so. The metadata moves `status` to `stable` and adds
+a `verified` entry with that human reviewer's actor and the review timestamp. Asking an agent to
+record the metadata does not transfer or weaken the human review responsibility.

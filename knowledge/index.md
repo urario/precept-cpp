@@ -28,7 +28,7 @@ okf_version: "0.2"
 * [ADR-0003: License Precept under Apache-2.0](decisions/adr-0003-apache-2-0.md) - Permissive license with an explicit patent grant.
 * [ADR-0004: Prefer a dedicated semantic vocabulary over a generic constrained framework](decisions/adr-0004-dedicated-semantic-vocabulary.md) - Named types instead of a predicate DSL.
 * [ADR-0005: Limit v0.1 to the span precondition family](decisions/adr-0005-v0-1-span-scope.md) - Validate one hypothesis before growing the vocabulary.
-* [ADR-0006: Define validation and conversion boundaries for the v0.1 span family](decisions/adr-0006-validation-and-conversion-boundaries.md) - Make runtime validation recoverable while preserving compile-time facts and explicit semantic boundaries.
+* [ADR-0006: Define validation and conversion boundaries for the v0.1 span family](decisions/adr-0006-validation-and-conversion-boundaries.md) - Preserve compile-time facts while distinguishing safe semantic weakening from invariant bypass.
 * [ADR-0007: Define versioning, compatibility, deprecation, and platform support for v0.1.0](decisions/adr-0007-versioning-compatibility-and-support.md) - Adopt SemVer with a MINOR-boundary compatibility promise, a one-MINOR deprecation notice, and CI-verified platform support.
 
 # Testing
