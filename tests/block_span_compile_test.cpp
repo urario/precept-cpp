@@ -46,13 +46,15 @@ static_assert(std::same_as<mutable_four::block_type, std::span<int, 4>>);
 static_assert(std::same_as<mutable_four::value_type, std::span<int, 4>>);
 static_assert(std::same_as<mutable_four::reference, std::span<int, 4>>);
 static_assert(std::same_as<std::iter_reference_t<mutable_four::iterator>, std::span<int, 4>>);
+static_assert(std::ranges::random_access_range<mutable_four>);
+static_assert(std::same_as<typename std::iterator_traits<mutable_four::iterator>::iterator_category,
+                           std::input_iterator_tag>);
 static_assert(std::same_as<decltype(std::declval<mutable_four>().as_span()), std::span<int>>);
 static_assert(std::same_as<decltype(mutable_four::try_from(std::declval<std::span<int>>())),
                            std::optional<mutable_four>>);
 
 static_assert(std::ranges::common_range<mutable_four>);
 static_assert(std::ranges::sized_range<mutable_four>);
-static_assert(std::ranges::random_access_range<mutable_four>);
 static_assert(std::ranges::borrowed_range<mutable_four>);
 static_assert(std::ranges::borrowed_range<const mutable_four>);
 static_assert(!std::ranges::contiguous_range<mutable_four>);

@@ -36,7 +36,7 @@ public:
   class iterator {
   public:
     using iterator_concept = std::random_access_iterator_tag;
-    using iterator_category = std::random_access_iterator_tag;
+    using iterator_category = std::input_iterator_tag;
     using value_type = block_type;
     using difference_type = std::ptrdiff_t;
     using reference = block_type;
