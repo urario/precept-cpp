@@ -16,6 +16,10 @@ sources:
     resource: https://github.com/urario/precept-cpp/issues/8#issuecomment-5289556266
     title: Review decision defining runnable examples as consumer-facing executable documentation
     author: human:urario
+  - id: issue-9-package-consumer
+    resource: https://github.com/urario/precept-cpp/issues/9
+    title: CMake installed-package and standalone consumer smoke test contract
+    author: human:urario
 tags: [testing, ctest, googletest, build]
 ---
 
@@ -40,7 +44,11 @@ when Precept is the top-level project.
   drift is detected. They link `Precept::Precept` only and do not depend on GoogleTest or another
   test framework. A property that needs a behavioral assertion stays covered by the ordinary
   GoogleTest suite.
-* Installed-package and consumer smoke tests are owned by issue #9.
+* Installed-package and consumer smoke tests are owned by issue #9. The smoke test configures a
+  separate `BUILD_TESTING=OFF` Precept build, installs it to a staging prefix, relocates the
+  install tree, and then configures, builds, and runs a standalone consumer with package registries
+  disabled. The consumer uses the installed `Precept::Precept` target and does not depend on
+  GoogleTest, Python, or the repository source/build tree.
 
 Configuring with `BUILD_TESTING=OFF` must not fetch or require GoogleTest. Development
 warnings and test dependencies remain private to development targets and do not propagate
