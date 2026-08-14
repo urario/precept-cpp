@@ -2,7 +2,10 @@
 type: Architecture Decision
 title: Define validation and conversion boundaries for the v0.1 span family
 description: Use optional runtime validation, reject invariant bypasses, and allow truthful standard-range weakening.
-status: draft
+status: stable
+verified:
+  - by: human:urario
+    at: 2026-08-14T17:36:23+09:00
 sources:
   - id: issue-4
     resource: https://github.com/urario/precept-cpp/issues/4
