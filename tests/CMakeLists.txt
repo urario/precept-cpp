@@ -14,14 +14,15 @@ FetchContent_Declare(
   GIT_SHALLOW TRUE)
 FetchContent_MakeAvailable(googletest)
 
-add_library(precept_compile_requirements OBJECT compile_requirements.cpp)
+add_library(precept_compile_requirements OBJECT compile_requirements.cpp
+                                                at_least_span_compile_test.cpp)
 target_link_libraries(precept_compile_requirements PRIVATE Precept::Precept)
 target_compile_options(
   precept_compile_requirements
   PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/W4;/permissive->
           $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall;-Wextra;-Wpedantic>)
 
-add_executable(precept_runtime_tests runtime_smoke_test.cpp)
+add_executable(precept_runtime_tests runtime_smoke_test.cpp at_least_span_test.cpp)
 target_link_libraries(precept_runtime_tests PRIVATE Precept::Precept GTest::gtest_main)
 target_compile_options(
   precept_runtime_tests
@@ -30,6 +31,26 @@ target_compile_options(
 
 include(GoogleTest)
 gtest_discover_tests(precept_runtime_tests)
+
+function(precept_expect_compile_failure test_name source_file)
+  try_compile(
+    ${test_name}_compiled
+    ${CMAKE_CURRENT_BINARY_DIR}/negative/${test_name}
+    ${CMAKE_CURRENT_SOURCE_DIR}/negative/${source_file}
+    CMAKE_FLAGS -DCMAKE_CXX_STANDARD=20 -DCMAKE_CXX_STANDARD_REQUIRED=ON
+                -DCMAKE_CXX_EXTENSIONS=OFF
+                -DINCLUDE_DIRECTORIES=${PROJECT_SOURCE_DIR}/include
+    OUTPUT_VARIABLE compile_output)
+  if(${test_name}_compiled)
+    message(FATAL_ERROR "Negative compile test ${test_name} unexpectedly compiled")
+  endif()
+endfunction()
+
+precept_expect_compile_failure(at_least_span_zero at_least_span_zero.cpp)
+precept_expect_compile_failure(at_least_span_dynamic_extent at_least_span_dynamic_extent.cpp)
+precept_expect_compile_failure(at_least_span_fixed_too_small at_least_span_fixed_too_small.cpp)
+precept_expect_compile_failure(at_least_span_dynamic_direct at_least_span_dynamic_direct.cpp)
+precept_expect_compile_failure(at_least_span_fixed_try_from at_least_span_fixed_try_from.cpp)
 
 # Knowledge bundle checks. These are development-only: the Python interpreter and its YAML
 # parser are never usage requirements of Precept::Precept, and a BUILD_TESTING=OFF

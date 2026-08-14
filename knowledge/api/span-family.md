@@ -12,6 +12,10 @@ sources:
     resource: https://github.com/urario/precept-cpp/issues/4#issuecomment-5287680856
     title: Final review resolution for static construction, validation inputs, block size, and borrowed iterators
     author: human:urario
+  - id: issue-20-resolution
+    resource: https://github.com/urario/precept-cpp/issues/20#issuecomment-5288715908
+    title: Resolution prioritizing truthful range interoperability and safe semantic weakening
+    author: human:urario
 tags: [api, span, v0.1, contract]
 ---
 
@@ -81,9 +85,26 @@ removed. Array covariance, including treating `Derived[]` as `Base[]`, is not su
 
 ## Standard-span conversion
 
-Precept wrappers do not implicitly convert to `std::span`. `as_span()` explicitly discards the
-semantic fact and returns a dynamic-extent `std::span<T>` by value. It never returns a mutable
-reference to a wrapper's internal state.
+Precept wrappers do not define implicit conversion operators to `std::span`.
+
+`at_least_span` intentionally models the standard contiguous, sized, and borrowed range concepts.
+Consequently, the standard library's range constructor may implicitly construct a dynamic-extent
+`std::span` from it. This is allowed semantic weakening: the source satisfies the fact-free target
+contract without runtime validation, without changing element qualification, ownership, or
+lifetime, and without creating an invalid target state.
+
+Implicit weakening is acceptable only when the source contract logically satisfies the target
+contract without runtime validation and without creating a false semantic guarantee. A conversion
+that strengthens an invariant or removes element qualification remains rejected or requires
+validation.
+
+`as_span()` remains the named observer for explicitly obtaining the complete dynamic-extent
+`std::span<T>` by value. It makes standard-span use visible when that is useful, but it is not the
+only possible semantic-weakening path. It never returns a mutable reference to a wrapper's internal
+state.
+
+This weakening applies to a dynamic-extent span. `at_least_span<T, N>` proves `size() >= N`, not
+`size() == N`; callers use `prefix()` when they require a guaranteed `std::span<T, N>`.
 
 ## Ownership, lifetime, and const
 
@@ -136,8 +157,8 @@ dynamic-span constructor.
   constructor and is also rejected by `try_from` so there is no duplicate always-successful path.
 
 A weaker minimum cannot convert directly to a stronger one. If its runtime size might satisfy the
-stronger invariant, the caller explicitly erases it to a dynamic span with `as_span()` and invokes
-the stronger type's `try_from()`.
+stronger invariant, the caller obtains its dynamic span with `as_span()` and invokes the stronger
+type's `try_from()` so the strengthening remains explicit and validated.
 
 ## Operations
 
@@ -153,7 +174,7 @@ The v0.1 surface contains:
 
 There is no member `empty()`: it would always return false and add no semantic value. Generic
 `std::ranges::empty()` remains usable through `size()`. Other `std::span` convenience operations
-are available after explicit `as_span()` conversion rather than being reimplemented.
+are available from the standard span returned by `as_span()` rather than being reimplemented.
 
 When `size() == N`, `prefix()` covers the entire view and `rest()` is a valid empty span.
 
@@ -272,7 +293,7 @@ zero-element logical block are not meaningful for this API.
   constructor and is rejected by `try_from` to avoid an always-engaged duplicate path.
 
 There is no conversion between different block sizes. Repartitioning requires
-`target::try_from(source.as_span())`, which makes both semantic erasure and runtime validation
+`target::try_from(source.as_span())`, which makes both repartitioning and runtime validation
 visible.
 
 ## Range and iterator model
@@ -500,7 +521,11 @@ Issue #5 must verify:
 * fixed-valid construction and fixed-invalid construction rejection
 * rejection of fixed spans by `try_from`, including a fixed-valid span
 * mutable-to-const and stronger-to-weaker conversions, with reverse conversions rejected
-* `prefix`, `rest`, `front`, `back`, range operations, and `as_span` return types
+* contiguous, sized, and borrowed range modeling
+* implicit safe weakening to a compatible dynamic-extent `std::span`, with the named `as_span`
+  form also supported
+* `prefix`, `rest`, `front`, `back`, range operations, and `as_span` return types, including use of
+  `prefix()` for the guaranteed fixed-extent view
 * rejection of `N == 0` and `N == std::dynamic_extent`
 * alias identity of `non_empty_span<T>` and `at_least_span<T, 1>`
 
