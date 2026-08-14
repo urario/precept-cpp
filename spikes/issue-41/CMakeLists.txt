@@ -5,7 +5,7 @@ add_executable(issue_41_aligned_ptr_gate_c main.cpp)
 target_compile_features(issue_41_aligned_ptr_gate_c PRIVATE cxx_std_20)
 
 if(MSVC)
-  target_compile_options(issue_41_aligned_ptr_gate_c PRIVATE /W4 /permissive-)
+  target_compile_options(issue_41_aligned_ptr_gate_c PRIVATE /W4 /WX /permissive-)
 else()
   target_compile_options(issue_41_aligned_ptr_gate_c PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()
