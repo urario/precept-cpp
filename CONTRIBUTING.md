@@ -85,9 +85,12 @@ skip. Both remain development-only and never become requirements of the library.
 the public headers, the tests, and the examples. Check or apply it with:
 
 ```sh
-clang-format --dry-run --Werror include/precept/span/*.hpp tests/*.cpp tests/negative/*.cpp examples/*.cpp
-clang-format -i include/precept/span/*.hpp tests/*.cpp tests/negative/*.cpp examples/*.cpp
+clang-format --dry-run --Werror $(bash tools/list_public_headers.sh) tests/*.cpp tests/negative/*.cpp examples/*.cpp
+clang-format -i $(bash tools/list_public_headers.sh) tests/*.cpp tests/negative/*.cpp examples/*.cpp
 ```
+
+`tools/list_public_headers.sh` recursively lists every header under `include/precept/`, so a new
+public header directory is picked up without widening a glob here and in CI separately.
 
 Code samples in Markdown are not reachable by `clang-format`, so match the same brace and indent
 style by hand when you edit one.
@@ -103,13 +106,13 @@ types. Run it the same way CI does:
 ```sh
 cmake -S . -B build -DCMAKE_CXX_COMPILER=clang++ -DBUILD_TESTING=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 cmake --build build --parallel
-clang-tidy -p build include/precept/span/*.hpp
+clang-tidy -p build $(bash tools/list_public_headers.sh)
 ```
 
 ### Sanitizers
 
 ASan and UBSan run in CI on a dedicated Linux GCC build, matching the "Deferred quality gates"
-condition in the [Test Strategy](knowledge/testing/test-strategy.md#deferred-quality-gates) now
+condition in the [Test Strategy](knowledge/testing/test-strategy.md#sanitizers) now
 that the v0.1 span family exists. Reproduce it locally with:
 
 ```sh

@@ -81,9 +81,12 @@ ctest --test-dir build --output-on-failure
 public header、テスト、examples — です。確認・適用します。
 
 ```sh
-clang-format --dry-run --Werror include/precept/span/*.hpp tests/*.cpp tests/negative/*.cpp examples/*.cpp
-clang-format -i include/precept/span/*.hpp tests/*.cpp tests/negative/*.cpp examples/*.cpp
+clang-format --dry-run --Werror $(bash tools/list_public_headers.sh) tests/*.cpp tests/negative/*.cpp examples/*.cpp
+clang-format -i $(bash tools/list_public_headers.sh) tests/*.cpp tests/negative/*.cpp examples/*.cpp
 ```
+
+`tools/list_public_headers.sh` は `include/precept/` 配下のヘッダーを再帰的に列挙するので、
+新しい public header ディレクトリが増えても、ここと CI とで別々に glob を広げる必要はありません。
 
 Markdown 内のコード例には `clang-format` が届かないので、編集するときは同じ brace / indent スタイルに
 手で合わせてください。
@@ -97,13 +100,13 @@ trailing return type のようなスタイル選択を蒸し返すことはし�
 ```sh
 cmake -S . -B build -DCMAKE_CXX_COMPILER=clang++ -DBUILD_TESTING=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 cmake --build build --parallel
-clang-tidy -p build include/precept/span/*.hpp
+clang-tidy -p build $(bash tools/list_public_headers.sh)
 ```
 
 ### サニタイザ
 
 ASan / UBSan は、v0.1 span family が存在するようになったことで成立した
-[Test Strategy の Deferred quality gates](knowledge/testing/test-strategy.md#deferred-quality-gates)
+[Test Strategy の Sanitizers](knowledge/testing/test-strategy.md#sanitizers)
 の条件に従い、専用の Linux GCC ビルドとして CI で実行します。ローカルで再現するには:
 
 ```sh

@@ -82,7 +82,7 @@ jobs:
       - name: Check formatting
         run: >-
           clang-format --dry-run --Werror
-          include/precept/span/*.hpp tests/*.cpp tests/negative/*.cpp examples/*.cpp
+          $(bash tools/list_public_headers.sh) tests/*.cpp tests/negative/*.cpp examples/*.cpp
 
   clang-tidy:
     name: clang-tidy
@@ -111,4 +111,4 @@ jobs:
       # cannot see through GoogleTest's ASSERT_TRUE/EXPECT_TRUE narrowing and flags every
       # validated optional access in the test suite as a false positive.
       - name: clang-tidy
-        run: clang-tidy -p build include/precept/span/*.hpp
+        run: clang-tidy -p build $(bash tools/list_public_headers.sh)
