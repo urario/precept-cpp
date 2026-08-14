@@ -33,9 +33,8 @@ guarantee correctly from the signature alone.
 
 # 3. Enforced
 
-The guarantee holds mechanically through the public representation and its validated boundaries —
-for example a semantic type, a transition API, a relational proof carrier, or a validating factory —
-not through comments, naming conventions, or reviewer vigilance.
+The guarantee holds mechanically through the type system and validated construction, not
+through comments, naming conventions, or reviewer vigilance.
 
 # 4. Reusable
 
@@ -50,10 +49,11 @@ machinery. Adoption cost stays close to including a header.
 # 6. Composable
 
 The API integrates naturally with standard C++ types and operations. It builds on the standard
-library rather than displacing it, works with family-appropriate standard operations when doing so
-preserves the claimed fact, and returns to a standard type whenever the verified fact is fully
-expressible there. Composability does **not** require adding arithmetic, comparison, conversion, or
-other operators when the invariant is not closed under those operations.
+library rather than displacing it, works with the operations users already reach for, and returns
+to a standard type whenever the verified fact is fully expressible there. What "natural" means
+differs per family — a view interoperates with ranges and algorithms, a value type with the
+arithmetic and comparisons of what it wraps — so this rule is judged against the family the API
+belongs to, not against a fixed list of accepted inputs.
 
 # 7. No magic
 
@@ -62,10 +62,8 @@ predictable from the signature.
 
 # 8. Better than an assert
 
-The API must deliver more than relocating an assertion or shortening a guard clause. The verified
-fact must remain useful after validation — for example by being visible in a semantic type or proof
-carrier, by constraining allowed transitions, or by being fully embodied in a returned standard
-type that downstream code can use without repeating the original check.
+The API must deliver more than relocating an assertion: the verified fact becomes visible
+in the signature and reusable by downstream callers.
 
 # Relationship to design principles
 
