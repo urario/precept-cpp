@@ -166,3 +166,10 @@ Japanese or English.
 
 If you changed `CONTRIBUTING.md`, update [CONTRIBUTING.ja.md](CONTRIBUTING.ja.md) in the same pull
 request.
+
+## License
+
+Precept is licensed under the [Apache License 2.0](LICENSE). Contributions are licensed under the
+same terms: Section 5 of the license places anything you deliberately submit for inclusion under
+that license, and this project adds no separate CLA or DCO on top of it. The reasoning behind the
+license is in [ADR-0003](knowledge/decisions/adr-0003-apache-2-0.md).

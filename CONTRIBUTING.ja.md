@@ -159,3 +159,10 @@ Pull Request template が尋ねるのは、関連 Issue、What / Why、public AP
 
 `CONTRIBUTING.md` を変更した場合は、同じ Pull Request で
 [CONTRIBUTING.ja.md](CONTRIBUTING.ja.md)（このファイル）も更新してください。
+
+## ライセンス
+
+Precept は [Apache License 2.0](LICENSE) で提供されます。貢献物も同じ条件で提供されます。ライセンス
+第 5 条により、取り込みを意図して提出したものはそのライセンスの下に置かれ、本プロジェクトはその上に独自の
+CLA や DCO を課していません。ライセンス選択の理由は
+[ADR-0003](knowledge/decisions/adr-0003-apache-2-0.md) にあります。

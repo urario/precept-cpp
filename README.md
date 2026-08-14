@@ -31,3 +31,8 @@ alongside everything else, when Python and PyYAML are available; see
 Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md)
 ([Japanese translation](CONTRIBUTING.ja.md)). Issues and pull requests are written primarily in
 Japanese; English is very welcome.
+
+## License
+
+Precept is licensed under the [Apache License 2.0](LICENSE). Source files carry the SPDX header
+rather than the full notice; see the [Coding Rules](knowledge/rules/coding.md).
