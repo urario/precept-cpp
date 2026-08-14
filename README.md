@@ -66,6 +66,30 @@ if (auto header = precept::checked_span<16>(input)) {
 
 The factory accepts `std::span` only. Construct a span explicitly before validating a container.
 
+## Fixed-size block spans
+
+`block_span<T, N>` validates that an element sequence contains only complete `N`-element blocks.
+Iteration returns each block as a fixed-extent `std::span<T, N>`, so consumers do not need a tail
+case:
+
+```cpp
+#include <precept/span/block_span.hpp>
+
+#include <cstddef>
+#include <span>
+
+std::span<const std::byte> input = receive_view();
+if (auto blocks = precept::block_span<const std::byte, 16>::try_from(input)) {
+    for (std::span<const std::byte, 16> block : *blocks) {
+        consume(block);
+    }
+}
+```
+
+`size()` and `block_count()` report the number of logical blocks. Use `as_span().size()` when you
+need the underlying element count. Empty input is valid, while a partial final block returns
+`std::nullopt`.
+
 ## Development
 
 The supported development entry point is CMake and CTest. Configuring tests for the first time
