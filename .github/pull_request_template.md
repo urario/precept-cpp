@@ -22,7 +22,9 @@ Delete a section only when it genuinely does not apply.
 
 ## Documentation
 
-<!-- README, CONTRIBUTING (update CONTRIBUTING.ja.md in the same PR), public API comments. -->
+<!-- README, CONTRIBUTING (update CONTRIBUTING.ja.md in the same PR), public API comments.
+     For new or changed public APIs, confirm that comments follow
+     knowledge/rules/documentation.md. -->
 
 ## Knowledge / ADR update
 

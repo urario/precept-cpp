@@ -3,9 +3,6 @@ type: Project Rule
 title: Documentation Rules
 description: Language policy, the split between README and this knowledge bundle, and how knowledge concepts are authored.
 status: draft
-generated:
-  by: claude-code/2.1.231
-  at: 2026-08-13T22:41:00Z
 sources:
   - id: issue-3
     resource: https://github.com/urario/precept-cpp/issues/3
@@ -14,6 +11,10 @@ sources:
   - id: issue-10
     resource: https://github.com/urario/precept-cpp/issues/10
     title: Foundation issue for managing project knowledge, rules, and ADRs with OKF v0.2
+    author: human:urario
+  - id: pr-21-public-api-comment-policy
+    resource: https://github.com/urario/precept-cpp/pull/21#issuecomment-5288811203
+    title: Public API comment policy decision
     author: human:urario
 tags: [rules, documentation, okf]
 ---
@@ -50,6 +51,48 @@ Where relevant they explain:
 * the relationship to the corresponding standard library type
 
 Implementation notes belong in the implementation, not in the public API comment.
+
+## Standard form
+
+Public API declarations use English, Doxygen-compatible `///` comments. New and modified public
+APIs follow this form even when documentation is not generated as part of the build:
+
+```cpp
+/// One-line summary.
+///
+/// Additional behavioral contract when it is necessary.
+```
+
+Identifiers, C++ types, and expressions are enclosed in backticks. `/** ... */` is supported by
+Doxygen but is not the standard form for new Precept APIs.
+
+## Document contracts, not signatures
+
+Comments prioritize information that a user cannot recover from the declaration alone. Depending
+on the API, that includes:
+
+* preconditions and postconditions
+* failure behavior and exception guarantees
+* ownership, lifetime, nullability, and invalidation
+* thread safety
+* units, complexity, side effects, and other non-obvious semantics
+* interoperability with the corresponding standard-library type
+
+Do not add a comment that only repeats an API name or restates its types. Obvious observers such as
+`size()`, `data()`, `begin()`, and `end()` do not require comments merely for uniform coverage.
+
+Doxygen commands such as `\param`, `\return`, `\throws`, and `\pre` are used only when they add
+contract information. They are not added mechanically for every parameter, return value, or
+function.
+
+## Implementation comments and review
+
+Implementation comments use ordinary `//` comments and explain a non-obvious constraint or why an
+implementation choice is necessary. They do not duplicate the public API contract.
+
+The meaning and usefulness of comments are review responsibilities. Precept does not currently
+require a Doxygen generation target, documentation coverage metric, or source-comment lint; those
+tools are introduced only through a separate project decision if they become valuable.
 
 # README and knowledge have different jobs
 

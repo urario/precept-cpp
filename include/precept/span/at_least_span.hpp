@@ -18,10 +18,14 @@ concept qualification_compatible = std::is_convertible_v<From (*)[], To (*)[]>;
 
 } // namespace detail
 
-/// A non-owning view that contains at least N elements.
+/// A non-owning contiguous view that contains at least `N` elements.
 ///
 /// The view does not own or extend the lifetime of its elements. Runtime-sized sources must be
-/// validated with try_from(); a size mismatch is reported as std::nullopt.
+/// validated with `try_from()`; a size mismatch is reported as `std::nullopt`.
+///
+/// This type models `std::ranges::contiguous_range`, `std::ranges::sized_range`, and
+/// `std::ranges::borrowed_range`. A compatible dynamic-extent `std::span` may therefore be
+/// constructed implicitly as a safe weakening of the minimum-size guarantee.
 template <class T, std::size_t N>
   requires(N > 0 && N != std::dynamic_extent)
 class at_least_span {
@@ -42,20 +46,20 @@ public:
   constexpr at_least_span& operator=(const at_least_span&) noexcept = default;
   constexpr at_least_span& operator=(at_least_span&&) noexcept = default;
 
-  /// Constructs from a fixed-extent span whose type proves the minimum-size invariant.
+  /// Implicitly constructs from a fixed-extent `std::span` that proves `size() >= N`.
   template <class U, std::size_t E>
     requires(E != std::dynamic_extent && E >= N && detail::qualification_compatible<U, T>)
   constexpr at_least_span(std::span<U, E> source) noexcept : view_(source) {}
 
-  /// Converts from a view with an equal or stronger minimum-size guarantee.
+  /// Implicitly weakens an equal or stronger minimum-size guarantee.
   template <class U, std::size_t M>
     requires(M >= N && detail::qualification_compatible<U, T>)
   constexpr at_least_span(const at_least_span<U, M>& source) noexcept : view_(source.as_span()) {}
 
-  /// Validates a dynamic-extent span without throwing or truncating it.
+  /// Validates a dynamic-extent `std::span` without throwing or truncating it.
   ///
-  /// Returns an engaged optional exactly when source.size() is at least N. The returned view is
-  /// non-owning and follows the same lifetime and invalidation rules as source.
+  /// Returns an engaged optional exactly when `source.size() >= N`. The returned view is non-owning
+  /// and follows the same lifetime and invalidation rules as `source`.
   template <class U, std::size_t E>
     requires(E == std::dynamic_extent && detail::qualification_compatible<U, T>)
   [[nodiscard]] static constexpr std::optional<at_least_span>
@@ -66,22 +70,30 @@ public:
     return at_least_span(validated_t{}, std::span<T>{source});
   }
 
-  /// Returns the complete dynamic-extent standard span through a readable named observer.
+  /// Returns a dynamic-extent `std::span` over the complete view.
   [[nodiscard]] constexpr std::span<T> as_span() const noexcept { return view_; }
 
-  /// Returns the first N elements as a fixed-extent standard span.
+  /// Returns the guaranteed first `N` elements as a fixed-extent `std::span`.
   [[nodiscard]] constexpr std::span<T, N> prefix() const noexcept {
     return view_.template first<N>();
   }
 
-  /// Returns the elements after the guaranteed fixed-size prefix.
+  /// Returns the elements following the guaranteed prefix.
   [[nodiscard]] constexpr std::span<T> rest() const noexcept { return view_.subspan(N); }
 
   [[nodiscard]] constexpr size_type size() const noexcept { return view_.size(); }
   [[nodiscard]] constexpr size_type size_bytes() const noexcept { return view_.size_bytes(); }
   [[nodiscard]] constexpr pointer data() const noexcept { return view_.data(); }
+
+  /// Returns the first element, which always exists.
   [[nodiscard]] constexpr reference front() const noexcept { return view_.front(); }
+
+  /// Returns the last element, which always exists.
   [[nodiscard]] constexpr reference back() const noexcept { return view_.back(); }
+
+  /// Returns the element at `index`.
+  ///
+  /// \pre `index < size()`.
   [[nodiscard]] constexpr reference operator[](size_type index) const noexcept {
     return view_[index];
   }
@@ -96,7 +108,7 @@ private:
   std::span<T> view_;
 };
 
-/// User-facing vocabulary for a non-owning span that is guaranteed to contain an element.
+/// An alias for `at_least_span<T, 1>` that guarantees at least one element.
 template <class T> using non_empty_span = at_least_span<T, 1>;
 
 } // namespace precept
