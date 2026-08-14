@@ -185,6 +185,24 @@ Candidates explored after v0.1, and the criteria a new API must satisfy, are lis
 [project charter](knowledge/vision/project-charter.md) and the
 [API admission rules](knowledge/architecture/api-admission-rules.md).
 
+## Supported environments
+
+A platform or compiler counts as supported when a required CI job verifies it — not because the
+maintainer happens to own the hardware. See
+[ADR-0007](knowledge/decisions/adr-0007-versioning-compatibility-and-support.md) for the full
+policy. Every environment below is CI-verified, with no distinction drawn between them:
+
+| OS | Compiler | Standard library | Verified version |
+| --- | --- | --- | --- |
+| Linux (ubuntu-24.04) | GCC | libstdc++ | GNU 13.3.0 |
+| Linux (ubuntu-24.04) | Clang | libstdc++ (default) | Clang 18.1.3 |
+| Linux (ubuntu-24.04) | Clang | libc++ | Clang 18.1.3, libc++ 18.1.3 |
+| Windows (windows-2025) | MSVC | MSVC STL | MSVC 19.51.36252.0 (Visual Studio 18 2026) |
+| macOS (macos-26-arm64) | AppleClang | libc++ | AppleClang 21.0.0.21000101 |
+
+These are the versions the CI matrix's default runner images actually provide; no older toolchain
+has been verified, so none is claimed as a minimum.
+
 ## Development
 
 The supported development entry point is CMake and CTest. Configuring tests for the first time
