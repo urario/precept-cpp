@@ -86,6 +86,32 @@ jobs:
       - name: Test
         run: ctest --test-dir build -C Debug --output-on-failure
 
+      - name: Issue 41 codegen spike (GCC)
+        if: matrix.name == 'Linux GCC'
+        shell: bash
+        run: |
+          g++ -std=c++20 -O2 -S -masm=intel spikes/issue-41-codegen/codegen.cpp -o issue41-gcc.s
+          cat issue41-gcc.s
+
+      - name: Issue 41 codegen spike (Clang)
+        if: matrix.name == 'Linux Clang'
+        shell: bash
+        run: |
+          clang++ -std=c++20 -O2 -S -masm=intel spikes/issue-41-codegen/codegen.cpp -o issue41-clang.s
+          cat issue41-clang.s
+
+      - name: Issue 41 codegen spike (MSVC)
+        if: matrix.name == 'Windows MSVC'
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $installPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          $devCmd = Join-Path $installPath 'Common7\Tools\VsDevCmd.bat'
+          $command = '"' + $devCmd + '" -arch=x64 && cl /nologo /std:c++20 /O2 /c /FAs /Faissue41-msvc.asm spikes\issue-41-codegen\codegen.cpp'
+          cmd /c $command
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Get-Content issue41-msvc.asm
+
       - name: Configure without tests
         if: matrix.check_no_tests
         run: cmake -S . -B build-no-tests -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Debug
