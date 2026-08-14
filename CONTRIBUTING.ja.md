@@ -88,9 +88,31 @@ clang-format -i include/precept/span/*.hpp tests/*.cpp tests/negative/*.cpp exam
 Markdown 内のコード例には `clang-format` が届かないので、編集するときは同じ brace / indent スタイルに
 手で合わせてください。
 
-clang-tidy は必須のゲートです（[ADR-0007](knowledge/decisions/adr-0007-versioning-compatibility-and-support.md) 参照）。CI への組み込みと `.clang-tidy` 設定は
-[issue #27](https://github.com/urario/precept-cpp/issues/27) で追跡しており、それが入るまでは
-決まったローカル実行コマンドはありません。
+### 静的解析
+
+clang-tidy は必須のゲートです（[ADR-0007](knowledge/decisions/adr-0007-versioning-compatibility-and-support.md) 参照）。`.clang-tidy` は public header だけを対象にし、
+意図的に控えめなチェック集合（`bugprone-*` / `performance-*` / `portability-*`）に絞っています。
+trailing return type のようなスタイル選択を蒸し返すことはしません。CI と同じ手順で実行できます。
+
+```sh
+cmake -S . -B build -DCMAKE_CXX_COMPILER=clang++ -DBUILD_TESTING=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cmake --build build --parallel
+clang-tidy -p build include/precept/span/*.hpp
+```
+
+### サニタイザ
+
+ASan / UBSan は、v0.1 span family が存在するようになったことで成立した
+[Test Strategy の Deferred quality gates](knowledge/testing/test-strategy.md#deferred-quality-gates)
+の条件に従い、専用の Linux GCC ビルドとして CI で実行します。ローカルで再現するには:
+
+```sh
+cmake -S . -B build-sanitizers -DCMAKE_CXX_COMPILER=g++ -DBUILD_TESTING=ON \
+  -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=all" \
+  -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
+cmake --build build-sanitizers --parallel
+ctest --test-dir build-sanitizers --output-on-failure
+```
 
 ## コードを書く前に
 
@@ -115,7 +137,8 @@ clang-tidy は必須のゲートです（[ADR-0007](knowledge/decisions/adr-0007
   ことはありません。
 * **ソースファイル** は [Coding Rules](knowledge/rules/coding.md) の SPDX ライセンスヘッダーで始まり、
   `clang-format` が通ること。
-* **CI が green** であること: Linux GCC / Linux Clang / Windows MSVC、いずれも knowledge check 込み。
+* **CI が green** であること: Linux GCC / Linux Clang / Windows MSVC / ASan・UBSan 付き Linux GCC、
+  いずれも knowledge check 込み。加えて `clang-format` / `clang-tidy` の各ジョブも green であること。
 
 ## テスト
 

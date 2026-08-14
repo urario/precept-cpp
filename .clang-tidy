@@ -1,0 +1,11 @@
+# Intentionally conservative: bugprone/performance/portability catch real defects without
+# relitigating style choices (trailing return types, special member functions, and similar)
+# that CONTRIBUTING and the existing codebase have already settled. Widening this set is a
+# separate decision, not implied by adopting clang-tidy as a gate.
+Checks: >
+  -*,
+  bugprone-*,
+  performance-*,
+  portability-*
+WarningsAsErrors: '*'
+HeaderFilterRegex: 'include/precept/.*'

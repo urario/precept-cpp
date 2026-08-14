@@ -34,7 +34,9 @@ target_compile_options(
           $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall;-Wextra;-Wpedantic>)
 
 include(GoogleTest)
-gtest_discover_tests(precept_runtime_tests)
+# DISCOVERY_TIMEOUT raised from the CTest module's 5-second default: the MSVC runner has
+# intermittently missed it, failing test discovery rather than any actual test.
+gtest_discover_tests(precept_runtime_tests DISCOVERY_TIMEOUT 60)
 
 if(CMAKE_CONFIGURATION_TYPES)
   set(precept_multi_config TRUE)

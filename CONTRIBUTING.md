@@ -92,11 +92,33 @@ clang-format -i include/precept/span/*.hpp tests/*.cpp tests/negative/*.cpp exam
 Code samples in Markdown are not reachable by `clang-format`, so match the same brace and indent
 style by hand when you edit one.
 
+### Static analysis
+
 clang-tidy is a required gate — see
-[ADR-0007](knowledge/decisions/adr-0007-versioning-compatibility-and-support.md). CI enforcement
-and the `.clang-tidy` configuration are tracked in
-[issue #27](https://github.com/urario/precept-cpp/issues/27); until that lands, there is no fixed
-local command to run.
+[ADR-0007](knowledge/decisions/adr-0007-versioning-compatibility-and-support.md). `.clang-tidy`
+scopes it to the public headers with a deliberately conservative check set (`bugprone-*`,
+`performance-*`, `portability-*`); it does not relitigate style choices such as trailing return
+types. Run it the same way CI does:
+
+```sh
+cmake -S . -B build -DCMAKE_CXX_COMPILER=clang++ -DBUILD_TESTING=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cmake --build build --parallel
+clang-tidy -p build include/precept/span/*.hpp
+```
+
+### Sanitizers
+
+ASan and UBSan run in CI on a dedicated Linux GCC build, matching the "Deferred quality gates"
+condition in the [Test Strategy](knowledge/testing/test-strategy.md#deferred-quality-gates) now
+that the v0.1 span family exists. Reproduce it locally with:
+
+```sh
+cmake -S . -B build-sanitizers -DCMAKE_CXX_COMPILER=g++ -DBUILD_TESTING=ON \
+  -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=all" \
+  -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
+cmake --build build-sanitizers --parallel
+ctest --test-dir build-sanitizers --output-on-failure
+```
 
 ## Before you write code
 
@@ -121,7 +143,8 @@ decisions, and it is what reviewers cite.
   a consumer requirement.
 * **Source files** start with the SPDX license header from the
   [Coding Rules](knowledge/rules/coding.md) and are `clang-format` clean.
-* **CI is green**: Linux GCC, Linux Clang, and Windows MSVC, each running the knowledge check.
+* **CI is green**: Linux GCC, Linux Clang, Windows MSVC, and Linux GCC under ASan/UBSan, each
+  running the knowledge check — plus the separate `clang-format` and `clang-tidy` jobs.
 
 ## Tests
 
