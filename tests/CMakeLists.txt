@@ -14,15 +14,18 @@ FetchContent_Declare(
   GIT_SHALLOW TRUE)
 FetchContent_MakeAvailable(googletest)
 
-add_library(precept_compile_requirements OBJECT compile_requirements.cpp
-                                                at_least_span_compile_test.cpp)
+add_library(
+  precept_compile_requirements OBJECT compile_requirements.cpp
+                                      at_least_span_compile_test.cpp
+                                      checked_span_compile_test.cpp)
 target_link_libraries(precept_compile_requirements PRIVATE Precept::Precept)
 target_compile_options(
   precept_compile_requirements
   PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/W4;/permissive->
           $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall;-Wextra;-Wpedantic>)
 
-add_executable(precept_runtime_tests runtime_smoke_test.cpp at_least_span_test.cpp)
+add_executable(precept_runtime_tests runtime_smoke_test.cpp at_least_span_test.cpp
+                                     checked_span_test.cpp)
 target_link_libraries(precept_runtime_tests PRIVATE Precept::Precept GTest::gtest_main)
 target_compile_options(
   precept_runtime_tests
@@ -51,6 +54,8 @@ precept_expect_compile_failure(at_least_span_dynamic_extent at_least_span_dynami
 precept_expect_compile_failure(at_least_span_fixed_too_small at_least_span_fixed_too_small.cpp)
 precept_expect_compile_failure(at_least_span_dynamic_direct at_least_span_dynamic_direct.cpp)
 precept_expect_compile_failure(at_least_span_fixed_try_from at_least_span_fixed_try_from.cpp)
+precept_expect_compile_failure(checked_span_fixed_unequal checked_span_fixed_unequal.cpp)
+precept_expect_compile_failure(checked_span_dynamic_extent checked_span_dynamic_extent.cpp)
 
 # Knowledge bundle checks. These are development-only: the Python interpreter and its YAML
 # parser are never usage requirements of Precept::Precept, and a BUILD_TESTING=OFF

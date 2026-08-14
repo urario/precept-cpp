@@ -45,6 +45,27 @@ a compatible dynamic-extent `std::span` when an API does not require the minimum
 `as_span()` remains the readable named form when you want that standard-span use to be explicit.
 Use `prefix()`—not the whole view—when you need the guaranteed `std::span<T, N>` prefix.
 
+## Exact-size spans
+
+`checked_span<N>` validates an exact runtime size and returns the fact as the standard fixed-extent
+`std::span<T, N>`. A mismatch returns `std::nullopt` without truncating the input:
+
+```cpp
+#include <precept/span/checked_span.hpp>
+
+#include <cstddef>
+#include <span>
+
+void consume_header(std::span<const std::byte, 16> header);
+
+std::span<const std::byte> input = receive_view();
+if (auto header = precept::checked_span<16>(input)) {
+    consume_header(*header);
+}
+```
+
+The factory accepts `std::span` only. Construct a span explicitly before validating a container.
+
 ## Development
 
 The supported development entry point is CMake and CTest. Configuring tests for the first time
