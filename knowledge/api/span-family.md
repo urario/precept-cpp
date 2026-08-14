@@ -2,7 +2,10 @@
 type: API Contract
 title: v0.1 Span Family API Contract
 description: Defines the guarantees, construction boundaries, conversions, lifetime rules, and operations of the v0.1 span APIs.
-status: draft
+status: stable
+verified:
+  - by: human:urario
+    at: 2026-08-14T17:36:23+09:00
 sources:
   - id: issue-4
     resource: https://github.com/urario/precept-cpp/issues/4
