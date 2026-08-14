@@ -2,8 +2,63 @@
 
 Tiny C++ types and operations that make semantic preconditions explicit.
 
-Precept is a C++20, header-only library with no consumer dependencies. The public API is still
-under development.
+A signature such as `void parse(std::span<const std::byte> packet)` hides its most important design
+condition: `packet.size() >= 16`. Every function downstream re-checks it, comments it, or trusts
+human memory. Precept states it where callers can see it, and the fact travels with the value:
+
+```cpp
+void parse(precept::at_least_span<const std::byte, 16> packet);
+```
+
+Precept is a C++20, header-only library with no consumer dependencies. The v0.1 span family is
+implemented; the public API is not frozen yet.
+
+## Why this matters after generative AI
+
+Guard clauses and boilerplate are cheap to generate now, so saving a few lines is not the point.
+What Precept buys is different:
+
+* Design assumptions stay visible in the API signature instead of inside a function body.
+* An edit — written by a person or generated — is less likely to silently drop a precondition.
+* A fact the caller already validated is reusable at deeper layers, not re-checked at each one.
+* The condition is enforced by the type system, not by a comment that can go stale.
+
+The reasoning behind this is recorded in the
+[project charter](knowledge/vision/project-charter.md).
+
+## Installation
+
+Precept needs a C++20 compiler and, for the CMake integrations below, CMake 3.21 or newer. It has
+no dependencies of its own, so nothing else is fetched into your build.
+
+With `FetchContent`:
+
+```cmake
+include(FetchContent)
+
+FetchContent_Declare(
+  precept
+  GIT_REPOSITORY https://github.com/urario/precept-cpp.git
+  GIT_TAG main)
+FetchContent_MakeAvailable(precept)
+
+target_link_libraries(your_app PRIVATE Precept::Precept)
+```
+
+With a vendored copy of the repository:
+
+```cmake
+add_subdirectory(third_party/precept-cpp)
+
+target_link_libraries(your_app PRIVATE Precept::Precept)
+```
+
+Either way, `Precept::Precept` is an interface target: it adds the include directory and requires
+C++20, and it never pulls test dependencies or development tooling into your build. Because the
+library is header-only, copying `include/` into your own include path works too.
+
+There is no `install()` step and no `find_package(Precept)` yet — installed-package support is
+tracked by [issue #9](https://github.com/urario/precept-cpp/issues/9).
 
 ## Minimum-size spans
 
@@ -17,17 +72,16 @@ it across calls. Runtime validation is non-throwing and does not own the underly
 #include <span>
 #include <vector>
 
-void parse(precept::at_least_span<const std::byte, 16> packet)
-{
-    std::span<const std::byte, 16> header = packet.prefix();
-    std::span<const std::byte> payload = packet.rest();
-    // Use header and payload without checking the minimum size again.
+void parse(precept::at_least_span<const std::byte, 16> packet) {
+  std::span<const std::byte, 16> header = packet.prefix();
+  std::span<const std::byte> payload = packet.rest();
+  // Use header and payload without checking the minimum size again.
 }
 
 std::vector<std::byte> bytes = receive();
 if (auto packet = precept::at_least_span<const std::byte, 16>::try_from(
         std::span<const std::byte>{bytes})) {
-    parse(*packet);
+  parse(*packet);
 }
 ```
 
@@ -36,7 +90,7 @@ For the common one-or-more case, `non_empty_span<T>` is the same type as
 
 ```cpp
 if (auto values = precept::non_empty_span<int>::try_from(input)) {
-    use(values->front(), values->back());
+  use(values->front(), values->back());
 }
 ```
 
@@ -60,7 +114,7 @@ void consume_header(std::span<const std::byte, 16> header);
 
 std::span<const std::byte> input = receive_view();
 if (auto header = precept::checked_span<16>(input)) {
-    consume_header(*header);
+  consume_header(*header);
 }
 ```
 
@@ -80,15 +134,41 @@ case:
 
 std::span<const std::byte> input = receive_view();
 if (auto blocks = precept::block_span<const std::byte, 16>::try_from(input)) {
-    for (std::span<const std::byte, 16> block : *blocks) {
-        consume(block);
-    }
+  for (std::span<const std::byte, 16> block : *blocks) {
+    consume(block);
+  }
 }
 ```
 
 `size()` and `block_count()` report the number of logical blocks. Use `as_span().size()` when you
 need the underlying element count. Empty input is valid, while a partial final block returns
 `std::nullopt`.
+
+## Examples
+
+[`examples/`](examples/) holds complete programs for the three usages the v0.1 vocabulary was
+designed around: [packet and header parsing](examples/packet_parsing.cpp),
+[fixed-block processing](examples/fixed_block_processing.cpp), and
+[non-empty collection processing](examples/non_empty_processing.cpp). They are built and executed
+by an ordinary test run, so they always match the current API.
+
+## Scope and non-goals
+
+v0.1 is deliberately narrow: size preconditions on spans, and nothing else. The point is to test
+one hypothesis — that C++ developers want to state recurring `std::span` size preconditions as
+parameter types and reuse them — before growing the vocabulary. See
+[ADR-0005](knowledge/decisions/adr-0005-v0-1-span-scope.md).
+
+Precept does not aim to:
+
+* become a general-purpose constraint or predicate framework,
+* replace or fully wrap standard library types,
+* own storage,
+* provide a C++17 compatibility span.
+
+Candidates explored after v0.1, and the criteria a new API must satisfy, are listed in the
+[project charter](knowledge/vision/project-charter.md) and the
+[API admission rules](knowledge/architecture/api-admission-rules.md).
 
 ## Development
 
@@ -107,9 +187,22 @@ the knowledge check, formatting, what a change is reviewed against, and how to o
 ## Knowledge base
 
 Design decisions, rules, and ADRs live in the [knowledge bundle](knowledge/index.md), which is the
-source of truth for them. `tools/check_knowledge.py` checks that bundle and runs under CTest
-alongside everything else, when Python and PyYAML are available; see
-[CONTRIBUTING.md](CONTRIBUTING.md#knowledge-check) for the setup that guarantees it runs.
+source of truth for them. Start from [`knowledge/index.md`](knowledge/index.md); the decisions that
+shape everything else are:
+
+* [ADR-0001](knowledge/decisions/adr-0001-cpp20.md) — C++20 as the minimum language version.
+* [ADR-0002](knowledge/decisions/adr-0002-header-only.md) — header-only, zero consumer
+  dependencies.
+* [ADR-0004](knowledge/decisions/adr-0004-dedicated-semantic-vocabulary.md) — a dedicated
+  vocabulary rather than a generic constraint framework.
+* [ADR-0005](knowledge/decisions/adr-0005-v0-1-span-scope.md) — the v0.1 scope boundary.
+
+The exact guarantees, conversions, and failure model of the four APIs above are defined by the
+[v0.1 span family API contract](knowledge/api/span-family.md).
+
+`tools/check_knowledge.py` checks the bundle and runs under CTest alongside everything else, when
+Python and PyYAML are available; see [CONTRIBUTING.md](CONTRIBUTING.md#knowledge-check) for the
+setup that guarantees it runs.
 
 ## Contributing
 

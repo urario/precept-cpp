@@ -15,5 +15,6 @@ if(PROJECT_IS_TOP_LEVEL)
 
   if(BUILD_TESTING)
     add_subdirectory(tests)
+    add_subdirectory(examples)
   endif()
 endif()

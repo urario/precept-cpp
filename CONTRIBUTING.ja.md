@@ -77,15 +77,18 @@ ctest --test-dir build --output-on-failure
 
 ### フォーマット
 
-`.clang-format` がソースのスタイルを定義します。今のところ対象は `tests/*.cpp` のみです — production
-header がまだ無いためです。確認・適用します。
+`.clang-format` がソースのスタイルを定義します。対象はリポジトリ内のすべての C++ ファイル —
+public header、テスト、examples — です。確認・適用します。
 
 ```sh
-clang-format --dry-run --Werror tests/*.cpp
-clang-format -i tests/*.cpp
+clang-format --dry-run --Werror include/precept/span/*.hpp tests/*.cpp tests/negative/*.cpp examples/*.cpp
+clang-format -i include/precept/span/*.hpp tests/*.cpp tests/negative/*.cpp examples/*.cpp
 ```
 
-clang-tidy はまだ必須のゲートではなく、public API の導入時に再検討します。
+Markdown 内のコード例には `clang-format` が届かないので、編集するときは同じ brace / indent スタイルに
+手で合わせてください。
+
+clang-tidy は必須のゲートではありません。導入するには別途プロジェクトとしての決定が必要です。
 
 ## コードを書く前に
 
@@ -120,8 +123,13 @@ CTest が共通の実行入口です。性質ごとに、それを保証でき�
 * コンパイル時の性質 → `static_assert`
 * positive compile test → 通常の CMake ビルドターゲット
 * negative compile test → public API の制約について、拒否されることの検証が必要な場合のみ
+* example が正しいままであること → `examples/` のプログラム。同じ `ctest` 実行でビルド・実行されます
 
 全体の切り分けは [Test Strategy](knowledge/testing/test-strategy.md) にあります。
+
+public API を変更するときは [`examples/`](examples/) がコンパイルでき、内容も実態に合っている状態を
+保ちます。example はドキュメントであってカバレッジを足す場所ではありません。assert する価値のある
+性質は GoogleTest のケースに書きます。
 
 ## knowledge と ADR
 

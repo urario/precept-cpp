@@ -16,6 +16,10 @@ sources:
     resource: https://github.com/urario/precept-cpp/pull/21#issuecomment-5288811203
     title: Public API comment policy decision
     author: human:urario
+  - id: issue-8-examples-decision
+    resource: https://github.com/urario/precept-cpp/issues/8#issuecomment-5289556266
+    title: Review decision defining runnable examples as consumer-facing executable documentation
+    author: human:urario
 tags: [rules, documentation, okf]
 ---
 
@@ -100,9 +104,15 @@ tools are introduced only through a separate project decision if they become val
   installation, scope, license.
 * **This knowledge bundle** is the source of truth for design decisions, rules, and
   contracts.
+* **`examples/`** is consumer-facing executable documentation, and the canonical home of
+  complete runnable examples.
 
 The README is never hidden inside the bundle, and design rationale is not duplicated at
 length in the README — link to the relevant concept instead.
+
+The README and this bundle use the smallest fragment needed to explain a point and link to the
+runnable example rather than duplicating a whole program. Examples are built and run as part of the
+test suite so that API drift is detected — see [Test Strategy](../testing/test-strategy.md).
 
 # Knowledge bundle conventions
 
