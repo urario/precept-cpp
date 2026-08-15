@@ -4,6 +4,7 @@
 #include <precept/aligned_ptr.hpp>
 #include <precept/index_below.hpp>
 #include <precept/narrow_exact.hpp>
+#include <precept/never_decrease.hpp>
 #include <precept/non_overlapping.hpp>
 #include <precept/nonzero.hpp>
 #include <precept/set_once.hpp>
@@ -58,14 +59,19 @@ int main() {
     return 7;
   }
 
+  precept::never_decrease<int> processed{0};
+  if (!processed.try_update(2) || processed.try_update(1) || processed.value() != 2) {
+    return 8;
+  }
+
   const auto divisor = precept::nonzero<int>::try_from(7);
   if (!divisor || divisor->value() != 7 || precept::nonzero<int>::try_from(0)) {
-    return 8;
+    return 9;
   }
 
   const auto wire_size = precept::narrow_exact<std::uint16_t>(storage.size());
   if (!wire_size || *wire_size != 16 || precept::narrow_exact<std::uint32_t>(-1)) {
-    return 9;
+    return 10;
   }
 
   const auto index = precept::index_below<16>::try_from(15);

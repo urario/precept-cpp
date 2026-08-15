@@ -115,6 +115,19 @@ foreach(header IN ITEMS
   endif()
 endforeach()
 
+foreach(header IN ITEMS
+        aligned_ptr.hpp
+        index_below.hpp
+        narrow_exact.hpp
+        never_decrease.hpp
+        non_overlapping.hpp
+        nonzero.hpp
+        set_once.hpp)
+  if(NOT EXISTS "${relocated_dir}/${PRECEPT_INSTALL_INCLUDEDIR}/precept/${header}")
+    message(FATAL_ERROR "Installed public header is missing: ${header}")
+  endif()
+endforeach()
+
 foreach(package_file IN ITEMS
         PreceptConfig.cmake
         PreceptConfigVersion.cmake
