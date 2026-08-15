@@ -2,7 +2,10 @@
 type: API Contract
 title: non-overlapping spans API contract
 description: Defines the portable storage non-overlap relation for byte-sized spans, validation, observation, and borrowed lifetime boundary.
-status: draft
+status: stable
+verified:
+  - by: human:urario
+    at: 2026-08-15T21:59:49+09:00
 sources:
   - id: issue-48
     resource: https://github.com/urario/precept-cpp/issues/48
