@@ -2,7 +2,10 @@
 type: API Contract
 title: nonzero API Contract
 description: Defines the non-zero guarantee, admitted element types, validation boundary, observation, and the arithmetic propagation boundary of nonzero.
-status: draft
+status: stable
+verified:
+  - by: human:urario
+    at: 2026-08-15T21:59:49+09:00
 sources:
   - id: issue-42
     resource: https://github.com/urario/precept-cpp/issues/42
