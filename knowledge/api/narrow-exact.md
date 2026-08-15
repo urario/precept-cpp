@@ -2,7 +2,10 @@
 type: API Contract
 title: narrow_exact API Contract
 description: Defines the exactness rule, admitted integer types, failure model, and the standard-type return boundary of narrow_exact.
-status: draft
+status: stable
+verified:
+  - by: human:urario
+    at: 2026-08-15T21:59:49+09:00
 sources:
   - id: issue-47
     resource: https://github.com/urario/precept-cpp/issues/47
