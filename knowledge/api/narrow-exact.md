@@ -12,6 +12,10 @@ sources:
     resource: https://github.com/urario/precept-cpp/issues/40
     title: v0.2 semantic vocabulary investigation, including the carrier and factory design laws this candidate is measured against
     author: human:urario
+  - id: issue-65-final-admission
+    resource: https://github.com/urario/precept-cpp/issues/65#issuecomment-5301911732
+    title: Final v0.2 admission matrix establishing the 8/8 stable portfolio
+    author: chatgpt/gpt-5.6-sol
 tags: [api, integral, conversion, validation, contract]
 ---
 
@@ -126,6 +130,10 @@ two-liner compiles silently when the checked type and the cast type disagree —
 unchecked value cannot be used by accident, because the result is an `std::optional<T>` rather
 than a `T` sitting beside a boolean. Neither spelling prevents a caller from writing a bare
 `static_cast` instead. The saved line is not the argument.
+
+The final v0.2 portfolio admits `narrow_exact<T>(value)` as **STABLE**. It is the representative
+factory-to-standard-type shape: validation and conversion are tied together, while the successful
+standard destination type carries the entire verified fact without a Precept wrapper.
 
 # Required implementation verification
 
