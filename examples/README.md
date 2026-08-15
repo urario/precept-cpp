@@ -26,7 +26,7 @@ are built and executed by an ordinary test run, so they cannot drift away from t
   count compared with `std::max` for a high-water mark, a domain-specific revision, and a local
   setter.
 * [`same_size_relations.cpp`](same_size_relations.cpp) - one-shot, multi-stage, domain-correspondence,
-  and three-sequence experiments that define the boundary of the experimental same-size carrier.
+  and three-sequence examples that define the boundary of the same-size carrier.
 
 Build and run them from the repository root:
 
@@ -43,7 +43,6 @@ The exact contracts these examples rely on are defined in the
 [nonzero API Contract](../knowledge/api/nonzero.md),
 [index_below API Contract](../knowledge/api/index-below.md),
 [narrow_exact API Contract](../knowledge/api/narrow-exact.md), and the
-[non-overlapping spans API Contract](../knowledge/api/non-overlapping.md), and the
-[never_decrease API Contract](../knowledge/api/never-decrease.md).
-[non-overlapping spans API Contract](../knowledge/api/non-overlapping.md), and the experimental
+[non-overlapping spans API Contract](../knowledge/api/non-overlapping.md),
+[never_decrease API Contract](../knowledge/api/never-decrease.md), and the
 [same-size span relation API Contract](../knowledge/api/same-size.md).
