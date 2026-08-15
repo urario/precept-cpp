@@ -3,18 +3,19 @@ type: Architecture Decision
 title: Define versioning, compatibility, deprecation, and platform support for v0.1.0
 description: Adopt SemVer with a MINOR-boundary compatibility promise, a one-MINOR deprecation notice, and CI-verified platform support ahead of v0.1.0.
 status: draft
-generated:
-  by: claude-code/2.1.231
-  at: 2026-08-14T07:45:00Z
 sources:
   - id: issue-26
     resource: https://github.com/urario/precept-cpp/issues/26
-    title: Design issue for versioning policy, API stability, and supported platform scope
+    title: Foundation issue for versioning policy, API stability, and supported platform scope
     author: claude-code/2.1.231
   - id: issue-26-decision-comment
     resource: https://github.com/urario/precept-cpp/issues/26#issuecomment-5290846380
     title: Owner decision on versioning, compatibility, deprecation, and support, recorded from a chat conversation
     author: claude-code/2.1.231
+  - id: pr-71-review
+    resource: https://github.com/urario/precept-cpp/pull/71#pullrequestreview-4943817959
+    title: Owner review requiring header-path changes to be covered by the compatibility policy
+    author: human:urario
 tags: [architecture, versioning, compatibility, deprecation, support, release]
 ---
 
@@ -51,6 +52,7 @@ the compatibility already assumed by the installed CMake package's `SameMinorVer
 A change counts as breaking when it does any of the following:
 
 * removes or renames a public type or function
+* removes or renames a shipped public header path such that an existing `#include` no longer works
 * narrows the set of inputs `try_from` (and equivalent validating factories) accept
 * removes an existing conversion between two public types
 * changes `std::ranges` concept modeling that a public type provides (for example, revoking
@@ -59,6 +61,13 @@ A change counts as breaking when it does any of the following:
 
 Removing a public name is deprecated for at least one MINOR release before removal, using
 `[[deprecated("...")]]` to carry a machine-visible notice.
+
+Relocating a shipped public header follows the same one-MINOR notice principle, but an include path
+cannot carry `[[deprecated]]`. Introduce the new canonical path while retaining the old path as a
+forwarding header for at least one MINOR release. The forwarding header contains no duplicate public
+declarations; it includes the canonical header. Release or migration documentation identifies the
+preferred path and planned removal. The old path is removed only at a compatibility boundary where
+a breaking change is permitted.
 
 A platform or compiler is "supported" when it is verified by a required CI job, not when the
 maintainer owns the hardware. README does not distinguish CI-only-verified platforms from others;
@@ -94,6 +103,10 @@ comment:
   The owner chose to require it now, overriding the AI-drafted recommendation to leave the decision
   open.
 
+The later public-header-layout review added a compatibility clarification rather than replacing the
+original versioning decision: a shipped header path is part of the public API surface, and relocation
+uses a forwarding-header transition before removal.
+
 # Consequences
 
 * README's "the public API is not frozen yet" language is replaced with the compatibility promise
@@ -104,6 +117,8 @@ comment:
   wording) without further dependency on this ADR beyond what is decided here.
 * Deprecating a public name going forward requires an accompanying `[[deprecated("...")]]`
   attribute and at least one MINOR release before removal.
+* Relocating a shipped public header requires a forwarding header at the old path for at least one
+  MINOR release before that path can be removed.
 * README's platform-support section, once #28 lands, lists every CI-verified platform uniformly,
   without singling out platforms the maintainer does not personally run.
 
@@ -122,4 +137,7 @@ Accepted.
 * Issue [#28](https://github.com/urario/precept-cpp/issues/28) — standard library coverage,
   minimum compiler verification, README support section
 * Issue [#30](https://github.com/urario/precept-cpp/issues/30) — v0.1.0 release
+* Issue [#70](https://github.com/urario/precept-cpp/issues/70) — public header layout and include-tree
+  architecture review
+* [Public Header Layout Rule](../architecture/public-header-layout.md)
 * [Project Charter](../vision/project-charter.md)
