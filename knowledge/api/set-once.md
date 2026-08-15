@@ -2,7 +2,10 @@
 type: API Contract
 title: set_once API Contract
 description: Defines the one-way slot transition, observation, construction, copy and move, failure, and contained-value boundaries of set_once.
-status: draft
+status: stable
+verified:
+  - by: human:urario
+    at: 2026-08-15T21:59:49+09:00
 sources:
   - id: issue-45
     resource: https://github.com/urario/precept-cpp/issues/45
