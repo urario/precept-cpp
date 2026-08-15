@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <precept/aligned_ptr.hpp>
+#include <precept/set_once.hpp>
 #include <precept/span/at_least_span.hpp>
 #include <precept/span/block_span.hpp>
 #include <precept/span/checked_span.hpp>
@@ -45,6 +46,11 @@ int main() {
   const auto aligned = precept::aligned_ptr<int, 64>::try_from(&value);
   if (!aligned || aligned->get() != &value) {
     return 6;
+  }
+
+  precept::set_once<int> configured;
+  if (!configured.try_set(42) || configured.value() != 42 || configured.try_set(7)) {
+    return 7;
   }
 
   return 0;

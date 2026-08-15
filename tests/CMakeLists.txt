@@ -19,7 +19,8 @@ add_library(
                                       aligned_ptr_compile_test.cpp
                                       at_least_span_compile_test.cpp
                                       block_span_compile_test.cpp
-                                      checked_span_compile_test.cpp)
+                                      checked_span_compile_test.cpp
+                                      set_once_compile_test.cpp)
 target_link_libraries(precept_compile_requirements PRIVATE Precept::Precept)
 target_compile_options(
   precept_compile_requirements
@@ -28,7 +29,7 @@ target_compile_options(
 
 add_executable(precept_runtime_tests runtime_smoke_test.cpp aligned_ptr_test.cpp
                                      at_least_span_test.cpp block_span_test.cpp
-                                     checked_span_test.cpp)
+                                     checked_span_test.cpp set_once_test.cpp)
 target_link_libraries(precept_runtime_tests PRIVATE Precept::Precept GTest::gtest_main)
 target_compile_options(
   precept_runtime_tests
@@ -108,6 +109,7 @@ precept_expect_compile_failure(aligned_ptr_below_natural_alignment
 precept_expect_compile_failure(aligned_ptr_void aligned_ptr_void.cpp)
 precept_expect_compile_failure(aligned_ptr_incomplete aligned_ptr_incomplete.cpp)
 precept_expect_compile_failure(aligned_ptr_template_deduction aligned_ptr_template_deduction.cpp)
+precept_expect_compile_failure(set_once_temporary_value set_once_temporary_value.cpp)
 
 # Knowledge bundle checks. These are development-only: the Python interpreter and its YAML
 # parser are never usage requirements of Precept::Precept, and a BUILD_TESTING=OFF

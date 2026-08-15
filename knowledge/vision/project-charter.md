@@ -16,6 +16,9 @@ sources:
     resource: https://github.com/urario/precept-cpp/issues/26#issuecomment-5290846380
     title: Owner decision on versioning, compatibility, deprecation, and support, recorded from a chat conversation
     author: claude-code/2.1.231
+  - id: issue-55
+    resource: https://github.com/urario/precept-cpp/issues/55
+    title: Production contract and implementation issue for set_once
 tags: [vision, charter, scope]
 ---
 
@@ -110,11 +113,16 @@ supported when a required CI job verifies it, not when the maintainer owns the h
 [ADR-0007](../decisions/adr-0007-versioning-compatibility-and-support.md) for the full policy and
 the rationale behind it.
 
-# Explored after v0.1
+# Vocabulary after v0.1
 
-Candidates only — not commitments:
+The post-v0.1 investigation admits vocabulary one rule at a time. Current production additions:
 
-* Refined arguments: `aligned_ptr`, `finite`, `nonzero`, `power_of_two`
+* Structural property: `aligned_ptr`
+* One-way transition: `set_once`
+
+Other explored names remain candidates, not commitments:
+
+* Refined arguments: `finite`, `nonzero`, `power_of_two`
 * Transition semantics: `never_decrease`, `never_increase`, `late`
 * Semantic operations: `parse_exact()`, `zip_exact()`, `read_exact()`, `write_all()`
 * Runtime protocol guards: `no_overlap`, `must_complete`, `latest::gate`
@@ -137,6 +145,7 @@ Star count is not a success criterion. Precept succeeds when:
 
 * Becoming a general-purpose constraint or predicate framework.
 * Replacing or fully wrapping standard library types.
-* Owning storage.
+* Making borrowed-view APIs own or extend the lifetime of their storage.
+* Becoming a general-purpose owning container library.
 * Providing a C++17 compatibility span.
 * Growing into a grab bag of convenience APIs.

@@ -9,6 +9,10 @@ are built and executed by an ordinary test run, so they cannot drift away from t
   case, where a partial final block fails validation instead of reaching the loop.
 * [`non_empty_processing.cpp`](non_empty_processing.cpp) — `non_empty_span` making `front()` and
   `back()` guaranteed, and the guarantee being reused by a deeper function.
+* [`aligned_buffer_processing.cpp`](aligned_buffer_processing.cpp) — carrying a validated pointer
+  alignment into a consumer that applies the standard optimizer hint.
+* [`set_once_configuration.cpp`](set_once_configuration.cpp) — carrying one-way initialization
+  from a configuration site to a separate use site without offering replacement or reset.
 
 Build and run them from the repository root:
 
@@ -19,4 +23,6 @@ ctest --test-dir build -R '^example_' --output-on-failure
 ```
 
 The exact contracts these examples rely on are defined in the
-[v0.1 Span Family API Contract](../knowledge/api/span-family.md).
+[v0.1 Span Family API Contract](../knowledge/api/span-family.md),
+[aligned_ptr API Contract](../knowledge/api/aligned-ptr.md), and
+[set_once API Contract](../knowledge/api/set-once.md).

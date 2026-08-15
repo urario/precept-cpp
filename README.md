@@ -182,6 +182,35 @@ escape and does not hide `std::assume_aligned`; a downstream facility keeps its 
 The exact boundary is defined by the
 [`aligned_ptr` API contract](knowledge/api/aligned-ptr.md).
 
+## Set-once values
+
+`set_once<T>` owns a value whose slot can move from unset to set at most once. It carries a
+one-way initialization rule across API boundaries without becoming a synchronization primitive:
+
+```cpp
+#include <precept/set_once.hpp>
+
+struct configuration {
+  explicit configuration(int workers) : worker_count(workers) {}
+
+  int worker_count;
+};
+
+precept::set_once<configuration> config;
+if (config.try_emplace(4)) {
+  start_workers(config.value().worker_count);
+}
+```
+
+`try_set()` and `try_emplace()` return `false` after the first successful setting attempt, without
+copying, moving, or constructing the contained value again. `value()` returns `const T&` and throws
+`std::bad_optional_access` while unset. The holder has no assignment, reset, replacement, mutable
+observer, or optional-style operators.
+
+The guarantee applies to slot assignment only. It does not make state reachable through `T`
+deeply immutable, and it provides no thread synchronization. The exact boundary is defined by the
+[`set_once` API contract](knowledge/api/set-once.md).
+
 ## Examples
 
 [`examples/`](examples/) holds complete programs for the three span usages the v0.1 vocabulary was
@@ -189,7 +218,9 @@ designed around: [packet and header parsing](examples/packet_parsing.cpp),
 [fixed-block processing](examples/fixed_block_processing.cpp), and
 [non-empty collection processing](examples/non_empty_processing.cpp). The
 [aligned buffer example](examples/aligned_buffer_processing.cpp) shows the first structural-property
-carrier. They are built and executed by an ordinary test run, so they always match the current API.
+carrier, and the [set-once configuration example](examples/set_once_configuration.cpp) carries a
+one-way initialization rule to a separate use site. They are built and executed by an ordinary
+test run, so they always match the current API.
 
 ## Scope and non-goals
 
@@ -202,7 +233,8 @@ Precept does not aim to:
 
 * become a general-purpose constraint or predicate framework,
 * replace or fully wrap standard library types,
-* own storage,
+* make borrowed-view APIs own or extend the lifetime of their storage,
+* become a general-purpose owning container library,
 * provide a C++17 compatibility span.
 
 Candidates explored after v0.1, and the criteria a new API must satisfy, are listed in the
