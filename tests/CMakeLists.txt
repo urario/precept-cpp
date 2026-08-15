@@ -21,6 +21,7 @@ add_library(
                                       block_span_compile_test.cpp
                                       checked_span_compile_test.cpp
                                       narrow_exact_compile_test.cpp
+                                      non_overlapping_compile_test.cpp
                                       nonzero_compile_test.cpp
                                       set_once_compile_test.cpp)
 target_link_libraries(precept_compile_requirements PRIVATE Precept::Precept)
@@ -32,7 +33,7 @@ target_compile_options(
 add_executable(precept_runtime_tests runtime_smoke_test.cpp aligned_ptr_test.cpp
                                      at_least_span_test.cpp block_span_test.cpp
                                      checked_span_test.cpp narrow_exact_test.cpp
-                                     nonzero_test.cpp set_once_test.cpp)
+                                     non_overlapping_test.cpp nonzero_test.cpp set_once_test.cpp)
 target_link_libraries(precept_runtime_tests PRIVATE Precept::Precept GTest::gtest_main)
 target_compile_options(
   precept_runtime_tests

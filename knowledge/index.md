@@ -22,6 +22,7 @@ okf_version: "0.2"
 * [set_once API Contract](api/set-once.md) - One-way slot transition, observation, copy and move, failure, ownership, and contained-value boundaries.
 * [nonzero API Contract](api/nonzero.md) - Non-zero integral guarantee, admitted element types, validation and observation boundaries, and the arithmetic propagation boundary.
 * [narrow_exact API Contract](api/narrow-exact.md) - Exact integer representability rule, admitted integer types, failure model, and the standard-type return boundary.
+* [non-overlapping spans API Contract](api/non-overlapping.md) - Portable byte-range relation, linear validation, carrier freshness, and the operation/domain boundary.
 
 # Rules
 
