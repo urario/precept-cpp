@@ -12,6 +12,10 @@ sources:
     resource: https://github.com/urario/precept-cpp/issues/70#issuecomment-5302123709
     title: Architecture and consumer-view review conclusion
     author: chatgpt/gpt-5.6-sol
+  - id: pr-71-review
+    resource: https://github.com/urario/precept-cpp/pull/71#pullrequestreview-4943817959
+    title: Review requiring family-promotion and header-relocation compatibility rules
+    author: human:urario
 tags: [architecture, public-api, headers, include-tree, compatibility]
 ---
 
@@ -125,6 +129,29 @@ into every consumer include path.
 A later public family may still justify a new directory, but it must satisfy the user-facing family
 criteria above rather than merely correspond to an architectural label.
 
+# Family promotion does not silently relocate shipped headers
+
+A root header does not move merely because later APIs make a new public family possible. Forming a
+family and relocating an already shipped include path are separate decisions.
+
+The default is to preserve the existing root path. A new family may group later APIs without
+forcing older headers to move when keeping those paths is clearer and avoids unnecessary migration.
+Visual completeness of a directory is not a reason to break an include path.
+
+If moving an existing header into a newly established family provides enough consumer value to
+justify migration, use a compatibility transition instead of an immediate rename:
+
+1. Add the new family path as the canonical location.
+2. Keep the old public path as a forwarding header that includes the canonical header; do not
+   duplicate declarations or definitions between the two paths.
+3. Keep the forwarding path for at least one MINOR release before removal.
+4. Document the preferred path and planned removal in the release or migration notes.
+5. Remove the old path only at a compatibility boundary permitted by
+   [ADR-0007](../decisions/adr-0007-versioning-compatibility-and-support.md).
+
+This transition is for headers that have already shipped as public API. A path that has never been
+released does not need a compatibility forwarding period.
+
 # Header location is compatibility surface
 
 The installed package copies the public include tree, so a source-tree path under `include/precept/`
@@ -186,7 +213,10 @@ When adding a public header, review its location in this order:
 4. **Do not create a one-file taxonomy.** A hypothetical future family is not a public directory.
 5. **If proposing a new directory, explain the consumer benefit.** Show why grouping improves
    discovery and why the boundary is predictable to users.
-6. **Treat moves as API changes.** Review compatibility before relocating an existing header.
+6. **Do not relocate existing paths just to complete a family.** Treat family promotion and header
+   migration as separate decisions.
+7. **Treat moves as API changes.** Review compatibility and forwarding requirements before
+   relocating an existing header.
 
 The goal is not a visually balanced tree. The goal is a public include structure that stays small,
 predictable, and useful to consumers as the semantic vocabulary grows.
