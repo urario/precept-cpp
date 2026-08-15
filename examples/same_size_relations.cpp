@@ -91,7 +91,7 @@ struct Result {
 class job_results {
 public:
   [[nodiscard]] static std::optional<job_results> try_from(std::span<const Job> jobs,
-                                                            std::span<const Result> results) {
+                                                           std::span<const Result> results) {
     if (jobs.size() != results.size()) {
       return std::nullopt;
     }
@@ -121,12 +121,13 @@ bool domain_correspondence_example() {
 
   const auto structural_pair = precept::checked_same_size(
       std::span<const Job>{jobs}, std::span<const Result>{mismatched_results});
-  if (!structural_pair ||
-      job_results::try_from(std::span<const Job>{jobs}, std::span<const Result>{mismatched_results})) {
+  if (!structural_pair || job_results::try_from(std::span<const Job>{jobs},
+                                                std::span<const Result>{mismatched_results})) {
     return false;
   }
 
-  return job_results::try_from(std::span<const Job>{jobs}, std::span<const Result>{matching_results})
+  return job_results::try_from(std::span<const Job>{jobs},
+                               std::span<const Result>{matching_results})
       .has_value();
 }
 

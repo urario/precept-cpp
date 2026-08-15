@@ -9,8 +9,7 @@
 
 namespace precept {
 
-template <class T, class U>
-class same_size_pair;
+template <class T, class U> class same_size_pair;
 
 template <class T, class U, std::size_t E, std::size_t F>
   requires(E == std::dynamic_extent && F == std::dynamic_extent)
@@ -26,8 +25,7 @@ checked_same_size(std::span<T, E> first, std::span<U, F> second) noexcept;
 ///
 /// The object does not own or extend the lifetime of either range. Destruction, reallocation, or
 /// storage reuse that invalidates a stored `std::span` also invalidates use of this object.
-template <class T, class U>
-class same_size_pair {
+template <class T, class U> class same_size_pair {
 public:
   constexpr same_size_pair(const same_size_pair&) noexcept = default;
   constexpr same_size_pair(same_size_pair&&) noexcept = default;

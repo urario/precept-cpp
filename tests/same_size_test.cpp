@@ -15,7 +15,8 @@ TEST(SameSizeTest, AcceptsEqualDynamicSpans) {
   std::array<int, 3> first{1, 2, 3};
   std::array<float, 3> second{4.0F, 5.0F, 6.0F};
 
-  const auto checked = precept::checked_same_size(std::span<int>{first}, std::span<const float>{second});
+  const auto checked =
+      precept::checked_same_size(std::span<int>{first}, std::span<const float>{second});
 
   ASSERT_TRUE(checked.has_value());
   EXPECT_EQ(checked->first().size(), first.size());

@@ -54,16 +54,18 @@ static_assert(!can_check_with_explicit_element_types<int, int, 2, 3>);
 static_assert(can_check_with_explicit_element_types<int, const int, std::dynamic_extent,
                                                     std::dynamic_extent>);
 
-static_assert(std::same_as<decltype(precept::checked_same_size(
-                               std::declval<std::span<int>>(), std::declval<std::span<const int>>())),
-                           std::optional<precept::same_size_pair<int, const int>>>);
+static_assert(
+    std::same_as<decltype(precept::checked_same_size(std::declval<std::span<int>>(),
+                                                     std::declval<std::span<const int>>())),
+                 std::optional<precept::same_size_pair<int, const int>>>);
 static_assert(noexcept(precept::checked_same_size(std::declval<std::span<int>>(),
                                                   std::declval<std::span<const int>>())));
 
 constexpr bool supports_constant_evaluation() {
   int first[] = {1, 2, 3};
   const int second[] = {4, 5, 6};
-  const auto result = precept::checked_same_size(std::span<int>{first}, std::span<const int>{second});
+  const auto result =
+      precept::checked_same_size(std::span<int>{first}, std::span<const int>{second});
   return result && result->first().data() == first && result->second().data() == second &&
          result->size() == 3;
 }
