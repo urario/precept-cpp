@@ -2,7 +2,10 @@
 type: API Contract
 title: index_below API Contract
 description: Defines the compile-time upper-bound guarantee, zero-bound policy, construction and observation boundaries, and the limit between a numeric bound and a domain-specific index.
-status: draft
+status: stable
+verified:
+  - by: human:urario
+    at: 2026-08-15T21:59:49+09:00
 sources:
   - id: issue-43
     resource: https://github.com/urario/precept-cpp/issues/43
