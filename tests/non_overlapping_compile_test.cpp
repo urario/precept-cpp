@@ -46,11 +46,12 @@ static_assert(!can_check_non_overlap<int, int>);
 static_assert(!can_check_non_overlap<std::byte, int>);
 static_assert(!can_check_non_overlap<std::uint16_t, std::byte>);
 
-static_assert(
-    std::same_as<decltype(precept::checked_non_overlapping(
-                     std::declval<std::span<std::byte, 2>>(),
-                     std::declval<std::span<const std::byte, 3>>())),
-                 std::optional<precept::non_overlapping_spans<std::byte, const std::byte>>>);
+using fixed_check_result =
+    decltype(precept::checked_non_overlapping(std::declval<std::span<std::byte, 2>>(),
+                                              std::declval<std::span<const std::byte, 3>>()));
+using expected_fixed_check_result =
+    std::optional<precept::non_overlapping_spans<std::byte, const std::byte>>;
+static_assert(std::same_as<fixed_check_result, expected_fixed_check_result>);
 static_assert(noexcept(precept::checked_non_overlapping(
     std::declval<std::span<std::byte>>(), std::declval<std::span<const std::byte>>())));
 
