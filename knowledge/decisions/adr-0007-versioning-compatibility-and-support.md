@@ -6,7 +6,7 @@ status: draft
 sources:
   - id: issue-26
     resource: https://github.com/urario/precept-cpp/issues/26
-    title: Foundation issue for versioning policy, API stability, and supported platform scope
+    title: Design issue for versioning policy, API stability, and supported platform scope
     author: claude-code/2.1.231
   - id: issue-26-decision-comment
     resource: https://github.com/urario/precept-cpp/issues/26#issuecomment-5290846380
@@ -103,9 +103,12 @@ comment:
   The owner chose to require it now, overriding the AI-drafted recommendation to leave the decision
   open.
 
-The later public-header-layout review added a compatibility clarification rather than replacing the
-original versioning decision: a shipped header path is part of the public API surface, and relocation
-uses a forwarding-header transition before removal.
+# Compatibility clarification
+
+The later public-header-layout review clarified that a shipped header path is part of the public API
+surface. Relocation therefore uses a forwarding-header transition before the old path is removed;
+this extends the existing one-MINOR deprecation principle to include paths without replacing the
+original versioning decision.
 
 # Consequences
 
