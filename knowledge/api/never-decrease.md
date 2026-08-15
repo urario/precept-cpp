@@ -96,9 +96,10 @@ external alias. This admission condition is not extended to arbitrary comparable
 ## Progress / processed count: positive evidence
 
 The runnable `examples/never_decrease_transitions.cpp` passes one carrier through decoder and
-worker reporting functions. Both update sites use the same rule, and a stale report is rejected
-without changing the value. The type keeps the transition contract at the downstream API boundary
-instead of relying on each updater to remember a local setter check.
+worker reporting functions. Both update sites use the same rule, and a regression is propagated as
+an invalid pipeline report: the coordinator stops before sending the misleading value to the next
+stage. The type keeps the transition contract at the downstream API boundary instead of relying on
+each updater to remember a local setter check.
 
 This is the clearest positive case found in the experiment: the rule is reused across multiple
 update sites and the per-object history is the intended semantic scope.
@@ -130,10 +131,10 @@ introducing a carrier.
 
 # Actual friction
 
-The progress example's reporting functions intentionally ignore a possible stale update, so they
-must explicitly discard the `[[nodiscard]]` result of `try_update()`. Downstream code that needs a
-plain count also calls `.value()`. These are acceptable carrier boundaries in the positive case,
-but they make the wrapper less attractive for one-site code.
+The positive progress example returns the `bool` from both update sites to a coordinator, so a
+regression becomes an explicit control-flow failure rather than an ignored observation. Downstream
+code that needs a plain count also calls `.value()`. These are acceptable carrier boundaries in the
+positive case, but they make the wrapper less attractive for one-site code.
 
 The comparison example exposed a semantic mismatch rather than an API defect: a generic
 non-decreasing transition cannot express revision duplicate rejection. Adding an error enum or a

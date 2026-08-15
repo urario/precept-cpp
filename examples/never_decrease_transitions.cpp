@@ -17,13 +17,23 @@ namespace {
 
 using processed_count = precept::never_decrease<std::size_t>;
 
-// These two layers share the same transition rule without repeating a setter check.
-void decoder_report(processed_count& processed, std::size_t count) noexcept {
-  static_cast<void>(processed.try_update(count));
+// These two layers share the same transition rule without repeating a setter check. A regression
+// is an invalid pipeline report here, so the failure is propagated instead of treated as telemetry.
+bool decoder_report(processed_count& processed, std::size_t count) noexcept {
+  return processed.try_update(count);
 }
 
-void worker_report(processed_count& processed, std::size_t count) noexcept {
-  static_cast<void>(processed.try_update(count));
+bool worker_report(processed_count& processed, std::size_t count) noexcept {
+  return processed.try_update(count);
+}
+
+bool accept_batch_reports(processed_count& processed, std::size_t decoded,
+                          std::size_t completed) noexcept {
+  if (!decoder_report(processed, decoded)) {
+    return false;
+  }
+
+  return worker_report(processed, completed);
 }
 
 std::size_t reported_count(const processed_count& processed) noexcept { return processed.value(); }
@@ -64,11 +74,13 @@ bool set_local_progress(std::size_t& current, std::size_t next) noexcept {
 
 int main() {
   processed_count processed{0};
-  decoder_report(processed, 10);
-  worker_report(processed, 20);
-  if (reported_count(processed) != 20 || processed.try_update(15) ||
-      reported_count(processed) != 20) {
+  if (!accept_batch_reports(processed, 10, 20) || reported_count(processed) != 20) {
     return 1;
+  }
+
+  // A broken decoder report stops the pipeline before the worker receives a misleading update.
+  if (accept_batch_reports(processed, 15, 25) || reported_count(processed) != 20) {
+    return 2;
   }
 
   std::size_t high_water = 0;
@@ -76,24 +88,24 @@ int main() {
   observe_high_water(high_water, 5); // Lower candidates are ignored, not rejected.
   observe_high_water(high_water, 20);
   if (high_water != 20) {
-    return 2;
+    return 3;
   }
 
   precept::never_decrease<std::uint64_t> generic_revision{7};
   if (!generic_revision.try_update(7)) {
-    return 3;
+    return 4;
   }
 
   configuration_revision revision{7};
   if (accept_revision(revision, configuration_revision{7}) ||
       !accept_revision(revision, configuration_revision{9}) || revision.number != 9) {
-    return 4;
+    return 5;
   }
 
   std::size_t local_progress = 0;
   if (!set_local_progress(local_progress, 5) || set_local_progress(local_progress, 4) ||
       local_progress != 5) {
-    return 5;
+    return 6;
   }
 
   return 0;

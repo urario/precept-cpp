@@ -117,6 +117,7 @@ endforeach()
 
 foreach(header IN ITEMS
         aligned_ptr.hpp
+        index_below.hpp
         narrow_exact.hpp
         never_decrease.hpp
         non_overlapping.hpp
