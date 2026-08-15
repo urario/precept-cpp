@@ -42,7 +42,7 @@ The exact contracts these examples rely on are defined in the
 [set_once API Contract](../knowledge/api/set-once.md),
 [nonzero API Contract](../knowledge/api/nonzero.md),
 [index_below API Contract](../knowledge/api/index-below.md),
-[narrow_exact API Contract](../knowledge/api/narrow-exact.md), and the
+[narrow_exact API Contract](../knowledge/api/narrow-exact.md),
 [non-overlapping spans API Contract](../knowledge/api/non-overlapping.md),
 [never_decrease API Contract](../knowledge/api/never-decrease.md), and the
 [same-size span relation API Contract](../knowledge/api/same-size.md).
