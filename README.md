@@ -211,6 +211,29 @@ The guarantee applies to slot assignment only. It does not make state reachable 
 deeply immutable, and it provides no thread synchronization. The exact boundary is defined by the
 [`set_once` API contract](knowledge/api/set-once.md).
 
+## Non-decreasing transitions
+
+`never_decrease<T>` carries one object's integral value history across update sites. Equal values
+are accepted, regressions are rejected, and the stored value is unchanged after rejection:
+
+```cpp
+#include <precept/never_decrease.hpp>
+
+#include <cstddef>
+
+precept::never_decrease<std::size_t> processed{0};
+processed.try_update(10);
+processed.try_update(20);
+processed.try_update(15); // false; still 20
+```
+
+This is an experimental transition vocabulary, not a general progress or revision abstraction.
+Use `std::max` when a high-water mark should ignore lower candidates, and use a domain-specific
+type when sequence or revision rules distinguish duplicates, conflicts, skipped values, or
+wraparound. The type has no arithmetic or thread-safety support. See the runnable
+[transition comparison example](examples/never_decrease_transitions.cpp) and the
+[`never_decrease` API contract](knowledge/api/never-decrease.md).
+
 ## Non-zero integers
 
 `nonzero<T>` carries a validated `value != 0` fact across API boundaries, for integral `T` other
@@ -305,7 +328,10 @@ boundary into two deeper layers. The
 that ends in an ordinary integer rather than a Precept type. The
 [non-overlapping buffer example](examples/non_overlapping_buffers.cpp) compares one-shot,
 multi-stage, and role-bearing scratch-buffer contracts. They are built and executed by an ordinary
-test run, so they always match the current API.
+test run, so they always match the current API. The
+[transition comparison example](examples/never_decrease_transitions.cpp) shows where a
+non-decreasing carrier is useful and where a closed operation, domain-specific type, or local
+setter is clearer.
 
 ## Scope and non-goals
 
