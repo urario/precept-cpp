@@ -18,6 +18,12 @@ concept can_check_non_overlap = requires(std::span<T> first, std::span<U> second
   precept::checked_non_overlapping(first, second);
 };
 
+template <std::size_t E, std::size_t F>
+concept can_check_fixed_byte_extents =
+    requires(std::span<std::byte, E> first, std::span<const std::byte, F> second) {
+      precept::checked_non_overlapping(first, second);
+    };
+
 using mutable_pair = precept::non_overlapping_spans<std::byte, std::byte>;
 using qualified_pair = precept::non_overlapping_spans<std::byte, const std::byte>;
 using heterogeneous_pair = precept::non_overlapping_spans<char, const unsigned char>;
@@ -45,13 +51,13 @@ static_assert(can_check_non_overlap<volatile std::byte, const volatile std::byte
 static_assert(!can_check_non_overlap<int, int>);
 static_assert(!can_check_non_overlap<std::byte, int>);
 static_assert(!can_check_non_overlap<std::uint16_t, std::byte>);
+static_assert(can_check_fixed_byte_extents<2, 3>);
 
-using fixed_check_result =
-    decltype(precept::checked_non_overlapping(std::declval<std::span<std::byte, 2>>(),
-                                              std::declval<std::span<const std::byte, 3>>()));
-using expected_fixed_check_result =
+using check_result = decltype(precept::checked_non_overlapping(
+    std::declval<std::span<std::byte>>(), std::declval<std::span<const std::byte>>()));
+using expected_check_result =
     std::optional<precept::non_overlapping_spans<std::byte, const std::byte>>;
-static_assert(std::same_as<fixed_check_result, expected_fixed_check_result>);
+static_assert(std::same_as<check_result, expected_check_result>);
 static_assert(noexcept(precept::checked_non_overlapping(
     std::declval<std::span<std::byte>>(), std::declval<std::span<const std::byte>>())));
 
