@@ -441,3 +441,14 @@ The exact API contracts for the span family and the v0.2 vocabulary are indexed 
 `tools/check_knowledge.py` checks the bundle and runs under CTest alongside everything else, when
 Python and PyYAML are available; see [CONTRIBUTING.md](CONTRIBUTING.md#knowledge-check) for the
 setup that guarantees it runs.
+
+## Contributing
+
+Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md)
+([Japanese translation](CONTRIBUTING.ja.md)). Issues and pull requests are written primarily in
+Japanese; English is very welcome.
+
+## License
+
+Precept is licensed under the [Apache License 2.0](LICENSE). Source files carry the SPDX header
+rather than the full notice; see the [Coding Rules](knowledge/rules/coding.md).
