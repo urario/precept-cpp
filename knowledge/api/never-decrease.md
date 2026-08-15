@@ -16,7 +16,11 @@ sources:
     resource: https://github.com/urario/precept-cpp/issues/61
     title: Implementation experiment and representative usage re-evaluation for never_decrease
     author: human:urario
-tags: [api, transition, integral, experimental]
+  - id: issue-65-final-admission
+    resource: https://github.com/urario/precept-cpp/issues/65#issuecomment-5301911732
+    title: Final v0.2 admission matrix establishing the 8/8 stable portfolio
+    author: chatgpt/gpt-5.6-sol
+tags: [api, transition, integral, v0.2]
 ---
 
 # Scope
@@ -27,8 +31,9 @@ tags: [api, transition, integral, experimental]
 current -> next when next >= current
 ```
 
-The type is an implementation experiment from issue #61. Its presence in the repository is
-evidence gathering, not a stable-release promise.
+The API originated in the implementation experiment from issue #61. That experiment established
+a narrow reusable case, and the final v0.2 portfolio admits the API as **STABLE with a use
+boundary**. The type is not a general progress, revision, sequence, or monotonicity framework.
 
 # Admitted types and invariant
 
@@ -166,7 +171,7 @@ evidence, not a reason to add a public transition framework.
 
 # Admission judgment
 
-**KEEP (use-boundary)** as an experimental vocabulary candidate:
+**STABLE (use-boundary)** in the v0.2 public vocabulary:
 
 * use it for a self-contained integral value whose non-decreasing transition itself is the reusable
   contract, especially progress or processed-count reporting across multiple update sites;
@@ -175,6 +180,7 @@ evidence, not a reason to add a public transition framework.
   or wraparound semantics matter; and
 * use a local setter when the rule is local and one-shot.
 
-This judgment does not promote `never_decrease<T>` to a general monotonic framework or erase the
-#44 conclusion that `next >= current` is not the whole domain semantic. It records the new evidence
-that the narrow progress-shaped case can carry an independent transition vocabulary.
+Stable admission does not promote `never_decrease<T>` to a general monotonic framework or erase
+the #44 conclusion that `next >= current` is not the whole domain semantic. It preserves the
+experiment's narrower result: the progress-shaped case can carry an independent reusable
+transition contract, while richer semantics remain outside this type.
