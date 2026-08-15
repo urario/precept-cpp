@@ -2,7 +2,10 @@
 type: Project Rule
 title: Public Header Layout Rule
 description: Defines how Precept public headers are grouped, when a public subdirectory is justified, and why the span family is grouped separately.
-status: draft
+status: stable
+verified:
+  - by: human:urario
+    at: 2026-08-15T21:29:00+09:00
 sources:
   - id: issue-70
     resource: https://github.com/urario/precept-cpp/issues/70
