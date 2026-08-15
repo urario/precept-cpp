@@ -144,9 +144,11 @@ to:
 
 is therefore a public compatibility decision, not repository cleanup.
 
-A relocation must be reviewed under the project's versioning and compatibility policy. When a
-relocation is chosen, its migration strategy belongs in the decision that authorizes the move; the
-new location must not be introduced silently as an internal refactor.
+A relocation must be reviewed under
+[ADR-0007](../decisions/adr-0007-versioning-compatibility-and-support.md), which defines the
+project's versioning and compatibility policy. When a relocation is chosen, its migration strategy
+belongs in the decision that authorizes the move; the new location must not be introduced silently
+as an internal refactor.
 
 # Current layout decision
 
