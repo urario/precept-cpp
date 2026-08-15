@@ -287,8 +287,9 @@ including the admitted integer types and how this differs from `nonzero`, is def
 
 ## Non-overlapping spans
 
-`checked_non_overlapping(first, second)` validates that the object-representation byte ranges of
-two `std::span` values share no byte and returns their typed span snapshots as a carrier:
+`checked_non_overlapping(first, second)` validates that two `std::span` values whose element types
+occupy exactly one byte share no byte of storage, and returns their typed span snapshots as a
+carrier:
 
 ```cpp
 #include <precept/non_overlapping.hpp>
@@ -304,10 +305,12 @@ if (auto buffers = precept::checked_non_overlapping(output, input)) {
 }
 ```
 
-Empty ranges are accepted, adjacent ranges are non-overlapping, and different element types are
-compared by byte extent. Validation is portable C++20 and linear in the sum of the byte extents; it
-does not order unrelated pointers or convert them to integers. The carrier is a borrowed view and
-follows the lifetime and invalidation rules of its stored spans.
+Empty ranges are accepted and adjacent ranges are non-overlapping. Byte-sized element types such as
+`std::byte`, `char`, and `unsigned char` are supported with their cv-qualification preserved.
+Validation is portable C++20 and linear in the sum of the element counts: it scans the actual span
+elements using pointer equality only. It does not create object-representation byte views, order
+unrelated pointers, or convert pointers to integers. Wider typed spans are intentionally outside
+the v0.2 stable contract.
 
 For a one-shot operation such as a single copy, let that operation validate and consume the
 relation locally. For input/output/scratch roles, a domain-specific aggregate is usually clearer

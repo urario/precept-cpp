@@ -7,7 +7,6 @@
 
 #include <array>
 #include <cstddef>
-#include <cstdint>
 #include <span>
 #include <utility>
 
@@ -66,21 +65,21 @@ TEST(NonOverlappingTest, AcceptsEveryEmptyRangeCombination) {
   EXPECT_TRUE(precept::checked_non_overlapping(whole, whole.last(0)).has_value());
 }
 
-TEST(NonOverlappingTest, UsesByteExtentAcrossDifferentElementTypes) {
-  std::array<std::uint32_t, 4> words{};
-  std::span<std::uint32_t> word_view{words};
-  const std::span<std::byte> bytes = std::as_writable_bytes(word_view);
+TEST(NonOverlappingTest, AcceptsDifferentByteSizedElementTypesWhenDisjoint) {
+  std::array<char, 4> first{};
+  std::array<unsigned char, 4> second{};
 
-  EXPECT_FALSE(
-      precept::checked_non_overlapping(word_view.first(2), bytes.subspan(3, 4)).has_value());
-  EXPECT_TRUE(
-      precept::checked_non_overlapping(word_view.first(1), bytes.subspan(sizeof(std::uint32_t)))
-          .has_value());
+  const auto checked =
+      precept::checked_non_overlapping(std::span{first}, std::span<const unsigned char>{second});
+
+  ASSERT_TRUE(checked.has_value());
+  EXPECT_EQ(checked->first().data(), first.data());
+  EXPECT_EQ(checked->second().data(), second.data());
 }
 
 TEST(NonOverlappingTest, CopyAndMovePreserveTheStoredSnapshots) {
-  std::array<int, 4> first{};
-  std::array<int, 4> second{};
+  std::array<std::byte, 4> first{};
+  std::array<std::byte, 4> second{};
   const auto original = precept::checked_non_overlapping(std::span{first}, std::span{second});
   ASSERT_TRUE(original.has_value());
 
@@ -93,20 +92,20 @@ TEST(NonOverlappingTest, CopyAndMovePreserveTheStoredSnapshots) {
 }
 
 TEST(NonOverlappingTest, ObserversCannotRetargetTheStoredSnapshots) {
-  std::array<int, 4> first{};
-  std::array<int, 4> second{};
-  std::array<int, 4> replacement{};
-  std::span<int> first_view{first};
+  std::array<std::byte, 4> first{};
+  std::array<std::byte, 4> second{};
+  std::array<std::byte, 4> replacement{};
+  std::span<std::byte> first_view{first};
   const auto checked = precept::checked_non_overlapping(first_view, std::span{second});
   ASSERT_TRUE(checked.has_value());
 
-  std::span<int> observed = checked->first();
+  std::span<std::byte> observed = checked->first();
   observed = replacement;
   first_view = replacement;
-  checked->first().front() = 42;
+  checked->first().front() = std::byte{42};
 
   EXPECT_EQ(checked->first().data(), first.data());
-  EXPECT_EQ(checked->first().front(), 42);
+  EXPECT_EQ(checked->first().front(), std::byte{42});
 }
 
 } // namespace

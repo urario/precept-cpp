@@ -1,127 +1,207 @@
 ---
 type: API Contract
 title: non-overlapping spans API contract
-description: Defines the byte-range relation, validation, observation, and borrowed lifetime boundary of non_overlapping_spans.
+description: Defines the portable storage non-overlap relation for byte-sized spans, validation, observation, and borrowed lifetime boundary.
 status: draft
 sources:
   - id: issue-48
     resource: https://github.com/urario/precept-cpp/issues/48
-    title: Experiment for a portable non-overlapping contiguous-range relation
+    title: Experiment for a reusable non-overlapping contiguous-range relation
     author: human:urario
-  - id: cpp20-draft
-    resource: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/n4861.pdf
-    title: C++20 working draft N4861
+  - id: issue-66
+    resource: https://github.com/urario/precept-cpp/issues/66
+    title: C++20 portability review for non_overlapping_spans
+    author: human:urario
+  - id: issue-67
+    resource: https://github.com/urario/precept-cpp/issues/67
+    title: Portable byte-sized span hardening
+    author: human:urario
+  - id: p1839r7
+    resource: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2025/p1839r7.html
+    title: Accessing object representations
     author: organization:wg21
-tags: [api, relation, span, lifetime, v0.2]
+    optional: true
+tags: [api, relation, span, lifetime, portability, v0.2]
 ---
 
 # Scope
 
-The initial API accepts two `std::span` values. It does not accept containers, iterator pairs,
-pointer-and-count pairs, segmented ranges, or multidimensional views. Volatile element types are
-excluded because C++20 `std::as_bytes` does not preserve volatile qualification.
+The stable candidate accepts two `std::span` values only when each element type occupies exactly
+one byte:
 
-The relation concerns storage only. It says nothing about element values, ownership, semantic
-correspondence, synchronization, or whether either range is otherwise valid for a particular
-operation.
+```text
+sizeof(T) == 1
+sizeof(U) == 1
+```
 
-# Portable contract
+This includes ordinary byte-buffer element types such as `std::byte`, `char`, and
+`unsigned char`, with cv-qualification preserved. It deliberately excludes wider typed spans such
+as `std::span<int>` or `std::span<float>`.
 
-`non_overlapping_spans<T, U>` stores copies of two spans whose object-representation byte ranges
-share no byte.
+The public header is `<precept/non_overlapping.hpp>`.
 
-* An empty span overlaps nothing, regardless of its `data()` value.
-* Adjacent half-open ranges such as `[0, 8)` and `[8, 16)` do not overlap.
-* Subspans of one backing array are judged by the bytes they cover, so overlapping, touching, and
-  separated subspans have the expected results.
-* Spans over unrelated live objects are valid inputs.
-* Different element types are compared by byte extent, not by element count.
+# Exact relation
 
-A short user-facing statement is therefore:
+A successful carrier guarantees that the storage occupied by the two stored span snapshots shares
+no byte.
 
-> On success, the returned object stores the two supplied span snapshots, and their
-> object-representation byte ranges share no byte. Empty ranges share no byte with any range, and
-> ranges that only touch at an endpoint are accepted.
+* An empty span overlaps nothing.
+* Two ranges that only touch at an endpoint do not overlap.
+* Overlapping subspans of one byte buffer are rejected.
+* Disjoint subspans of one byte buffer are accepted.
+* Different byte-sized element types are admitted when their spans are otherwise valid.
 
-# Validation and portability
+The relation concerns storage only. It says nothing about values, ownership, semantic
+correspondence, synchronization, or whether either range satisfies additional requirements of a
+particular operation.
+
+# Why the element-size boundary exists
+
+The original implementation accepted arbitrary typed spans and converted them with
+`std::as_bytes` before comparing object-representation byte addresses. Issue #66 re-examined that
+basis for stable admission.
+
+P1839R7 documents a defect in the current C++ object-representation wording: direct traversal of
+an object's representation through char-like pointers is widely intended and implemented, but the
+current specification does not make the general technique well-defined. The paper specifically
+identifies `std::as_bytes` as a standard-library facility whose intended implementation depends on
+that missing language support.
+
+Precept therefore does not make its v0.2 stable contract depend on traversing an arbitrary typed
+object representation.
+
+For a span whose element type has `sizeof(T) == 1`, no object-representation view is needed. The
+span already denotes the actual contiguous sequence of one-byte element objects. Its occupied
+storage is exactly the set of addresses represented by those elements.
+
+This narrowed scope turns the portability issue into an ordinary span-and-pointer-equality problem
+and keeps the useful byte-buffer use case.
+
+# Validation
 
 `checked_non_overlapping(first, second)` returns an engaged optional when the relation holds and
-`std::nullopt` otherwise. It neither truncates a range nor reads or modifies element values.
+`std::nullopt` when at least one byte of storage is shared.
 
-The implementation deliberately does not apply built-in relational operators to unrelated
-pointers, convert pointers to integers, or interpret the implementation-defined total order from
-`std::less` as a linear address space. C++20 guarantees a total order for pointer comparison
-function objects, but that alone does not state that byte intervals belonging to unrelated objects
-cannot interleave in that order.
+For two non-empty contiguous ranges of one-byte elements, overlap exists exactly when the first
+element address of either range occurs among the element addresses of the other range. Validation
+therefore scans both spans using pointer equality only.
 
-Instead, validation forms `std::as_bytes` views. For two non-empty contiguous byte intervals,
-overlap exists exactly when the first byte of either interval is contained in the other. The
-implementation searches both byte views using pointer equality and never compares an unrelated
-pointer with a one-past pointer. Empty ranges return before any such search.
+The implementation does not:
 
-This portable route is linear in `first.size_bytes() + second.size_bytes()`. The API does not claim
-constant-time validation or `constexpr` validation in C++20.
+* call `std::as_bytes` or `std::as_writable_bytes`;
+* order unrelated pointers with built-in relational operators;
+* interpret `std::less` as a linear address space; or
+* convert pointers to integers.
+
+Validation is linear in the sum of the two element counts and does not read or modify element
+values.
 
 # Carrier shape and observation
 
-The successful value stores the original typed spans, not byte views. `first()` and `second()`
-return those span snapshots by value, preserving element type and const qualification for ordinary
-C++ operations. Returning by value prevents a caller from retargeting the spans stored inside the
+The successful value stores the original typed spans, not an erased byte view.
+
+```cpp
+template<class T, class U>
+  requires (sizeof(T) == 1 && sizeof(U) == 1)
+class non_overlapping_spans;
+```
+
+`first()` and `second()` return the stored span snapshots by value, preserving element type and
+cv-qualification. Returning by value prevents callers from retargeting the spans stored inside the
 carrier.
 
-Copy and move preserve the snapshots and the relation. Mutating elements through a mutable stored
-span cannot change addresses or extents and therefore cannot change the relation. Reassigning one
-of the source span variables after validation also has no effect on the stored snapshots.
+Copy and move preserve the snapshots and the relation. Mutating an element through a mutable span
+cannot move or resize the stored ranges and therefore cannot change the non-overlap relation.
 
 # Freshness and lifetime
 
-The carrier is a borrowed view and does not own, allocate, or extend the lifetime of storage. Its
-lifetime rule is the ordinary `std::span` rule: destruction or reallocation of an owner, the end of
-an element's lifetime, or storage reuse that invalidates either stored span also makes using the
-carrier invalid. The carrier does not claim that a current container or a later span still denotes
-the validated ranges.
+The carrier is a borrowed view and does not own, allocate, or extend storage lifetime. Destruction
+or reallocation of an owner, end of an element lifetime, or storage reuse that invalidates either
+stored span also invalidates use of the carrier.
 
-No ownership model, borrow token, registry, or lifetime tracking is needed to state this boundary.
+Reassigning one of the source `std::span` variables after validation does not retarget the stored
+snapshots.
 
-# Representative usage result
+No ownership model, borrow token, registry, or lifetime tracking is part of this API.
 
-The runnable buffer example exercised three different call shapes.
+# Representative usage
 
-| Usage | Relation lifetime | Reuse | Result |
-|---|---:|---:|---|
-| one-shot copy | zero public hops; validated and unwrapped inside one operation | once | operation-owned validation is clearer; carrier is negative evidence here |
-| three-stage buffer processing | three function calls | three times | carrier keeps the non-overlap precondition in every stage signature and amortizes linear validation |
-| input/output/scratch processing | three phase calls | pair facts are not passed separately | a role-bearing domain aggregate is clearer than three pair carriers |
+The runnable `examples/non_overlapping_buffers.cpp` uses `std::byte` buffers and exercises three
+shapes.
 
-The carrier is therefore not the default shape for every non-overlap check. It is useful only when
-the same pair relation itself survives across an API boundary and is consumed more than once.
+| Usage | Relation lifetime | Result |
+| --- | --- | --- |
+| one-shot copy | validated and consumed inside one operation | operation-owned validation is clearer |
+| multi-stage input/output pair | same validated pair crosses multiple consumers | carrier keeps the relation visible in signatures |
+| input/output/scratch roles | true contract is a role-bearing three-buffer set | domain-specific aggregate is clearer than three pair carriers |
 
-# Comparison with same-size
+The carrier is therefore not the default shape for every overlap test. It is useful when the same
+pair relation itself survives across an API boundary and is reused.
 
-Issue #46 found that equal-size relation carriers were mechanically possible but usually lost to a
-local operation. Both relations can store span snapshots and state borrowed lifetime rules.
+# Relationship to typed buffers
 
-The distinguishing evidence here is that portable non-overlap validation is linear in byte extent,
-while size equality is constant time. Reusing a non-overlap carrier can therefore avoid repeated
-work as well as repeated guard clauses. The multi-stage usage also consumes exactly the generic
-pair relation, whereas scratch-buffer usage confirms the #46 warning that a richer domain relation
-should win when the generic fact is only a necessary fragment.
+A caller with `std::span<float>`, `std::span<int>`, or another wider element type does not get a
+stable v0.2 `checked_non_overlapping` overload for that typed span directly.
 
-# Friction observed during implementation
+The library deliberately does not ask callers to use `std::as_bytes` merely to re-enter this API,
+because that would recreate the portability basis removed by #66. A future language defect
+resolution or a separately justified typed-buffer design may reopen that scope.
 
-1. A portable constant-time address-interval check could not be justified from the standard
-   pointer total order alone; the equality-only implementation is linear in bytes.
-2. The one-shot copy immediately called `first()` and `second()`, so exposing the carrier to its
-   caller added no value.
-3. Pairwise scratch validation produced three temporary carriers and repeated each buffer role;
-   downstream code became clearer with a domain-specific three-buffer aggregate.
-4. A bare `non_overlapping(...)` factory looked like a Boolean predicate, so the implemented
-   spelling uses `checked_non_overlapping(...)` for an optional carrier result.
-5. Volatile spans had to be excluded at the `std::as_bytes` boundary.
+This is a scope reduction, not a rejection of the relation carrier itself.
 
-# Recommendation
+# Public API sketch
 
-**KEEP, with a use boundary:** keep the relation carrier for a validated pair that crosses an API
-boundary and is reused. Prefer an operation-owned check for one-shot work, and prefer a
-domain-specific aggregate when roles or three-way relations are the real contract. Do not grow a
-generic relation framework or a memory-region algebra from this API.
+```cpp
+namespace precept {
+
+template<class T, class U>
+  requires (sizeof(T) == 1 && sizeof(U) == 1)
+class non_overlapping_spans {
+public:
+    using first_element_type = T;
+    using second_element_type = U;
+
+    [[nodiscard]] constexpr std::span<T> first() const noexcept;
+    [[nodiscard]] constexpr std::span<U> second() const noexcept;
+};
+
+template<class T, std::size_t E, class U, std::size_t F>
+  requires (sizeof(T) == 1 && sizeof(U) == 1)
+[[nodiscard]]
+std::optional<non_overlapping_spans<T, U>>
+checked_non_overlapping(std::span<T, E> first,
+                        std::span<U, F> second) noexcept;
+
+} // namespace precept
+```
+
+# Admission finding
+
+**STABLE with a use boundary** is the target after #67 hardening:
+
+```text
+one-shot byte-buffer relation  -> operation-owned check
+reused byte-buffer pair        -> non_overlapping_spans
+role-bearing / N-way relation  -> domain-specific aggregate
+wider arbitrary typed spans    -> outside v0.2 stable scope
+```
+
+The portability review removes the only material blocker identified in #65 by reducing the stable
+surface to the part that can be stated and implemented directly in C++20 without object-
+representation traversal.
+
+# Required verification
+
+Stable verification covers:
+
+* disjoint one-byte spans;
+* overlapping, touching, and separated subspans of the same storage;
+* all empty-range combinations;
+* cv-qualified byte-sized element types;
+* different byte-sized element types for disjoint ranges;
+* rejection of wider element types at compile time;
+* copy and move preservation of stored snapshots;
+* source-span reassignment not retargeting the carrier;
+* absence of unchecked public construction;
+* installed consumer use; and
+* the runnable multi-stage buffer example.
