@@ -15,6 +15,9 @@ are built and executed by an ordinary test run, so they cannot drift away from t
   from a configuration site to a separate use site without offering replacement or reset.
 * [`nonzero_scaling.cpp`](nonzero_scaling.cpp) — a divisor validated once at a configuration
   boundary and reused by a planning layer and a kernel, neither of which re-checks it.
+* [`narrow_exact_wire_fields.cpp`](narrow_exact_wire_fields.cpp) — in-memory values narrowed into
+  the field widths of a wire format, where validation ends in ordinary integers rather than a
+  Precept type.
 
 Build and run them from the repository root:
 
@@ -27,5 +30,6 @@ ctest --test-dir build -R '^example_' --output-on-failure
 The exact contracts these examples rely on are defined in the
 [v0.1 Span Family API Contract](../knowledge/api/span-family.md),
 [aligned_ptr API Contract](../knowledge/api/aligned-ptr.md),
-[set_once API Contract](../knowledge/api/set-once.md), and
-[nonzero API Contract](../knowledge/api/nonzero.md).
+[set_once API Contract](../knowledge/api/set-once.md),
+[nonzero API Contract](../knowledge/api/nonzero.md), and
+[narrow_exact API Contract](../knowledge/api/narrow-exact.md).
