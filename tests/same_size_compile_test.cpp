@@ -22,6 +22,12 @@ concept can_check_fixed_extent = requires(std::span<T, E> first, std::span<U, F>
   precept::checked_same_size(first, second);
 };
 
+template <class T, class U, std::size_t E, std::size_t F>
+concept can_check_with_explicit_element_types =
+    requires(std::span<T, E> first, std::span<U, F> second) {
+      precept::checked_same_size<T, U>(first, second);
+    };
+
 using mutable_pair = precept::same_size_pair<int, int>;
 using qualified_pair = precept::same_size_pair<int, const float>;
 
@@ -43,6 +49,10 @@ static_assert(can_check_same_size<int, int>);
 static_assert(can_check_same_size<int, const float>);
 static_assert(!can_check_fixed_extent<int, 2, int, 2>);
 static_assert(!can_check_fixed_extent<int, 2, int, 3>);
+static_assert(!can_check_with_explicit_element_types<int, int, 2, 2>);
+static_assert(!can_check_with_explicit_element_types<int, int, 2, 3>);
+static_assert(can_check_with_explicit_element_types<int, const int, std::dynamic_extent,
+                                                    std::dynamic_extent>);
 
 static_assert(std::same_as<decltype(precept::checked_same_size(
                                std::declval<std::span<int>>(), std::declval<std::span<const int>>())),

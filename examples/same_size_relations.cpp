@@ -41,8 +41,8 @@ std::optional<int> dot_product_carrier(std::span<const int> lhs,
   return result;
 }
 
-// A multi-stage pipeline is the positive candidate: the relation is part of every downstream
-// signature, so stages do not rely on a caller convention or repeat a guard clause.
+// A multi-stage pipeline is the positive candidate: the relation is part of the signatures that
+// consume both spans, so those stages do not rely on a caller convention or repeat a guard clause.
 using paired_buffers = precept::same_size_pair<float, const float>;
 
 void normalize(paired_buffers buffers) noexcept {
@@ -51,8 +51,8 @@ void normalize(paired_buffers buffers) noexcept {
   }
 }
 
-void transform(paired_buffers buffers) noexcept {
-  for (float& value : buffers.first()) {
+void transform(std::span<float> values) noexcept {
+  for (float& value : values) {
     value += 1.0F;
   }
 }
@@ -73,7 +73,7 @@ std::optional<float> process_in_stages(std::span<float> values,
   }
 
   normalize(*pair);
-  transform(*pair);
+  transform(pair->first());
   return emit(*pair);
 }
 

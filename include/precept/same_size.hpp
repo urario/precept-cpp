@@ -12,9 +12,10 @@ namespace precept {
 template <class T, class U>
 class same_size_pair;
 
-template <class T, class U>
+template <class T, class U, std::size_t E, std::size_t F>
+  requires(E == std::dynamic_extent && F == std::dynamic_extent)
 [[nodiscard]] constexpr std::optional<same_size_pair<T, U>>
-checked_same_size(std::span<T> first, std::span<U> second) noexcept;
+checked_same_size(std::span<T, E> first, std::span<U, F> second) noexcept;
 
 /// A pair of non-owning dynamic spans with equal element counts.
 ///
@@ -48,9 +49,11 @@ private:
   constexpr same_size_pair(validated_t, std::span<T> first, std::span<U> second) noexcept
       : first_(first), second_(second) {}
 
-  template <class First, class Second>
+  template <class First, class Second, std::size_t FirstExtent, std::size_t SecondExtent>
+    requires(FirstExtent == std::dynamic_extent && SecondExtent == std::dynamic_extent)
   friend constexpr std::optional<same_size_pair<First, Second>>
-  checked_same_size(std::span<First> first, std::span<Second> second) noexcept;
+  checked_same_size(std::span<First, FirstExtent> first,
+                    std::span<Second, SecondExtent> second) noexcept;
 
   std::span<T> first_;
   std::span<U> second_;
@@ -63,9 +66,10 @@ private:
 /// modify element values, and the carrier does not claim semantic correspondence between elements.
 /// Fixed-extent spans are intentionally not accepted by this factory; use the standard extent in
 /// `std::span<T, N>` when the equality is already represented by the type.
-template <class T, class U>
+template <class T, class U, std::size_t E, std::size_t F>
+  requires(E == std::dynamic_extent && F == std::dynamic_extent)
 [[nodiscard]] constexpr std::optional<same_size_pair<T, U>>
-checked_same_size(std::span<T> first, std::span<U> second) noexcept {
+checked_same_size(std::span<T, E> first, std::span<U, F> second) noexcept {
   if (first.size() != second.size()) {
     return std::nullopt;
   }

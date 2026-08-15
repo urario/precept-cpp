@@ -42,9 +42,10 @@ public:
   [[nodiscard]] constexpr std::size_t size() const noexcept;
 };
 
-template <class T, class U>
+template <class T, class U, std::size_t E, std::size_t F>
+  requires(E == std::dynamic_extent && F == std::dynamic_extent)
 [[nodiscard]] constexpr std::optional<same_size_pair<T, U>>
-checked_same_size(std::span<T> first, std::span<U> second) noexcept;
+checked_same_size(std::span<T, E> first, std::span<U, F> second) noexcept;
 ```
 
 `same_size_pair` has no public unchecked constructor. The only raw-span construction boundary is
@@ -93,10 +94,12 @@ the default one-shot shape.
 ## Multi-stage
 
 The example validates once at an input boundary, then passes `same_size_pair<float, const float>`
-through `normalize`, `transform`, and `emit`. Each signature states the equal-cardinality
-precondition, downstream functions do not repeat the size check, and the carrier remains alive for
-three calls. This is the positive candidate: the value is not just a shortened guard clause, and
-the caller/reviewer convention is replaced by a visible contract.
+to `normalize` and `emit`, which both consume the paired buffers. `transform` deliberately accepts
+the weakened `std::span<float>` returned by `first()` because it does not use the second span. The
+carrier therefore survives two independent downstream consumers without pretending that every
+stage needs the relation. This is the positive candidate: the value is not just a shortened guard
+clause, and the caller/reviewer convention is replaced by a visible contract where the relation is
+actually needed.
 
 The carrier remains a structural relation only. If a pipeline needs roles, ownership, or a stronger
 domain relationship, the caller should introduce a domain-specific aggregate instead.
@@ -137,8 +140,9 @@ The implementation experiment observed the following:
 
 * One-shot use needed immediate `.first()` / `.second()` unwrapping, while the local check already
   expressed the operation's complete precondition.
-* Multi-stage signatures became explicit, but downstream code still uses `.first()`, `.second()`,
-  and `.size()` rather than a domain-named view.
+* Multi-stage signatures became explicit for the paired consumers, but the independent transform
+  stage is clearer after weakening to `std::span<float>`; paired consumers still use `.first()`,
+  `.second()`, and `.size()` rather than a domain-named view.
 * The generic carrier was intentionally too weak for job/result correspondence; the local domain
   aggregate was clearer once index identity mattered.
 * Three parallel sequences were naturally expressed by two local equality checks, so this binary
