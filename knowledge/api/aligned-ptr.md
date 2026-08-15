@@ -2,7 +2,10 @@
 type: API Contract
 title: aligned_ptr API Contract
 description: Defines the alignment guarantee, validation boundary, nullability, conversions, and ownership rules of aligned_ptr.
-status: draft
+status: stable
+verified:
+  - by: human:urario
+    at: 2026-08-15T21:59:49+09:00
 sources:
   - id: issue-41
     resource: https://github.com/urario/precept-cpp/issues/41
