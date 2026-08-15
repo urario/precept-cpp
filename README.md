@@ -259,6 +259,37 @@ holding that value is that fact — nothing further needs to travel with it. The
 including the admitted integer types and how this differs from `nonzero`, is defined by the
 [`narrow_exact` API contract](knowledge/api/narrow-exact.md).
 
+## Non-overlapping spans
+
+`checked_non_overlapping(first, second)` validates that the object-representation byte ranges of
+two `std::span` values share no byte and returns their typed span snapshots as a carrier:
+
+```cpp
+#include <precept/non_overlapping.hpp>
+
+using separated_io = precept::non_overlapping_spans<std::byte, const std::byte>;
+
+void stage_a(separated_io buffers);
+void stage_b(separated_io buffers);
+
+if (auto buffers = precept::checked_non_overlapping(output, input)) {
+  stage_a(*buffers);
+  stage_b(*buffers); // the same validated pair is reused
+}
+```
+
+Empty ranges are accepted, adjacent ranges are non-overlapping, and different element types are
+compared by byte extent. Validation is portable C++20 and linear in the sum of the byte extents; it
+does not order unrelated pointers or convert them to integers. The carrier is a borrowed view and
+follows the lifetime and invalidation rules of its stored spans.
+
+For a one-shot operation such as a single copy, let that operation validate and consume the
+relation locally. For input/output/scratch roles, a domain-specific aggregate is usually clearer
+than three pair carriers. The runnable
+[buffer example](examples/non_overlapping_buffers.cpp) demonstrates all three shapes, and the exact
+boundary is defined by the
+[`non_overlapping_spans` API contract](knowledge/api/non-overlapping.md).
+
 ## Examples
 
 [`examples/`](examples/) holds complete programs for the three span usages the v0.1 vocabulary was
@@ -271,8 +302,10 @@ one-way initialization rule to a separate use site, and the
 [decimation example](examples/nonzero_scaling.cpp) carries a validated divisor from a configuration
 boundary into two deeper layers. The
 [wire-field example](examples/narrow_exact_wire_fields.cpp) shows the opposite shape: validation
-that ends in an ordinary integer rather than a Precept type. They are built and executed by an
-ordinary test run, so they always match the current API.
+that ends in an ordinary integer rather than a Precept type. The
+[non-overlapping buffer example](examples/non_overlapping_buffers.cpp) compares one-shot,
+multi-stage, and role-bearing scratch-buffer contracts. They are built and executed by an ordinary
+test run, so they always match the current API.
 
 ## Scope and non-goals
 

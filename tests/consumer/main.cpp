@@ -3,6 +3,7 @@
 
 #include <precept/aligned_ptr.hpp>
 #include <precept/narrow_exact.hpp>
+#include <precept/non_overlapping.hpp>
 #include <precept/nonzero.hpp>
 #include <precept/set_once.hpp>
 #include <precept/span/at_least_span.hpp>
@@ -64,6 +65,13 @@ int main() {
   const auto wire_size = precept::narrow_exact<std::uint16_t>(storage.size());
   if (!wire_size || *wire_size != 16 || precept::narrow_exact<std::uint32_t>(-1)) {
     return 9;
+  }
+
+  std::array<std::byte, 16> output{};
+  const auto separated = precept::checked_non_overlapping(std::span{output}, input);
+  if (!separated || separated->first().data() != output.data() ||
+      separated->second().data() != storage.data()) {
+    return 10;
   }
 
   return 0;
