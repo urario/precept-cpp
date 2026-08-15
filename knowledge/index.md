@@ -14,6 +14,7 @@ okf_version: "0.2"
 
 * [Design Principles](architecture/design-principles.md) - The principles that shape how Precept types, factories, and conversions are designed.
 * [API Admission Rules](architecture/api-admission-rules.md) - The eight rules a public API must satisfy before it is accepted.
+* [Public Header Layout Rule](architecture/public-header-layout.md) - Root-first include layout, the single-span refinement family, and the criteria for creating public subdirectories.
 
 # API
 
