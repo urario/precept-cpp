@@ -18,7 +18,8 @@ are built and executed by an ordinary test run, so they cannot drift away from t
 * [`narrow_exact_wire_fields.cpp`](narrow_exact_wire_fields.cpp) — in-memory values narrowed into
   the field widths of a wire format, where validation ends in ordinary integers rather than a
   Precept type.
-
+* [`index_below_fixed_tables.cpp`](index_below_fixed_tables.cpp) — a fixed protocol field index
+  reused by two consumers, contrasted with a one-shot lookup and loop that keep local raw indices.
 * [`non_overlapping_buffers.cpp`](non_overlapping_buffers.cpp) - one-shot, multi-stage, and scratch
   buffer processing compared to show when a non-overlap carrier survives long enough to help.
 
@@ -34,6 +35,7 @@ The exact contracts these examples rely on are defined in the
 [v0.1 Span Family API Contract](../knowledge/api/span-family.md),
 [aligned_ptr API Contract](../knowledge/api/aligned-ptr.md),
 [set_once API Contract](../knowledge/api/set-once.md),
-[nonzero API Contract](../knowledge/api/nonzero.md), and
+[nonzero API Contract](../knowledge/api/nonzero.md),
+[index_below API Contract](../knowledge/api/index-below.md),
 [narrow_exact API Contract](../knowledge/api/narrow-exact.md), and the
 [non-overlapping spans API Contract](../knowledge/api/non-overlapping.md).

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <precept/aligned_ptr.hpp>
+#include <precept/index_below.hpp>
 #include <precept/narrow_exact.hpp>
 #include <precept/non_overlapping.hpp>
 #include <precept/nonzero.hpp>
@@ -67,11 +68,17 @@ int main() {
     return 9;
   }
 
+  const auto index = precept::index_below<16>::try_from(15);
+  if (!index || index->value() != 15 || precept::index_below<16>::try_from(16) ||
+      precept::index_below<0>::try_from(0)) {
+    return 10;
+  }
+
   std::array<std::byte, 16> output{};
   const auto separated = precept::checked_non_overlapping(std::span{output}, input);
   if (!separated || separated->first().data() != output.data() ||
       separated->second().data() != storage.data()) {
-    return 10;
+    return 11;
   }
 
   return 0;
