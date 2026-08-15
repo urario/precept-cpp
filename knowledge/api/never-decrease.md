@@ -95,11 +95,11 @@ external alias. This admission condition is not extended to arbitrary comparable
 
 ## Progress / processed count: positive evidence
 
-The runnable `examples/never_decrease_transitions.cpp` passes one carrier through decoder and
-worker reporting functions. Both update sites use the same rule, and a regression is propagated as
-an invalid pipeline report: the coordinator stops before sending the misleading value to the next
-stage. The type keeps the transition contract at the downstream API boundary instead of relying on
-each updater to remember a local setter check.
+The runnable `examples/never_decrease_transitions.cpp` passes one carrier through primary-path and
+replay-path reporting functions. Both update sites report the same authoritative cumulative count,
+and a regression is propagated as an invalid report: the coordinator stops before forwarding the
+misleading value downstream. The type keeps the transition contract at the reporting API boundary
+instead of relying on each updater to remember a local setter check.
 
 This is the clearest positive case found in the experiment: the rule is reused across multiple
 update sites and the per-object history is the intended semantic scope.

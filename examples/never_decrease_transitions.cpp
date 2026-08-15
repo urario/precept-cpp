@@ -3,9 +3,10 @@
 
 // Comparing a reusable non-decreasing transition with closed and domain-specific alternatives.
 //
-// `never_decrease` is useful here only when several update sites share the same meaning: a
-// processed count may stay equal or advance, but it must not regress. High-water marks instead
-// usually want `std::max`, while revisions often need stricter domain rules than non-decrease.
+// `never_decrease` is useful here only when several update sites share the same meaning: an
+// authoritative processed count may stay equal or advance, but it must not regress. High-water
+// marks instead usually want `std::max`, while revisions often need stricter domain rules than
+// non-decrease.
 
 #include <precept/never_decrease.hpp>
 
@@ -17,23 +18,15 @@ namespace {
 
 using processed_count = precept::never_decrease<std::size_t>;
 
-// These two layers share the same transition rule without repeating a setter check. A regression
-// is an invalid pipeline report here, so the failure is propagated instead of treated as telemetry.
-bool decoder_report(processed_count& processed, std::size_t count) noexcept {
+// These alternative reporting paths share one authoritative cumulative count without repeating a
+// setter check. A regression is an invalid report here, so the failure is propagated instead of
+// treated as telemetry.
+bool primary_path_report(processed_count& processed, std::size_t count) noexcept {
   return processed.try_update(count);
 }
 
-bool worker_report(processed_count& processed, std::size_t count) noexcept {
+bool replay_path_report(processed_count& processed, std::size_t count) noexcept {
   return processed.try_update(count);
-}
-
-bool accept_batch_reports(processed_count& processed, std::size_t decoded,
-                          std::size_t completed) noexcept {
-  if (!decoder_report(processed, decoded)) {
-    return false;
-  }
-
-  return worker_report(processed, completed);
 }
 
 std::size_t reported_count(const processed_count& processed) noexcept { return processed.value(); }
@@ -74,12 +67,13 @@ bool set_local_progress(std::size_t& current, std::size_t next) noexcept {
 
 int main() {
   processed_count processed{0};
-  if (!accept_batch_reports(processed, 10, 20) || reported_count(processed) != 20) {
+  if (!primary_path_report(processed, 10) || !replay_path_report(processed, 20) ||
+      reported_count(processed) != 20) {
     return 1;
   }
 
-  // A broken decoder report stops the pipeline before the worker receives a misleading update.
-  if (accept_batch_reports(processed, 15, 25) || reported_count(processed) != 20) {
+  // A stale primary-path report is rejected before the coordinator forwards it downstream.
+  if (primary_path_report(processed, 15) || reported_count(processed) != 20) {
     return 2;
   }
 

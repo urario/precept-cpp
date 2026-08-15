@@ -222,9 +222,12 @@ are accepted, regressions are rejected, and the stored value is unchanged after 
 #include <cstddef>
 
 precept::never_decrease<std::size_t> processed{0};
-processed.try_update(10);
-processed.try_update(20);
-processed.try_update(15); // false; still 20
+if (!processed.try_update(10) || !processed.try_update(20)) {
+  return false; // The report could not advance the count.
+}
+if (!processed.try_update(15)) {
+  return false; // Reject the invalid regression; the value is still 20.
+}
 ```
 
 This is an experimental transition vocabulary, not a general progress or revision abstraction.
