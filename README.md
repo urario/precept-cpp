@@ -236,6 +236,29 @@ not always sufficient by itself — signed division still requires a representab
 validated index still needs its own range check. The exact boundary is defined by the
 [`nonzero` API contract](knowledge/api/nonzero.md).
 
+## Exact integer narrowing
+
+`narrow_exact<T>(value)` converts one integer to another when `T` represents the value exactly,
+and returns `std::nullopt` when it does not:
+
+```cpp
+#include <precept/narrow_exact.hpp>
+
+std::size_t payload_size = payload.size();
+if (auto wire_size = precept::narrow_exact<std::uint16_t>(payload_size)) {
+  write_length_prefix(*wire_size); // an ordinary std::uint16_t from here on
+}
+```
+
+Representability is decided on the value, so one rule covers both directions of the mistake: a
+negative value never becomes a large unsigned one, and a value above the destination maximum is
+never wrapped. The decision itself is `std::in_range`, which Precept does not reimplement.
+
+There is no `narrow_exact` type. The verified fact is that the value fits in `T`, and a `T`
+holding that value is that fact — nothing further needs to travel with it. The exact boundary,
+including the admitted integer types and how this differs from `nonzero`, is defined by the
+[`narrow_exact` API contract](knowledge/api/narrow-exact.md).
+
 ## Examples
 
 [`examples/`](examples/) holds complete programs for the three span usages the v0.1 vocabulary was
@@ -246,8 +269,10 @@ designed around: [packet and header parsing](examples/packet_parsing.cpp),
 carrier, the [set-once configuration example](examples/set_once_configuration.cpp) carries a
 one-way initialization rule to a separate use site, and the
 [decimation example](examples/nonzero_scaling.cpp) carries a validated divisor from a configuration
-boundary into two deeper layers. They are built and executed by an ordinary test run, so they
-always match the current API.
+boundary into two deeper layers. The
+[wire-field example](examples/narrow_exact_wire_fields.cpp) shows the opposite shape: validation
+that ends in an ordinary integer rather than a Precept type. They are built and executed by an
+ordinary test run, so they always match the current API.
 
 ## Scope and non-goals
 

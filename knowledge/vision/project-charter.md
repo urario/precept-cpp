@@ -119,10 +119,12 @@ The post-v0.1 investigation admits vocabulary one rule at a time. Current produc
 
 * Structural property: `aligned_ptr`
 * One-way transition: `set_once`
+* Scalar property: `nonzero`
+* Validating factory returning a standard type: `narrow_exact()`
 
 Other explored names remain candidates, not commitments:
 
-* Refined arguments: `finite`, `nonzero`, `power_of_two`
+* Refined arguments: `finite`, `power_of_two`
 * Transition semantics: `never_decrease`, `never_increase`, `late`
 * Semantic operations: `parse_exact()`, `zip_exact()`, `read_exact()`, `write_all()`
 * Runtime protocol guards: `no_overlap`, `must_complete`, `latest::gate`
