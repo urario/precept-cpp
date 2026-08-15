@@ -2,7 +2,10 @@
 type: API Contract
 title: never_decrease API Contract
 description: Defines the per-object non-decreasing value history, admitted integral types, transition failure, and usage boundary of never_decrease.
-status: draft
+status: stable
+verified:
+  - by: human:urario
+    at: 2026-08-15T21:59:49+09:00
 sources:
   - id: issue-40
     resource: https://github.com/urario/precept-cpp/issues/40
