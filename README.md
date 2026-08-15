@@ -10,10 +10,12 @@ human memory. Precept states it where callers can see it, and the fact travels w
 void parse(precept::at_least_span<const std::byte, 16> packet);
 ```
 
-Precept is a C++20, header-only library with no consumer dependencies. The v0.1 span family is
-implemented. Tagged releases follow [Semantic Versioning](knowledge/decisions/adr-0007-versioning-compatibility-and-support.md):
-within the 0.x series, PATCH releases preserve compatibility within a MINOR version, while a MINOR
-release may break it. A public name is deprecated for at least one MINOR release before removal.
+Precept is a C++20, header-only library with no consumer dependencies. The v0.2 vocabulary extends
+the original span family with small scalar, pointer, transition, conversion, and relation APIs,
+each with an explicit usage boundary described below. Tagged releases follow
+[Semantic Versioning](knowledge/decisions/adr-0007-versioning-compatibility-and-support.md): within
+the 0.x series, PATCH releases preserve compatibility within a MINOR version, while a MINOR release
+may break it. A public name is deprecated for at least one MINOR release before removal.
 
 ## Why this matters after generative AI
 
@@ -230,12 +232,12 @@ if (!processed.try_update(15)) {
 }
 ```
 
-This is an experimental transition vocabulary, not a general progress or revision abstraction.
-Use `std::max` when a high-water mark should ignore lower candidates, and use a domain-specific
-type when sequence or revision rules distinguish duplicates, conflicts, skipped values, or
-wraparound. The type has no arithmetic or thread-safety support. See the runnable
-[transition comparison example](examples/never_decrease_transitions.cpp) and the
-[`never_decrease` API contract](knowledge/api/never-decrease.md).
+Use this type when the non-decreasing transition itself is a reusable contract across update sites.
+It is not a general progress or revision abstraction: use `std::max` when a high-water mark should
+ignore lower candidates, and use a domain-specific type when sequence or revision rules distinguish
+duplicates, conflicts, skipped values, or wraparound. The type has no arithmetic or thread-safety
+support. See the runnable [transition comparison example](examples/never_decrease_transitions.cpp)
+and the [`never_decrease` API contract](knowledge/api/never-decrease.md).
 
 ## Non-zero integers
 
@@ -319,7 +321,7 @@ than three pair carriers. The runnable
 boundary is defined by the
 [`non_overlapping_spans` API contract](knowledge/api/non-overlapping.md).
 
-## Experimental same-size span relations
+## Same-size span relations
 
 `checked_same_size(first, second)` validates two dynamic `std::span` values and returns a
 `same_size_pair` whose only guarantee is `first().size() == second().size()`:
@@ -338,11 +340,11 @@ if (auto values = precept::checked_same_size(raw_values, weights)) {
 }
 ```
 
-This is a v0.2 experimental relation vocabulary, not a general zip or correspondence proof.
+This relation has a narrow stable usage boundary; it is not a general zip or correspondence proof.
 Equal size does not imply that elements correspond semantically, share a domain or owner, or have
 the same lifetime. Use a local check for one-shot work, and use a domain-specific aggregate when
 roles or index identity matter. The [same-size relation example](examples/same_size_relations.cpp)
-and [draft contract](knowledge/api/same-size.md) record the current usage boundary.
+and [API contract](knowledge/api/same-size.md) record the exact usage boundary.
 
 ## Examples
 
@@ -368,10 +370,11 @@ always match the current API.
 
 ## Scope and non-goals
 
-v0.1 is deliberately narrow: size preconditions on spans, and nothing else. The point is to test
-one hypothesis — that C++ developers want to state recurring `std::span` size preconditions as
-parameter types and reuse them — before growing the vocabulary. See
-[ADR-0005](knowledge/decisions/adr-0005-v0-1-span-scope.md).
+v0.1 deliberately tested one narrow hypothesis: recurring `std::span` size preconditions could be
+made explicit and reusable without building a general constraint framework. v0.2 keeps that design
+style and extends it to a small admitted vocabulary of structural properties, scalar properties,
+exact conversion, per-object transitions, and reusable binary relations. The original v0.1 scope
+decision remains recorded in [ADR-0005](knowledge/decisions/adr-0005-v0-1-span-scope.md).
 
 Precept does not aim to:
 
@@ -381,7 +384,7 @@ Precept does not aim to:
 * become a general-purpose owning container library,
 * provide a C++17 compatibility span.
 
-Candidates explored after v0.1, and the criteria a new API must satisfy, are listed in the
+The principles used to admit the current vocabulary are recorded in the
 [project charter](knowledge/vision/project-charter.md) and the
 [API admission rules](knowledge/architecture/api-admission-rules.md).
 
@@ -432,8 +435,8 @@ Release notes are recorded in the [update log](knowledge/log.md).
   vocabulary rather than a generic constraint framework.
 * [ADR-0005](knowledge/decisions/adr-0005-v0-1-span-scope.md) — the v0.1 scope boundary.
 
-The exact guarantees, conversions, and failure model of the four APIs above are defined by the
-[v0.1 span family API contract](knowledge/api/span-family.md).
+The exact API contracts for the span family and the v0.2 vocabulary are indexed under the
+[API section of the knowledge bundle](knowledge/index.md#api).
 
 `tools/check_knowledge.py` checks the bundle and runs under CTest alongside everything else, when
 Python and PyYAML are available; see [CONTRIBUTING.md](CONTRIBUTING.md#knowledge-check) for the

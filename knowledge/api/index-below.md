@@ -2,7 +2,10 @@
 type: API Contract
 title: index_below API Contract
 description: Defines the compile-time upper-bound guarantee, zero-bound policy, construction and observation boundaries, and the limit between a numeric bound and a domain-specific index.
-status: draft
+status: stable
+verified:
+  - by: human:urario
+    at: 2026-08-15T21:59:49+09:00
 sources:
   - id: issue-43
     resource: https://github.com/urario/precept-cpp/issues/43
@@ -20,6 +23,10 @@ sources:
     resource: https://github.com/urario/precept-cpp/issues/47
     title: narrow_exact factory-to-standard-type experiment used for comparison
     author: human:urario
+  - id: issue-65-final-admission
+    resource: https://github.com/urario/precept-cpp/issues/65#issuecomment-5301911732
+    title: Final v0.2 admission matrix establishing the 8/8 stable portfolio
+    author: chatgpt/gpt-5.6-sol
 tags: [api, index, scalar-property, fixed-extent, validation, contract]
 ---
 
@@ -137,9 +144,9 @@ The same experiment found two negative cases. A one-shot lookup was clearer as a
 and an ordinary loop needed no carrier. It also confirmed that the compile-time bound is only part
 of the semantic contract when two same-extent tables must not exchange indices.
 
-The v0.2 recommendation is therefore **KEEP with a narrow usage boundary**: use the generic carrier
-for a stable numeric bound that is independently useful across API boundaries; use a local check
-for immediate consumption and a domain-specific type when identity matters.
+The final v0.2 admission is **STABLE (use-boundary)**: use the generic carrier for a stable numeric
+bound that is independently useful across API boundaries; use a local check for immediate
+consumption and a domain-specific type when identity matters.
 
 # Relationship to other v0.2 shapes
 

@@ -2,7 +2,10 @@
 type: API Contract
 title: nonzero API Contract
 description: Defines the non-zero guarantee, admitted element types, validation boundary, observation, and the arithmetic propagation boundary of nonzero.
-status: draft
+status: stable
+verified:
+  - by: human:urario
+    at: 2026-08-15T21:59:49+09:00
 sources:
   - id: issue-42
     resource: https://github.com/urario/precept-cpp/issues/42
@@ -12,6 +15,10 @@ sources:
     resource: https://github.com/urario/precept-cpp/issues/40
     title: v0.2 semantic vocabulary investigation, including the design laws this candidate is measured against
     author: human:urario
+  - id: issue-65-final-admission
+    resource: https://github.com/urario/precept-cpp/issues/65#issuecomment-5301911732
+    title: Final v0.2 admission matrix establishing the 8/8 stable portfolio
+    author: chatgpt/gpt-5.6-sol
 tags: [api, scalar-property, integral, validation, contract]
 ---
 
@@ -111,8 +118,9 @@ integral widening is closed over the guarantee. It is left out until a real call
 
 The evidence gathered in issue #42 is recorded there. In short: the carrier pays for itself where
 the validated value is **stored** and read by more than one later layer, and it does not where the
-value is validated and consumed at the next call. Both patterns appear in the shipped usage, so
-this contract is admitted as evidence gathering under the v0.2 policy, not as a frozen API.
+value is validated and consumed at the next call. Both patterns appear in the representative
+usage, so the final v0.2 admission is **STABLE** with that usage boundary preserved: carry the fact
+when it crosses API boundaries; prefer a local check when validation and consumption are adjacent.
 
 Measured on GCC 13 at `-O2`, a function taking `nonzero<std::size_t>` and the same function taking
 `std::size_t` generate identical code, and validating a literal constant folds away entirely. The

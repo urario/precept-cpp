@@ -24,9 +24,9 @@ okf_version: "0.2"
 * [nonzero API Contract](api/nonzero.md) - Non-zero integral guarantee, admitted element types, validation and observation boundaries, and the arithmetic propagation boundary.
 * [index_below API Contract](api/index-below.md) - Compile-time upper-bound guarantee, zero-bound policy, fixed-extent composition, and the domain-semantic boundary.
 * [narrow_exact API Contract](api/narrow-exact.md) - Exact integer representability rule, admitted integer types, failure model, and the standard-type return boundary.
-* [non-overlapping spans API Contract](api/non-overlapping.md) - Portable byte-range relation, linear validation, carrier freshness, and the operation/domain boundary.
-* [never_decrease API Contract](api/never-decrease.md) - Per-object non-decreasing integral transition, failure semantics, assignment boundary, and usage limits.
-* [same-size span relation API Contract](api/same-size.md) - Experimental dynamic-span cardinality relation, snapshot semantics, usage boundary, and evidence judgment.
+* [non-overlapping spans API Contract](api/non-overlapping.md) - Stable byte-sized storage relation, linear validation, carrier freshness, portability boundary, and the operation/domain boundary.
+* [never_decrease API Contract](api/never-decrease.md) - Stable per-object non-decreasing integral transition, failure semantics, assignment boundary, and usage limits.
+* [same-size span relation API Contract](api/same-size.md) - Stable dynamic-span cardinality relation, snapshot semantics, usage boundary, and correspondence limits.
 
 # Rules
 

@@ -2,7 +2,10 @@
 type: API Contract
 title: non-overlapping spans API contract
 description: Defines the portable storage non-overlap relation for byte-sized spans, validation, observation, and borrowed lifetime boundary.
-status: draft
+status: stable
+verified:
+  - by: human:urario
+    at: 2026-08-15T21:59:49+09:00
 sources:
   - id: issue-48
     resource: https://github.com/urario/precept-cpp/issues/48
@@ -16,6 +19,10 @@ sources:
     resource: https://github.com/urario/precept-cpp/issues/67
     title: Portable byte-sized span hardening
     author: human:urario
+  - id: issue-65-final-admission
+    resource: https://github.com/urario/precept-cpp/issues/65#issuecomment-5301911732
+    title: Final v0.2 admission matrix establishing the 8/8 stable portfolio
+    author: chatgpt/gpt-5.6-sol
   - id: p1839r7
     resource: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2025/p1839r7.html
     title: Accessing object representations
@@ -26,7 +33,7 @@ tags: [api, relation, span, lifetime, portability, v0.2]
 
 # Scope
 
-The stable candidate accepts two `std::span` values only when each element type occupies exactly
+The stable v0.2 API accepts two `std::span` values only when each element type occupies exactly
 one byte:
 
 ```text
@@ -177,7 +184,7 @@ checked_non_overlapping(std::span<T, E> first,
 
 # Admission finding
 
-**STABLE with a use boundary** is the target after #67 hardening:
+**STABLE (use-boundary)** in the v0.2 public vocabulary:
 
 ```text
 one-shot byte-buffer relation  -> operation-owned check
@@ -186,9 +193,9 @@ role-bearing / N-way relation  -> domain-specific aggregate
 wider arbitrary typed spans    -> outside v0.2 stable scope
 ```
 
-The portability review removes the only material blocker identified in #65 by reducing the stable
-surface to the part that can be stated and implemented directly in C++20 without object-
-representation traversal.
+The #66 / #67 portability hardening removed the only material blocker identified by the portfolio
+review. Stable admission is intentionally limited to byte-sized element spans, where the relation
+can be stated and implemented directly in C++20 without object-representation traversal.
 
 # Required verification
 

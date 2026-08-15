@@ -1,8 +1,11 @@
 ---
 type: API Contract
 title: same-size span relation API contract
-description: Defines the experimental dynamic-span carrier for equal cardinality and its semantic boundary.
-status: draft
+description: Defines the stable dynamic-span carrier for equal cardinality and its semantic usage boundary.
+status: stable
+verified:
+  - by: human:urario
+    at: 2026-08-15T21:59:49+09:00
 sources:
   - id: issue-62
     resource: https://github.com/urario/precept-cpp/issues/62
@@ -20,14 +23,19 @@ sources:
     resource: https://github.com/urario/precept-cpp/issues/48
     title: Non-overlapping span relation experiment
     author: human:urario
-tags: [api, relation, span, lifetime, v0.2, experimental]
+  - id: issue-65-final-admission
+    resource: https://github.com/urario/precept-cpp/issues/65#issuecomment-5301911732
+    title: Final v0.2 admission matrix establishing the 8/8 stable portfolio
+    author: chatgpt/gpt-5.6-sol
+tags: [api, relation, span, lifetime, v0.2]
 ---
 
 # Scope
 
-This is an experimental API surface for exactly two dynamic-extent `std::span` values. It does not
-accept arbitrary containers or fixed-extent spans. Fixed-extent equality should remain expressed by
-the standard `std::span<T, N>` type, including after a fixed-size validation of a dynamic span.
+This stable v0.2 API surface represents exactly one relation between two dynamic-extent
+`std::span` values. It does not accept arbitrary containers or fixed-extent spans. Fixed-extent
+equality should remain expressed by the standard `std::span<T, N>` type, including after a
+fixed-size validation of a dynamic span.
 
 The public header is `<precept/same_size.hpp>`.
 
@@ -97,7 +105,7 @@ The example validates once at an input boundary, then passes `same_size_pair<flo
 to `normalize` and `emit`, which both consume the paired buffers. `transform` deliberately accepts
 the weakened `std::span<float>` returned by `first()` because it does not use the second span. The
 carrier therefore survives two independent downstream consumers without pretending that every
-stage needs the relation. This is the positive candidate: the value is not just a shortened guard
+stage needs the relation. This is the positive case: the value is not just a shortened guard
 clause, and the caller/reviewer convention is replaced by a visible contract where the relation is
 actually needed.
 
@@ -124,15 +132,15 @@ framework. This is N-way pressure to record for a future decision, not scope for
 | Concern | `same_size_pair` | `non_overlapping_spans` |
 | --- | --- | --- |
 | Validation cost | O(1), one size comparison | Current implementation is non-trivial and linear in byte extents |
-| Relation | Equal element cardinality | Disjoint object-representation byte ranges |
+| Relation | Equal element cardinality | Disjoint storage for byte-sized spans |
 | Signature value | Keeps equal cardinality visible across reused stages | Keeps storage relation visible across reused stages |
 | Reuse value | Demonstrated for a multi-stage paired-buffer pipeline; weak for one-shot work | Stronger when repeated validation would repeat a linear scan |
 | Lifetime burden | Ordinary borrowed `std::span` lifetime | Ordinary borrowed `std::span` lifetime, with a stronger storage relation |
 | Semantic weakness | Equal size does not imply correspondence | Non-overlap does not name buffer roles or ownership |
 
 The experiment therefore separates validation savings from contract value. A cheap relation can
-still be a carrier candidate when the relation itself crosses multiple API boundaries, but the
-cheap check makes one-shot wrapper ceremony especially hard to justify.
+still be worth carrying when the relation itself crosses multiple API boundaries, but the cheap
+check makes one-shot wrapper ceremony especially hard to justify.
 
 # Actual friction
 
@@ -148,19 +156,19 @@ The implementation experiment observed the following:
 * Three parallel sequences were naturally expressed by two local equality checks, so this binary
   carrier was not extended to N-way form.
 
-# Judgment
+# Admission judgment
 
-**KEEP (use-boundary-limited)** is the result of this implementation experiment:
+**STABLE (use-boundary)** in the v0.2 public vocabulary:
 
 ```text
 one-shot          -> local check or consuming operation
-multi-stage pair  -> same_size_pair candidate
+multi-stage pair  -> same_size_pair
 domain pairing    -> domain-specific aggregate
 N-way relation    -> local check until a separate design decision exists
 ```
 
-This judgment keeps the implementation as v0.2 evidence and dogfood surface. It is not a stable
-API admission or a commitment to a generic relational-proof framework. The earlier #46 DEFER
-decision remains historical evidence: the carrier should not be used merely because a relation can
-be wrapped, and future promotion requires the multi-stage signature value to continue to outweigh
-the wrapper ceremony in real consumers.
+Stable admission does not turn equal cardinality into correspondence and does not commit Precept
+to a generic relational-proof framework. The earlier #46 DEFER decision remains useful historical
+evidence: a relation should not be wrapped merely because it can be. The admitted case is the
+narrow one demonstrated by #62, where the relation remains useful across multiple downstream
+signatures and outweighs the carrier ceremony.
