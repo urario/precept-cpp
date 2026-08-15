@@ -7,6 +7,7 @@
 #include <precept/never_decrease.hpp>
 #include <precept/non_overlapping.hpp>
 #include <precept/nonzero.hpp>
+#include <precept/same_size.hpp>
 #include <precept/set_once.hpp>
 #include <precept/span/at_least_span.hpp>
 #include <precept/span/block_span.hpp>
@@ -85,6 +86,16 @@ int main() {
   if (!separated || separated->first().data() != output.data() ||
       separated->second().data() != storage.data()) {
     return 11;
+  }
+
+  std::array<int, 3> same_size_first{1, 2, 3};
+  std::array<const float, 3> same_size_second{4.0F, 5.0F, 6.0F};
+  const auto same_size = precept::checked_same_size(
+      std::span<int>{same_size_first}, std::span<const float>{same_size_second});
+  if (!same_size || same_size->size() != 3 ||
+      same_size->first().data() != same_size_first.data() ||
+      same_size->second().data() != same_size_second.data()) {
+    return 12;
   }
 
   return 0;

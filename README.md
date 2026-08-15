@@ -316,6 +316,31 @@ than three pair carriers. The runnable
 boundary is defined by the
 [`non_overlapping_spans` API contract](knowledge/api/non-overlapping.md).
 
+## Experimental same-size span relations
+
+`checked_same_size(first, second)` validates two dynamic `std::span` values and returns a
+`same_size_pair` whose only guarantee is `first().size() == second().size()`:
+
+```cpp
+#include <precept/same_size.hpp>
+
+using paired_values = precept::same_size_pair<float, const float>;
+
+void normalize(paired_values values);
+void emit(paired_values values);
+
+if (auto values = precept::checked_same_size(raw_values, weights)) {
+  normalize(*values);
+  emit(*values); // the equal-size relation remains in both signatures
+}
+```
+
+This is a v0.2 experimental relation vocabulary, not a general zip or correspondence proof.
+Equal size does not imply that elements correspond semantically, share a domain or owner, or have
+the same lifetime. Use a local check for one-shot work, and use a domain-specific aggregate when
+roles or index identity matter. The [same-size relation example](examples/same_size_relations.cpp)
+and [draft contract](knowledge/api/same-size.md) record the current usage boundary.
+
 ## Examples
 
 [`examples/`](examples/) holds complete programs for the three span usages the v0.1 vocabulary was
@@ -330,11 +355,13 @@ boundary into two deeper layers. The
 [wire-field example](examples/narrow_exact_wire_fields.cpp) shows the opposite shape: validation
 that ends in an ordinary integer rather than a Precept type. The
 [non-overlapping buffer example](examples/non_overlapping_buffers.cpp) compares one-shot,
-multi-stage, and role-bearing scratch-buffer contracts. They are built and executed by an ordinary
-test run, so they always match the current API. The
+multi-stage, and role-bearing scratch-buffer contracts. The
 [transition comparison example](examples/never_decrease_transitions.cpp) shows where a
 non-decreasing carrier is useful and where a closed operation, domain-specific type, or local
-setter is clearer.
+setter is clearer. The
+[same-size relation example](examples/same_size_relations.cpp) compares local, multi-stage,
+domain-specific, and N-way shapes. They are built and executed by an ordinary test run, so they
+always match the current API.
 
 ## Scope and non-goals
 
