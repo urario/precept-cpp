@@ -11,6 +11,10 @@ sources:
   - id: issue-55
     resource: https://github.com/urario/precept-cpp/issues/55
     title: Production contract and implementation issue for set_once
+  - id: issue-65-final-admission
+    resource: https://github.com/urario/precept-cpp/issues/65#issuecomment-5301911732
+    title: Final v0.2 admission matrix establishing the 8/8 stable portfolio
+    author: chatgpt/gpt-5.6-sol
 tags: [api, transition, initialization, value-holder]
 ---
 
@@ -122,3 +126,7 @@ Unlike `std::optional<T>`, the public surface has no reset, replacement, or assi
 type is appropriate only when this narrower transition is itself the reusable semantic contract;
 domain-specific non-null, conflict, or lifecycle policies must not be generalized away merely
 because they also contain an unset-to-set transition.
+
+The final v0.2 portfolio admits `set_once<T>` as **STABLE**. Stable admission is for this narrow
+per-object slot transition only; it does not add thread safety, deep immutability, conflict
+resolution, or a generic state-machine abstraction.
