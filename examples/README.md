@@ -13,6 +13,8 @@ are built and executed by an ordinary test run, so they cannot drift away from t
   alignment into a consumer that applies the standard optimizer hint.
 * [`set_once_configuration.cpp`](set_once_configuration.cpp) — carrying one-way initialization
   from a configuration site to a separate use site without offering replacement or reset.
+* [`nonzero_scaling.cpp`](nonzero_scaling.cpp) — a divisor validated once at a configuration
+  boundary and reused by a planning layer and a kernel, neither of which re-checks it.
 
 Build and run them from the repository root:
 
@@ -24,5 +26,6 @@ ctest --test-dir build -R '^example_' --output-on-failure
 
 The exact contracts these examples rely on are defined in the
 [v0.1 Span Family API Contract](../knowledge/api/span-family.md),
-[aligned_ptr API Contract](../knowledge/api/aligned-ptr.md), and
-[set_once API Contract](../knowledge/api/set-once.md).
+[aligned_ptr API Contract](../knowledge/api/aligned-ptr.md),
+[set_once API Contract](../knowledge/api/set-once.md), and
+[nonzero API Contract](../knowledge/api/nonzero.md).

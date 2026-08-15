@@ -211,6 +211,31 @@ The guarantee applies to slot assignment only. It does not make state reachable 
 deeply immutable, and it provides no thread synchronization. The exact boundary is defined by the
 [`set_once` API contract](knowledge/api/set-once.md).
 
+## Non-zero integers
+
+`nonzero<T>` carries a validated `value != 0` fact across API boundaries, for integral `T` other
+than `bool`:
+
+```cpp
+#include <precept/nonzero.hpp>
+
+std::size_t decimated_length(std::size_t input, precept::nonzero<std::uint32_t> decimation);
+
+if (auto decimation = precept::nonzero<std::uint32_t>::try_from(raw)) {
+  use(decimated_length(samples.size(), *decimation)); // no divisor check here or below
+}
+```
+
+`try_from()` is `constexpr` and `noexcept`, `value()` is the only way back to a plain scalar, and
+there is no implicit conversion in either direction.
+
+`nonzero<T>` carries only the fact that the stored scalar is non-zero. It is not a general numeric
+wrapper and does not propagate the guarantee through arbitrary arithmetic: the difference of two
+non-zero values can be zero, so the type offers no arithmetic operators at all. Non-zero is also
+not always sufficient by itself — signed division still requires a representable result, and a
+validated index still needs its own range check. The exact boundary is defined by the
+[`nonzero` API contract](knowledge/api/nonzero.md).
+
 ## Examples
 
 [`examples/`](examples/) holds complete programs for the three span usages the v0.1 vocabulary was
@@ -218,9 +243,11 @@ designed around: [packet and header parsing](examples/packet_parsing.cpp),
 [fixed-block processing](examples/fixed_block_processing.cpp), and
 [non-empty collection processing](examples/non_empty_processing.cpp). The
 [aligned buffer example](examples/aligned_buffer_processing.cpp) shows the first structural-property
-carrier, and the [set-once configuration example](examples/set_once_configuration.cpp) carries a
-one-way initialization rule to a separate use site. They are built and executed by an ordinary
-test run, so they always match the current API.
+carrier, the [set-once configuration example](examples/set_once_configuration.cpp) carries a
+one-way initialization rule to a separate use site, and the
+[decimation example](examples/nonzero_scaling.cpp) carries a validated divisor from a configuration
+boundary into two deeper layers. They are built and executed by an ordinary test run, so they
+always match the current API.
 
 ## Scope and non-goals
 

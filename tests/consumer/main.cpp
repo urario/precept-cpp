@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <precept/aligned_ptr.hpp>
+#include <precept/nonzero.hpp>
 #include <precept/set_once.hpp>
 #include <precept/span/at_least_span.hpp>
 #include <precept/span/block_span.hpp>
@@ -51,6 +52,11 @@ int main() {
   precept::set_once<int> configured;
   if (!configured.try_set(42) || configured.value() != 42 || configured.try_set(7)) {
     return 7;
+  }
+
+  const auto divisor = precept::nonzero<int>::try_from(7);
+  if (!divisor || divisor->value() != 7 || precept::nonzero<int>::try_from(0)) {
+    return 8;
   }
 
   return 0;
