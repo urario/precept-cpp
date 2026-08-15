@@ -20,6 +20,10 @@ sources:
     resource: https://github.com/urario/precept-cpp/issues/41#issuecomment-5295112396
     title: Final diagnostics and ergonomics gate freezing the production contract
     author: human:urario
+  - id: issue-65-final-admission
+    resource: https://github.com/urario/precept-cpp/issues/65#issuecomment-5301911732
+    title: Final v0.2 admission matrix establishing the 8/8 stable portfolio
+    author: chatgpt/gpt-5.6-sol
 tags: [api, alignment, pointer, structural-property, contract]
 ---
 
@@ -155,6 +159,10 @@ A stable structural property is not sufficient by itself to justify a semantic c
 must cross an API boundary and change or constrain downstream behavior often enough to be reused.
 The carrier preserves only that fact and permits only address-preserving weakening. A richer domain
 view wins when the actual contract includes more than the structural property.
+
+The final v0.2 portfolio admits `aligned_ptr<T, N>` as **STABLE**. No material blocker remains
+within this contract; its stable scope is the current-address alignment fact and the explicit
+boundaries above.
 
 # Public API sketch
 
