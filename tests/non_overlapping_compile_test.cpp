@@ -23,8 +23,7 @@ using qualified_pair = precept::non_overlapping_spans<std::byte, const std::byte
 using heterogeneous_pair = precept::non_overlapping_spans<char, const unsigned char>;
 
 static_assert(!std::default_initializable<mutable_pair>);
-static_assert(
-    !std::constructible_from<mutable_pair, std::span<std::byte>, std::span<std::byte>>);
+static_assert(!std::constructible_from<mutable_pair, std::span<std::byte>, std::span<std::byte>>);
 static_assert(std::copy_constructible<mutable_pair>);
 static_assert(std::movable<mutable_pair>);
 static_assert(std::is_trivially_copyable_v<mutable_pair>);
@@ -47,11 +46,11 @@ static_assert(!can_check_non_overlap<int, int>);
 static_assert(!can_check_non_overlap<std::byte, int>);
 static_assert(!can_check_non_overlap<std::uint16_t, std::byte>);
 
-static_assert(std::same_as<decltype(precept::checked_non_overlapping(
-                               std::declval<std::span<std::byte, 2>>(),
-                               std::declval<std::span<const std::byte, 3>>())),
-                           std::optional<
-                               precept::non_overlapping_spans<std::byte, const std::byte>>>);
+static_assert(
+    std::same_as<decltype(precept::checked_non_overlapping(
+                     std::declval<std::span<std::byte, 2>>(),
+                     std::declval<std::span<const std::byte, 3>>())),
+                 std::optional<precept::non_overlapping_spans<std::byte, const std::byte>>>);
 static_assert(noexcept(precept::checked_non_overlapping(
     std::declval<std::span<std::byte>>(), std::declval<std::span<const std::byte>>())));
 
