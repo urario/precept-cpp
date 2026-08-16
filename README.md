@@ -43,7 +43,7 @@ include(FetchContent)
 FetchContent_Declare(
   precept
   GIT_REPOSITORY https://github.com/urario/precept-cpp.git
-  GIT_TAG v0.1.0)
+  GIT_TAG v0.2.0)
 FetchContent_MakeAvailable(precept)
 
 target_link_libraries(your_app PRIVATE Precept::Precept)
@@ -72,7 +72,7 @@ cmake --install build --prefix <prefix>
 An installed package can be consumed with the same target name:
 
 ```cmake
-find_package(Precept 0.1 CONFIG REQUIRED)
+find_package(Precept 0.2 CONFIG REQUIRED)
 target_link_libraries(your_app PRIVATE Precept::Precept)
 ```
 
