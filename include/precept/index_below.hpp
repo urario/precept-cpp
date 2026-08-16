@@ -34,6 +34,15 @@ public:
     }
   }
 
+  /// Implicitly widens a validated upper-bound guarantee.
+  ///
+  /// When `M <= N`, the source fact `value() < M` already satisfies `value() < N`. The validated
+  /// scalar is preserved without runtime validation. A conversion to a smaller bound is not
+  /// provided; use `try_from()` to establish that stronger guarantee.
+  template <std::size_t M>
+    requires(M <= N)
+  constexpr index_below(const index_below<M>& source) noexcept : index_(source.value()) {}
+
   /// Returns the validated index as an ordinary `std::size_t`.
   [[nodiscard]] constexpr std::size_t value() const noexcept { return index_; }
 

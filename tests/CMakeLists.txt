@@ -119,6 +119,10 @@ precept_expect_compile_failure(aligned_ptr_below_natural_alignment
 precept_expect_compile_failure(aligned_ptr_void aligned_ptr_void.cpp)
 precept_expect_compile_failure(aligned_ptr_incomplete aligned_ptr_incomplete.cpp)
 precept_expect_compile_failure(aligned_ptr_template_deduction aligned_ptr_template_deduction.cpp)
+precept_expect_compile_failure(index_below_strengthening_8_to_4
+                               index_below_strengthening_8_to_4.cpp)
+precept_expect_compile_failure(index_below_strengthening_16_to_4
+                               index_below_strengthening_16_to_4.cpp)
 precept_expect_compile_failure(nonzero_direct_construction nonzero_direct_construction.cpp)
 precept_expect_compile_failure(nonzero_arithmetic nonzero_arithmetic.cpp)
 precept_expect_compile_failure(set_once_temporary_value set_once_temporary_value.cpp)
