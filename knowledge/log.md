@@ -2,6 +2,13 @@
 
 ## 2026-08-16
 
+* **v0.3.0**: Adds `at_least_span<T, N>::subspan<Offset>()`. For `Offset < N`, it preserves the
+  derivable residual minimum-size guarantee as `at_least_span<T, N - Offset>`; `Offset == N`
+  returns `std::span<T>`, and `Offset > N` is ill-formed. The operation preserves the actual
+  runtime view size and requires no additional runtime validation for the residual minimum. No
+  additional public API is included. See [release issue #84](https://github.com/urario/precept-cpp/issues/84)
+  for the release work and evidence.
+
 * **v0.2.0**: Extends Precept beyond the original v0.1 span-precondition family while keeping that
   family public. The semantic vocabulary exploration admitted eight APIs:
   `aligned_ptr<T, N>` and `nonzero<T>` as property/refined carriers, `index_below<N>` as a
