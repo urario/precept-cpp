@@ -104,6 +104,22 @@ if (auto packet = precept::at_least_span<const std::byte, 16>::try_from(
 }
 ```
 
+When a fixed prefix is removed and the remaining minimum is still useful to a downstream API,
+`subspan<Offset>()` preserves that already-established fact without a second runtime validation:
+
+```cpp
+void process_body(precept::at_least_span<const std::byte, 24> body);
+
+void process_packet(precept::at_least_span<const std::byte, 32> packet) {
+  process_body(packet.subspan<8>()); // at_least_span<const std::byte, 24>
+}
+```
+
+`subspan<N>()` returns `std::span<T>` when the minimum-size fact is exhausted, and an offset above
+`N` is ill-formed. If the fact is consumed locally rather than crossing an API boundary, a plain
+`std::span` with a local check may be clearer; `prefix().first<K>()` remains the standard path for
+fixed prefixes.
+
 For the common one-or-more case, `non_empty_span<T>` is the same type as
 `at_least_span<T, 1>`. Once validation succeeds, `front()` and `back()` are guaranteed:
 
