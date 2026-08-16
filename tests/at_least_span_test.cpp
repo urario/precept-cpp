@@ -56,6 +56,39 @@ TEST(AtLeastSpanTest, ExactSizeHasAnEmptyRest) {
   EXPECT_TRUE(view.rest().empty());
 }
 
+TEST(AtLeastSpanTest, SubspanPreservesResidualMinimumAndRuntimeSize) {
+  std::array<int, 100> values{};
+  values[4] = 42;
+  precept::at_least_span<int, 16> view = std::span<int, 100>{values};
+
+  const auto tail = view.subspan<4>();
+
+  static_assert(decltype(tail)::minimum_size == 12);
+  EXPECT_EQ(tail.size(), 96U);
+  EXPECT_EQ(tail.data(), values.data() + 4);
+  EXPECT_EQ(tail.front(), 42);
+}
+
+TEST(AtLeastSpanTest, SubspanAtMinimumReturnsTheStandardSpan) {
+  std::array<int, 100> values{};
+  precept::at_least_span<int, 16> view = std::span<int, 100>{values};
+
+  const auto tail = view.subspan<16>();
+
+  EXPECT_EQ(tail.size(), 84U);
+  EXPECT_EQ(tail.data(), values.data() + 16);
+}
+
+TEST(AtLeastSpanTest, SubspanPreservesConstElementQualification) {
+  std::array<int, 20> values{};
+  precept::at_least_span<const int, 16> view = std::span<int, 20>{values};
+
+  const auto tail = view.subspan<4>();
+
+  EXPECT_EQ(tail.size(), 16U);
+  EXPECT_EQ(tail.data(), values.data() + 4);
+}
+
 TEST(AtLeastSpanTest, ProvidesStandardRangeAndElementAccess) {
   std::vector<int> values = {1, 2, 3, 4};
   auto result = precept::at_least_span<int, 2>::try_from(std::span<int>{values});
