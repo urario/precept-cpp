@@ -1,11 +1,8 @@
 ---
 type: API Contract
 title: index_below API Contract
-description: Defines the compile-time upper-bound guarantee, zero-bound policy, construction and observation boundaries, and the limit between a numeric bound and a domain-specific index.
-status: stable
-verified:
-  - by: human:urario
-    at: 2026-08-15T21:59:49+09:00
+description: Defines the compile-time upper-bound guarantee, zero-bound policy, safe bound weakening, construction and observation boundaries, and the limit between a numeric bound and a domain-specific index.
+status: draft
 sources:
   - id: issue-43
     resource: https://github.com/urario/precept-cpp/issues/43
@@ -27,6 +24,10 @@ sources:
     resource: https://github.com/urario/precept-cpp/issues/65#issuecomment-5301911732
     title: Final v0.2 admission matrix establishing the 8/8 stable portfolio
     author: chatgpt/gpt-5.6-sol
+  - id: issue-90
+    resource: https://github.com/urario/precept-cpp/issues/90
+    title: v0.4 proposal for failure-free `index_below` bound weakening
+    author: human:urario
 tags: [api, index, scalar-property, fixed-extent, validation, contract]
 ---
 
@@ -115,11 +116,11 @@ The type provides no arithmetic, increment, decrement, ordering, dereference, or
 operators. Computation happens on `value()` and returns an ordinary scalar that must be validated
 again if it needs to carry the bound.
 
-No conversion between different bounds is provided. Numerically,
-`index_below<8>` could safely weaken to `index_below<16>`, but the representative usages did not
-need that conversion. Adding it would also make it easier to move a value between differently
-bounded domains without establishing that the domains are related. The conversion remains absent
-until a same-domain use demonstrates value beyond its mathematical validity.
+An `index_below<M>` converts implicitly to `index_below<N>` when `M <= N`. The source contract
+`value() < M` already satisfies the destination contract `value() < N`, so the validated scalar is
+preserved directly without runtime validation. Equal-bound conversion remains ordinary copy/move.
+Conversion in the strengthening direction is not provided; use the destination's `try_from()` to
+validate the stronger bound.
 
 # Non-goals
 
@@ -129,7 +130,7 @@ The public surface deliberately excludes:
 * container ownership, lifetime tracking, and proof freshness for mutable runtime state;
 * lower bounds, arbitrary intervals, and a general bounded-integer framework;
 * arithmetic, increment, decrement, comparison, and implicit scalar conversion;
-* conversion between bounds;
+* strengthening conversion between bounds;
 * policy templates and custom error types; and
 * domain identity or a strong-typedef framework.
 
@@ -168,6 +169,10 @@ namespace precept {
 template<std::size_t N>
 class index_below {
 public:
+    template<std::size_t M>
+        requires (M <= N)
+    constexpr index_below(const index_below<M>& source) noexcept;
+
     [[nodiscard]]
     static constexpr std::optional<index_below>
     try_from(std::size_t index) noexcept;
@@ -187,6 +192,10 @@ Production verification covers:
 * rejection of `N` and `N + 1` where representable;
 * the bounds zero and one;
 * preservation of the original value and the fact through copies;
+* implicit, `constexpr`, `noexcept` weakening from `index_below<M>` to `index_below<N>` when
+  `M <= N`, including exact value preservation;
+* rejection of strengthening conversions;
+* preservation of same-specialization copy/move behavior;
 * absence of default construction, raw construction, and implicit scalar conversion;
 * `constexpr` validation and observation;
 * fixed-extent `std::array` and `std::span` composition;
@@ -195,5 +204,5 @@ Production verification covers:
 * representative protocol, lookup-table, local-check, and ordinary-loop call sites.
 
 Runtime behavior belongs in GoogleTest and type properties in `static_assert`, per the
-[Test Strategy](../testing/test-strategy.md). No negative compile test is needed: the invariant
-bypass and conversion boundaries are directly observable with standard type traits.
+[Test Strategy](../testing/test-strategy.md). Strengthening conversion rejection is covered by
+both type traits and focused negative compile tests.

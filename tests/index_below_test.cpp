@@ -10,6 +10,7 @@
 #include <optional>
 #include <span>
 #include <string_view>
+#include <utility>
 
 namespace {
 
@@ -53,6 +54,24 @@ TEST(IndexBelowTest, CopyPreservesTheValidatedValue) {
   EXPECT_EQ(copy.value(), 2U);
   EXPECT_EQ(preserved.value(), 6U);
   EXPECT_EQ(original->value(), 6U);
+}
+
+TEST(IndexBelowTest, WidensTheBoundWithoutChangingTheValidatedValue) {
+  const auto original = *precept::index_below<4>::try_from(3);
+
+  const precept::index_below<8> widened_to_eight = original;
+  const precept::index_below<16> widened_to_sixteen = original;
+
+  EXPECT_EQ(widened_to_eight.value(), 3U);
+  EXPECT_EQ(widened_to_sixteen.value(), 3U);
+}
+
+TEST(IndexBelowTest, MovePreservesTheValidatedValueWithinOneSpecialization) {
+  auto original = *precept::index_below<8>::try_from(6);
+
+  precept::index_below<8> moved = std::move(original);
+
+  EXPECT_EQ(moved.value(), 6U);
 }
 
 // Fixed protocol field: validation happens at the input boundary and the same fact is reused by
