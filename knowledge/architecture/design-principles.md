@@ -2,10 +2,7 @@
 type: Design Principle
 title: Precept Design Principles
 description: The principles that shape how Precept semantic types, factories, operations, and proof carriers are designed.
-status: stable
-verified:
-  - by: human:urario
-    at: 2026-08-14T21:47:00+09:00
+status: draft
 sources:
   - id: issue-1
     resource: https://github.com/urario/precept-cpp/issues/1
@@ -19,6 +16,10 @@ sources:
     resource: https://github.com/urario/precept-cpp/issues/49#issuecomment-5293470398
     title: Owner approval of the v0.2 API admission and design-principle baseline
     author: chatgpt/gpt-5.6-sol
+  - id: issue-79-v0-3
+    resource: https://github.com/urario/precept-cpp/issues/79
+    title: v0.3 design resolution for minimum-extent fact preservation across compile-time subviews
+    author: human:urario
 tags: [architecture, design-principles]
 ---
 
@@ -107,6 +108,18 @@ stronger semantic type or proof merely because the inputs had it.
 Prefer the appropriate standard result type, or require validation again when the fact must be
 re-established. This keeps semantic vocabulary from growing into a speculative operator or policy
 framework.
+
+# Closed is necessary, not sufficient
+
+Do not add an operation merely because an invariant is closed under it. Preserve a semantic fact
+only when all of the following hold:
+
+* the operation is natural;
+* the result fact is derivable from the existing fact;
+* standard C++ would otherwise discard reusable information; and
+* preservation requires no new validation or generic framework.
+
+When these conditions are not met, use the standard operation or re-establish the fact explicitly.
 
 # Precept view types do not own storage
 

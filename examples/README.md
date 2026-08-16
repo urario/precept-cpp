@@ -3,8 +3,12 @@
 Each example is a self-contained program that a consumer could paste into their own project. They
 are built and executed by an ordinary test run, so they cannot drift away from the API.
 
+The packet example also shows the positive v0.3 case: a compile-time-known prefix is removed with
+`subspan<Offset>()`, and the residual minimum-size fact crosses into a downstream function.
+
 * [`packet_parsing.cpp`](packet_parsing.cpp) — a minimum-size header precondition stated in the
-  parameter type with `at_least_span`, and the exact-size counterpart, `checked_span`.
+  parameter type with `at_least_span`, a fixed-prefix residual body passed downstream with
+  `subspan<Offset>()`, and the exact-size counterpart, `checked_span`.
 * [`fixed_block_processing.cpp`](fixed_block_processing.cpp) — `block_span` iteration with no tail
   case, where a partial final block fails validation instead of reaching the loop.
 * [`non_empty_processing.cpp`](non_empty_processing.cpp) — `non_empty_span` making `front()` and

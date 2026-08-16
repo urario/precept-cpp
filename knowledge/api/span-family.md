@@ -2,10 +2,7 @@
 type: API Contract
 title: v0.1 Span Family API Contract
 description: Defines the guarantees, construction boundaries, conversions, lifetime rules, and operations of the v0.1 span APIs.
-status: stable
-verified:
-  - by: human:urario
-    at: 2026-08-14T17:36:23+09:00
+status: draft
 sources:
   - id: issue-4
     resource: https://github.com/urario/precept-cpp/issues/4
@@ -19,7 +16,19 @@ sources:
     resource: https://github.com/urario/precept-cpp/issues/20#issuecomment-5288715908
     title: Resolution prioritizing truthful range interoperability and safe semantic weakening
     author: human:urario
-tags: [api, span, v0.1, contract]
+  - id: issue-79-v0-3
+    resource: https://github.com/urario/precept-cpp/issues/79
+    title: v0.3 design resolution for minimum-extent fact preservation across compile-time subviews
+    author: human:urario
+  - id: issue-80-v0-3
+    resource: https://github.com/urario/precept-cpp/issues/80
+    title: v0.3 implementation contract for proof-preserving subviews of at_least_span
+    author: human:urario
+  - id: issue-81-v0-3
+    resource: https://github.com/urario/precept-cpp/issues/81
+    title: v0.3 subview contract tests, diagnostics, and zero-extra-validation evidence
+    author: human:urario
+tags: [api, span, v0.1, v0.3, contract]
 ---
 
 # Scope
@@ -33,7 +42,9 @@ precept::checked_span<N>(...)
 precept::block_span<T, N>
 ```
 
-It is normative for issues #5, #6, and #7. The reasons for the validation and conversion
+It also defines the v0.3 `subspan<Offset>()` addition to `at_least_span<T, N>`.
+
+It is normative for issues #5, #6, and #7 and for the v0.3 subview contract. The reasons for the validation and conversion
 boundaries are recorded separately in
 [ADR-0006](../decisions/adr-0006-validation-and-conversion-boundaries.md).
 
@@ -165,7 +176,7 @@ type's `try_from()` so the strengthening remains explicit and validated.
 
 ## Operations
 
-The v0.1 surface contains:
+The v0.1 surface, plus the v0.3 subview addition, contains:
 
 * `minimum_size`, equal to `N`
 * `size()`, `size_bytes()`, and `data()`
@@ -173,6 +184,7 @@ The v0.1 surface contains:
 * guaranteed `front()` and `back()`
 * `prefix()`, returning `std::span<T, N>`
 * `rest()`, returning the dynamic span `[N, size())`
+* `subspan<Offset>()`, returning a compile-time subview while preserving a derivable residual minimum
 * `as_span()`, returning the complete dynamic element view
 
 There is no member `empty()`: it would always return false and add no semantic value. Generic
@@ -180,6 +192,29 @@ There is no member `empty()`: it would always return false and add no semantic v
 are available from the standard span returned by `as_span()` rather than being reimplemented.
 
 When `size() == N`, `prefix()` covers the entire view and `rest()` is a valid empty span.
+
+### Compile-time subviews (v0.3)
+
+The v0.3 addition is limited to this operation:
+
+```cpp
+template<std::size_t Offset>
+    requires (Offset <= N)
+[[nodiscard]] constexpr auto subspan() const noexcept;
+```
+
+Its result is determined by the compile-time offset:
+
+* `subspan<Offset>()`, `Offset < N` returns `at_least_span<T, N - Offset>`.
+* `subspan<N>()` returns `std::span<T>` and is the same view as `rest()`.
+* `subspan<Offset>()`, `Offset > N`, is not a valid call because the constraint is not satisfied.
+
+The runtime actual size is preserved; the view is not truncated. The operation performs no new
+runtime validation because the residual minimum follows mechanically from the source guarantee.
+The result remains non-owning, and its lifetime and invalidation rules follow the source view.
+`at_least_span<T, 0>` does not exist: when the guarantee is exhausted, the result is the standard
+type. `first<K>()` is not part of v0.3; use `prefix().first<K>()` when that standard fixed-extent
+view is the required result.
 
 ## Example
 
@@ -436,6 +471,9 @@ public:
     [[nodiscard]] constexpr std::span<T> as_span() const noexcept;
     [[nodiscard]] constexpr std::span<T, N> prefix() const noexcept;
     [[nodiscard]] constexpr std::span<T> rest() const noexcept;
+    template<std::size_t Offset>
+        requires (Offset <= N)
+    [[nodiscard]] constexpr auto subspan() const noexcept;
     [[nodiscard]] constexpr size_type size() const noexcept;
     [[nodiscard]] constexpr size_type size_bytes() const noexcept;
     [[nodiscard]] constexpr pointer data() const noexcept;
