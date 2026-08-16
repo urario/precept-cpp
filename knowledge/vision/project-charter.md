@@ -19,6 +19,10 @@ sources:
   - id: issue-55
     resource: https://github.com/urario/precept-cpp/issues/55
     title: Production contract and implementation issue for set_once
+  - id: issue-79-v0-3
+    resource: https://github.com/urario/precept-cpp/issues/79
+    title: v0.3 design resolution for minimum-extent fact preservation across compile-time subviews
+    author: human:urario
 tags: [vision, charter, scope]
 ---
 
@@ -104,6 +108,24 @@ The hypothesis being tested:
 Their exact contracts, conversions, and failure model are defined by the
 [v0.1 Span Family API Contract](../api/span-family.md). They remain outside this charter's
 responsibility.
+
+# v0.3 roadmap — semantic fact preservation
+
+v0.3 does not add a new semantic type. Its public addition is limited to:
+
+```cpp
+template<std::size_t Offset>
+    requires (Offset <= N)
+[[nodiscard]] constexpr auto subspan() const noexcept;
+```
+
+For `at_least_span<T, N>`, an offset below `N` returns
+`at_least_span<T, N - Offset>`, while `subspan<N>()` returns `std::span<T>`. An offset above `N`
+is ill-formed. `first<K>()` was rejected in #79; callers use `prefix().first<K>()` instead.
+
+The v0.3 chain is #79 design, #80 implementation, #81 evidence, #82 documentation sync, #83 final
+admission, and #84 release. Runtime offsets, counted subviews, cursor/parser abstractions, and
+generic proof frameworks remain outside this release.
 
 # Versioning and support
 

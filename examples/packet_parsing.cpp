@@ -21,12 +21,24 @@
 namespace {
 
 constexpr std::size_t header_size = 16;
+constexpr std::size_t packet_minimum = 32;
+constexpr std::size_t body_offset = 8;
 
 // The header is exactly 16 bytes, so it travels as a fixed-extent standard span. No Precept type is
 // needed here: `std::span<const std::byte, 16>` already carries the whole fact.
 std::uint16_t read_message_type(std::span<const std::byte, header_size> header) {
   return static_cast<std::uint16_t>(static_cast<unsigned>(header[0]) << 8 |
                                     static_cast<unsigned>(header[1]));
+}
+
+void process_body(precept::at_least_span<const std::byte, 24> body) {
+  std::cout << "residual body bytes: " << body.size() << '\n';
+}
+
+// The fixed eight-byte prefix is removed without revalidating the remaining minimum. The actual
+// runtime size is retained in the residual view.
+void process_packet(precept::at_least_span<const std::byte, packet_minimum> packet) {
+  process_body(packet.subspan<body_offset>());
 }
 
 // The minimum size is part of the parameter type, so this function neither re-checks it nor
@@ -56,6 +68,13 @@ int main() {
   if (auto packet = precept::at_least_span<const std::byte, header_size>::try_from(
           std::span<const std::byte>{datagram})) {
     parse_packet(*packet);
+  }
+
+  // A fixed prefix can be removed while the residual minimum remains visible to the next API.
+  const std::vector<std::byte> fixed_header_packet = receive(packet_minimum);
+  if (auto packet = precept::at_least_span<const std::byte, packet_minimum>::try_from(
+          std::span<const std::byte>{fixed_header_packet})) {
+    process_packet(*packet);
   }
 
   // A short datagram is rejected without throwing, and without a truncated view being handed on.
