@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 
 project(PreceptConsumer LANGUAGES CXX)
 
-find_package(Precept 0.1 CONFIG REQUIRED)
+find_package(Precept 0.2 CONFIG REQUIRED)
 
 set(expected_public_headers
     precept/aligned_ptr.hpp
