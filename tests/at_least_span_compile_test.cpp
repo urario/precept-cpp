@@ -16,6 +16,8 @@ namespace {
 using mutable_four = precept::at_least_span<int, 4>;
 using const_four = precept::at_least_span<const int, 4>;
 using mutable_eight = precept::at_least_span<int, 8>;
+using mutable_sixteen = precept::at_least_span<int, 16>;
+using const_sixteen = precept::at_least_span<const int, 16>;
 
 template <class Target, class Source>
 concept accepts_try_from = requires(Source source) { Target::try_from(source); };
@@ -56,6 +58,16 @@ static_assert(std::same_as<mutable_four::reference, int&>);
 static_assert(std::same_as<decltype(std::declval<mutable_four>().as_span()), std::span<int>>);
 static_assert(std::same_as<decltype(std::declval<mutable_four>().prefix()), std::span<int, 4>>);
 static_assert(std::same_as<decltype(std::declval<mutable_four>().rest()), std::span<int>>);
+static_assert(
+    std::same_as<decltype(std::declval<mutable_sixteen>().subspan<0>()), mutable_sixteen>);
+static_assert(std::same_as<decltype(std::declval<mutable_sixteen>().subspan<8>()),
+                           precept::at_least_span<int, 8>>);
+static_assert(std::same_as<decltype(std::declval<mutable_sixteen>().subspan<15>()),
+                           precept::at_least_span<int, 1>>);
+static_assert(
+    std::same_as<decltype(std::declval<mutable_sixteen>().subspan<16>()), std::span<int>>);
+static_assert(std::same_as<decltype(std::declval<const_sixteen>().subspan<8>()),
+                           precept::at_least_span<const int, 8>>);
 static_assert(std::same_as<decltype(mutable_four::try_from(std::declval<std::span<int>>())),
                            std::optional<mutable_four>>);
 static_assert(!has_empty_member<mutable_four>);
@@ -73,13 +85,18 @@ static_assert(!valid_at_least_span<std::dynamic_extent>);
 static_assert(noexcept(mutable_four::try_from(std::declval<std::span<int>>())));
 static_assert(noexcept(std::declval<mutable_four>().prefix()));
 static_assert(noexcept(std::declval<mutable_four>().rest()));
+static_assert(noexcept(std::declval<mutable_sixteen>().subspan<8>()));
+static_assert(noexcept(std::declval<mutable_sixteen>().subspan<16>()));
 static_assert(noexcept(std::declval<mutable_four>().as_span()));
 
 constexpr bool supports_constant_evaluation() {
   int values[] = {1, 2, 3, 4, 5};
   mutable_four view = std::span<int, 5>{values};
+  const auto residual = view.subspan<2>();
+  const auto standard = view.subspan<4>();
   return view.size() == 5 && view.prefix().size() == 4 && view.rest().size() == 1 &&
-         view.front() == 1 && view.back() == 5 && view[2] == 3;
+         residual.size() == 3 && residual.front() == 3 && standard.size() == 1 &&
+         standard.front() == 5 && view.front() == 1 && view.back() == 5 && view[2] == 3;
 }
 
 static_assert(supports_constant_evaluation());

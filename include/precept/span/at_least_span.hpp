@@ -81,6 +81,18 @@ public:
   /// Returns the elements following the guaranteed prefix.
   [[nodiscard]] constexpr std::span<T> rest() const noexcept { return view_.subspan(N); }
 
+  /// Returns a compile-time subview with the residual minimum-size guarantee.
+  template <std::size_t Offset>
+    requires(Offset <= N)
+  [[nodiscard]] constexpr auto subspan() const noexcept {
+    if constexpr (Offset == N) {
+      return view_.template subspan<Offset>();
+    } else {
+      using result_type = at_least_span<T, N - Offset>;
+      return result_type(typename result_type::validated_t{}, view_.template subspan<Offset>());
+    }
+  }
+
   [[nodiscard]] constexpr size_type size() const noexcept { return view_.size(); }
   [[nodiscard]] constexpr size_type size_bytes() const noexcept { return view_.size_bytes(); }
   [[nodiscard]] constexpr pointer data() const noexcept { return view_.data(); }
@@ -101,6 +113,10 @@ public:
   [[nodiscard]] constexpr iterator end() const noexcept { return view_.end(); }
 
 private:
+  template <class U, std::size_t M>
+    requires(M > 0 && M != std::dynamic_extent)
+  friend class at_least_span;
+
   struct validated_t {};
 
   constexpr at_least_span(validated_t, std::span<T> source) noexcept : view_(source) {}
